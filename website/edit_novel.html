@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Edit Novel</title>
+
+    <link
+        rel="stylesheet"
+        href="manual_novel.css"
+    >
+
+</head>
+
+<body>
+
+    <div class="manual-novel-container">
+
+        <div class="manual-novel-header">
+
+            <h1>
+                Edit Novel
+            </h1>
+
+            <p>
+                Update your novel information and chapters.
+            </p>
+
+        </div>
+
+
+        <!-- =====================================================
+             NOVEL INFORMATION
+        ====================================================== -->
+
+        <form id="editNovelForm">
+
+            <div class="form-section">
+
+                <h2>
+                    Novel Information
+                </h2>
+
+                <div class="form-group">
+
+                    <label for="novelTitle">
+                        Novel Title *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="novelTitle"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="novelAuthor">
+                            Author
+                        </label>
+
+                        <input
+                            type="text"
+                            id="novelAuthor"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="novelGenre">
+                            Genre
+                        </label>
+
+                        <input
+                            type="text"
+                            id="novelGenre"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="novelStatus">
+                        Status
+                    </label>
+
+                    <select id="novelStatus">
+
+                        <option value="Ongoing">
+                            Ongoing
+                        </option>
+
+                        <option value="Completed">
+                            Completed
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="novelSynopsis">
+                        Synopsis
+                    </label>
+
+                    <textarea
+                        id="novelSynopsis"
+                        rows="6"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="coverImage">
+                        Cover Image URL
+                    </label>
+
+                    <input
+                        type="url"
+                        id="coverImage"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 CHAPTERS
+            ================================================== -->
+
+            <div class="form-section">
+
+                <div class="chapter-section-header">
+
+                    <div>
+
+                        <h2>
+                            Chapters
+                        </h2>
+
+                        <p>
+                            Edit, remove or add chapters.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Existing chapters will appear here -->
+
+                <div id="chaptersContainer"></div>
+
+
+                <!-- Add Chapter Button -->
+
+                <div class="add-chapter-bottom">
+
+                    <button
+                        type="button"
+                        id="addChapterBtn"
+                        class="add-chapter-btn"
+                    >
+                        + Add Chapter
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 ACTIONS
+            ================================================== -->
+
+            <div class="form-actions">
+
+                <button
+                    type="submit"
+                    id="saveNovelBtn"
+                    class="save-novel-btn"
+                >
+                    Save Changes
+                </button>
+
+
+                <button
+                    type="button"
+                    id="cancelBtn"
+                    class="cancel-btn"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+
+            <div id="editNovelMessage"></div>
+
+        </form>
+
+    </div>
+
+
+    <script src="edit_novel.js"></script>
+
+</body>
+
+</html>

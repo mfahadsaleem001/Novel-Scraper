@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Novel Reader | Library</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ============================================================
+         HEADER
+    ============================================================ -->
+
+    <header class="header">
+
+        <div class="logo">
+            📚 Novel Reader
+        </div>
+
+        <div class="header-text">
+            Discover • Read • Enjoy
+        </div>
+
+    </header>
+
+
+    <!-- ============================================================
+         MAIN CONTENT
+    ============================================================ -->
+
+    <main class="main-container">
+
+
+        <!-- ========================================================
+             HERO SECTION
+        ======================================================== -->
+
+        <section class="hero">
+
+            <div class="hero-badge">
+                📚 Your Reading Collection
+            </div>
+
+            <h1>
+                Discover Stories.<br>
+                <span>Start Reading.</span>
+            </h1>
+
+            <p>
+                Explore captivating novels by genre or author
+                and find your next story to read.
+            </p>
+
+        </section>
+
+
+
+        <!-- ========================================================
+             SEARCH & GENRE FILTERS
+        ======================================================== -->
+
+        <section class="browse-controls">
+
+
+            <!-- SEARCH -->
+
+            <div class="search-box">
+
+                <span class="search-icon">
+                    🔍
+                </span>
+
+                <input
+                    type="search"
+                    id="searchInput"
+                    placeholder="Search novels by title or author..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+
+            <!-- GENRE FILTER -->
+
+            <div class="genre-section">
+
+                <div class="genre-header">
+
+                    <h2>
+                        Browse by Genre
+                    </h2>
+
+                    <span id="genreCount">
+                        All Genres
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="genreFilters"
+                    class="genre-filters"
+                >
+
+                    <button
+                        type="button"
+                        class="genre-button active"
+                        data-genre="all"
+                    >
+                        All
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ========================================================
+             NOVEL LIBRARY
+        ======================================================== -->
+
+        <section class="novels-section">
+
+            <div class="section-title">
+
+                <div>
+
+                    <div class="section-icon">
+                        📚
+                    </div>
+
+                    <div>
+                        <h2>
+                            Novel Library
+                        </h2>
+                    </div>
+
+                </div>
+
+
+                <span
+                    id="novelCount"
+                    class="novel-count"
+                >
+                    Loading...
+                </span>
+
+            </div>
+
+
+            <!-- NOVELS -->
+
+            <div
+                id="novelsList"
+                class="novels-list"
+            >
+
+                <p class="loading">
+                    Loading novels...
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- ============================================================
+         FOOTER
+    ============================================================ -->
+
+    <footer>
+
+        <p>
+            📚 Novel Reader
+        </p>
+
+        <span>
+            Read. Discover. Enjoy.
+        </span>
+
+    </footer>
+
+
+
+    <!-- ============================================================
+         JAVASCRIPT
+    ============================================================ -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

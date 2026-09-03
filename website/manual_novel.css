@@ -1,0 +1,965 @@
+/* =========================================================
+   MANUAL NOVEL PAGE
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background:
+        radial-gradient(
+            circle at top left,
+            rgba(99, 102, 241, 0.12),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at bottom right,
+            rgba(236, 72, 153, 0.10),
+            transparent 35%
+        ),
+        #0f1117;
+    color: #f5f5f5;
+    min-height: 100vh;
+}
+
+
+/* =========================================================
+   PAGE CONTAINER
+   ========================================================= */
+
+.manual-novel-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.manual-novel-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.manual-novel-header h1 {
+    margin: 0 0 10px;
+    font-size: 34px;
+    font-weight: 800;
+
+    background: linear-gradient(
+        135deg,
+        #ffffff,
+        #c7d2fe,
+        #f9a8d4
+    );
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.manual-novel-header p {
+    margin: 0;
+    color: #9ca3af;
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   FORM CARD
+   ========================================================= */
+
+.manual-novel-form {
+    background: rgba(24, 27, 36, 0.92);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 22px;
+
+    padding: 30px;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+
+    backdrop-filter: blur(12px);
+}
+
+
+/* =========================================================
+   FORM GROUP
+   ========================================================= */
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 9px;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    color: #e5e7eb;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+
+    padding: 13px 15px;
+
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 12px;
+
+    background: rgba(15, 17, 23, 0.85);
+
+    color: #f5f5f5;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: rgba(99, 102, 241, 0.8);
+
+    background: rgba(15, 17, 23, 1);
+
+    box-shadow:
+        0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.form-group textarea {
+    min-height: 130px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.form-group select {
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   FILE INPUT
+   ========================================================= */
+
+.form-group input[type="file"] {
+    padding: 10px;
+    cursor: pointer;
+    background: rgba(15, 17, 23, 0.9);
+}
+
+.form-group input[type="file"]::file-selector-button {
+    margin-right: 12px;
+
+    padding: 9px 14px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: linear-gradient(
+        135deg,
+        #6366f1,
+        #4f46e5
+    );
+
+    color: white;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        filter 0.2s ease;
+}
+
+.form-group input[type="file"]::file-selector-button:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+}
+
+
+/* =========================================================
+   FILE HELP TEXT
+   ========================================================= */
+
+.file-help {
+    margin: 8px 0 0;
+
+    color: #8b92a3;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   COVER PREVIEW
+   ========================================================= */
+
+#coverPreviewContainer {
+    margin-top: 18px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#coverPreview {
+    width: 180px;
+    height: 250px;
+
+    object-fit: cover;
+
+    border-radius: 14px;
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    box-shadow:
+        0 15px 35px rgba(0, 0, 0, 0.4);
+
+    animation: coverFadeIn 0.3s ease;
+}
+
+@keyframes coverFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* =========================================================
+   CHAPTERS SECTION
+   ========================================================= */
+
+.chapters-section {
+    margin-top: 30px;
+}
+
+.chapters-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 18px;
+}
+
+.chapters-header h2 {
+    margin: 0;
+
+    font-size: 20px;
+    font-weight: 750;
+
+    color: #f3f4f6;
+}
+
+
+/* =========================================================
+   CHAPTER CARD
+   ========================================================= */
+
+.chapter-item {
+    position: relative;
+
+    margin-bottom: 18px;
+
+    padding: 22px;
+
+    border-radius: 16px;
+
+    background: rgba(15, 17, 23, 0.75);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    transition:
+        border-color 0.25s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.chapter-item:hover {
+    transform: translateY(-2px);
+
+    border-color: rgba(99, 102, 241, 0.25);
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.20);
+}
+
+.chapter-title {
+    margin-bottom: 15px;
+}
+
+.chapter-title label,
+.chapter-content label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #cbd5e1;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.chapter-title input,
+.chapter-content textarea {
+    width: 100%;
+
+    padding: 12px 14px;
+
+    border-radius: 10px;
+
+    border: 1px solid rgba(255, 255, 255, 0.09);
+
+    background: #11141b;
+
+    color: #f5f5f5;
+
+    outline: none;
+}
+
+.chapter-title input:focus,
+.chapter-content textarea:focus {
+    border-color: rgba(99, 102, 241, 0.75);
+
+    box-shadow:
+        0 0 0 3px rgba(99, 102, 241, 0.10);
+}
+
+.chapter-content textarea {
+    min-height: 220px;
+
+    resize: vertical;
+
+    line-height: 1.65;
+}
+
+
+/* =========================================================
+   ADD CHAPTER BUTTON
+   ========================================================= */
+
+#addChapterBtn {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 10px 15px;
+
+    border: 1px solid rgba(99, 102, 241, 0.30);
+
+    border-radius: 10px;
+
+    background: rgba(99, 102, 241, 0.10);
+
+    color: #c7d2fe;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.25s ease,
+        border-color 0.25s ease,
+        transform 0.2s ease;
+}
+
+#addChapterBtn:hover {
+    background: rgba(99, 102, 241, 0.18);
+
+    border-color: rgba(99, 102, 241, 0.55);
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   REMOVE CHAPTER BUTTON
+   ========================================================= */
+
+.remove-chapter-btn {
+    margin-top: 14px;
+
+    padding: 8px 12px;
+
+    border: 1px solid rgba(239, 68, 68, 0.25);
+
+    border-radius: 9px;
+
+    background: rgba(239, 68, 68, 0.08);
+
+    color: #fca5a5;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.remove-chapter-btn:hover {
+    background: rgba(239, 68, 68, 0.15);
+
+    border-color: rgba(239, 68, 68, 0.45);
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   FORM ACTIONS
+   ========================================================= */
+
+.form-actions {
+    display: flex;
+
+    gap: 12px;
+
+    margin-top: 30px;
+
+    padding-top: 25px;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.form-actions button,
+.form-actions a {
+    flex: 1;
+
+    min-height: 48px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        filter 0.25s ease;
+}
+
+
+/* =========================================================
+   SAVE BUTTON
+   ========================================================= */
+
+#saveNovelBtn {
+    border: none;
+
+    background: linear-gradient(
+        135deg,
+        #6366f1,
+        #4f46e5
+    );
+
+    color: white;
+
+    box-shadow:
+        0 8px 20px rgba(79, 70, 229, 0.25);
+}
+
+#saveNovelBtn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 28px rgba(79, 70, 229, 0.38);
+
+    filter: brightness(1.08);
+}
+
+
+/* =========================================================
+   CANCEL BUTTON
+   ========================================================= */
+
+#cancelBtn {
+    border: 1px solid rgba(255, 255, 255, 0.10);
+
+    background: rgba(255, 255, 255, 0.04);
+
+    color: #d1d5db;
+}
+
+#cancelBtn:hover {
+    transform: translateY(-2px);
+
+    background: rgba(255, 255, 255, 0.08);
+
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+
+/* =========================================================
+   MESSAGE BOX
+   ========================================================= */
+
+#manualNovelMessage {
+    margin-top: 20px;
+
+    padding: 13px 15px;
+
+    border-radius: 11px;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   MANUAL NOVEL ACTION BUTTONS
+   READ + EDIT
+   ========================================================= */
+
+.manual-novel-actions {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 12px;
+
+    margin-top: 20px;
+}
+
+
+/* =========================================================
+   COMMON ACTION BUTTON
+   ========================================================= */
+
+.manual-novel-actions .read-button,
+.manual-novel-actions .edit-novel-button {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    min-height: 48px;
+
+    padding: 12px 18px;
+
+    border: 1px solid rgba(255, 255, 255, 0.10);
+
+    border-radius: 13px;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.2px;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease,
+        background 0.25s ease;
+}
+
+
+/* =========================================================
+   READ BUTTON
+   ========================================================= */
+
+.manual-novel-actions .read-button {
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(99, 102, 241, 0.22),
+            rgba(99, 102, 241, 0.08)
+        );
+
+    border-color: rgba(129, 140, 248, 0.28);
+
+    box-shadow:
+        0 6px 18px rgba(0, 0, 0, 0.20);
+}
+
+.manual-novel-actions .read-button:hover {
+    transform: translateY(-3px);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(99, 102, 241, 0.40),
+            rgba(79, 70, 229, 0.16)
+        );
+
+    border-color: rgba(129, 140, 248, 0.65);
+
+    box-shadow:
+        0 12px 28px rgba(79, 70, 229, 0.25);
+}
+
+
+/* =========================================================
+   EDIT BUTTON
+   ========================================================= */
+
+.manual-novel-actions .edit-novel-button {
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(236, 72, 153, 0.20),
+            rgba(236, 72, 153, 0.07)
+        );
+
+    border-color: rgba(244, 114, 182, 0.26);
+
+    box-shadow:
+        0 6px 18px rgba(0, 0, 0, 0.20);
+}
+
+.manual-novel-actions .edit-novel-button:hover {
+    transform: translateY(-3px);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(236, 72, 153, 0.38),
+            rgba(219, 39, 119, 0.14)
+        );
+
+    border-color: rgba(244, 114, 182, 0.62);
+
+    box-shadow:
+        0 12px 28px rgba(219, 39, 119, 0.24);
+}
+
+
+/* =========================================================
+   BUTTON INNER SHINE
+   ========================================================= */
+
+.manual-novel-actions .read-button::after,
+.manual-novel-actions .edit-novel-button::after {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: -100%;
+
+    width: 60%;
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.14),
+        transparent
+    );
+
+    transform: skewX(-20deg);
+
+    transition: left 0.5s ease;
+}
+
+.manual-novel-actions .read-button:hover::after,
+.manual-novel-actions .edit-novel-button:hover::after {
+    left: 130%;
+}
+
+
+/* =========================================================
+   BUTTON ACTIVE
+   ========================================================= */
+
+.manual-novel-actions .read-button:active,
+.manual-novel-actions .edit-novel-button:active {
+    transform: translateY(-1px) scale(0.98);
+}
+
+
+/* =========================================================
+   GENERAL BUTTON
+   ========================================================= */
+
+button {
+    font-family: inherit;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .manual-novel-container {
+        padding: 25px 15px 45px;
+    }
+
+    .manual-novel-form {
+        padding: 22px 18px;
+    }
+
+    .manual-novel-header h1 {
+        font-size: 28px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .manual-novel-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .chapter-item {
+        padding: 17px;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 420px) {
+
+    .manual-novel-header h1 {
+        font-size: 24px;
+    }
+
+    .manual-novel-form {
+        padding: 18px 14px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 13px;
+    }
+
+    #coverPreview {
+        width: 150px;
+        height: 215px;
+    }
+}
+.add-chapter-bottom {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+.chapter-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
+    width: 100%;
+}
+
+/* ============================================================
+   PREMIUM CHAPTER ACTION BUTTONS
+============================================================ */
+
+.chapter-actions {
+    display: flex;
+    gap: 14px;
+    margin-top: 18px;
+    width: 100%;
+    align-items: center;
+}
+
+
+/* Common Button Style */
+
+.chapter-actions button {
+    flex: 1;
+    min-height: 46px;
+    padding: 12px 18px;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    letter-spacing: 0.2px;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease,
+        background 0.25s ease;
+
+    position: relative;
+    overflow: hidden;
+}
+
+
+/* ============================================================
+   EDIT CHAPTER
+============================================================ */
+
+.edit-chapter-btn {
+    color: #e0e7ff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #3730a3,
+            #4f46e5
+        );
+
+    border: 1px solid
+        rgba(129, 140, 248, 0.45);
+
+    box-shadow:
+        0 4px 14px
+        rgba(79, 70, 229, 0.22);
+}
+
+
+.edit-chapter-btn:hover {
+    transform: translateY(-2px);
+
+    background:
+        linear-gradient(
+            135deg,
+            #4338ca,
+            #6366f1
+        );
+
+    border-color:
+        rgba(165, 180, 252, 0.7);
+
+    box-shadow:
+        0 8px 22px
+        rgba(79, 70, 229, 0.35);
+}
+
+
+.edit-chapter-btn:active {
+    transform: translateY(0);
+}
+
+
+/* ============================================================
+   REMOVE CHAPTER
+============================================================ */
+
+.remove-chapter-btn {
+    color: #fecaca;
+
+    background:
+        linear-gradient(
+            135deg,
+            #3f1722,
+            #4c1d2b
+        );
+
+    border: 1px solid
+        rgba(248, 113, 113, 0.35);
+
+    box-shadow:
+        0 4px 14px
+        rgba(220, 38, 38, 0.14);
+}
+
+
+.remove-chapter-btn:hover {
+    transform: translateY(-2px);
+
+    background:
+        linear-gradient(
+            135deg,
+            #5b1b2a,
+            #7f1d1d
+        );
+
+    border-color:
+        rgba(252, 165, 165, 0.65);
+
+    box-shadow:
+        0 8px 22px
+        rgba(220, 38, 38, 0.25);
+}
+
+
+.remove-chapter-btn:active {
+    transform: translateY(0);
+}
+
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media (max-width: 600px) {
+
+    .chapter-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .chapter-actions button {
+        width: 100%;
+    }
+
+}
+
+.edit-chapter-btn,
+.remove-chapter-btn {
+    cursor: pointer;
+}

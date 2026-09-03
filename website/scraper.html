@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Novel Scraper | Add Novel</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- =========================================================
+         HEADER
+    ========================================================== -->
+
+    <header class="header">
+
+        <div class="logo">
+            📚 Novel Reader
+        </div>
+
+        <div class="header-text">
+            Novel Management
+        </div>
+
+    </header>
+
+
+    <!-- =========================================================
+         MAIN
+    ========================================================== -->
+
+    <main class="main-container">
+
+        <!-- =====================================================
+             SCRAPER HERO
+        ====================================================== -->
+
+        <section class="hero">
+
+            <div class="hero-icon">
+                🔍
+            </div>
+
+            <h1>
+                Add a New Novel
+            </h1>
+
+            <p>
+                Paste a novel URL below to fetch the novel
+                and add it to your reading library.
+            </p>
+
+
+            <!-- =================================================
+                 SCRAPE FORM
+            ================================================== -->
+
+            <form id="scrapeForm">
+
+                <div class="url-input-container">
+
+                    <input
+                        type="url"
+                        id="novelUrl"
+                        placeholder="Paste novel URL here..."
+                        autocomplete="off"
+                        required
+                    >
+
+                    <button
+                        type="submit"
+                        id="scrapeButton"
+                    >
+
+                        <span id="buttonIcon">
+                            🔍
+                        </span>
+
+                        <span id="buttonText">
+                            Add Novel
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </form>
+
+
+            <!-- =================================================
+                 MESSAGE
+            ================================================== -->
+
+            <div
+                id="message"
+                class="message"
+            ></div>
+
+
+            <!-- =================================================
+                 SCRAPING STATUS
+            ================================================== -->
+
+            <div
+                id="scrapingStatus"
+                class="scraping-status"
+            >
+
+                <span id="statusText"></span>
+
+            </div>
+
+
+            <p class="example-url">
+                Example: https://crushnovels.net/novel/novel-name
+            </p>
+
+        </section>
+
+
+        <!-- =====================================================
+             SCRAPED NOVEL RESULT
+        ====================================================== -->
+
+        <section
+            id="scrapedNovelSection"
+            class="novels-section"
+            hidden
+        >
+
+            <div class="section-title">
+
+                <div>
+
+                    <div class="section-icon">
+                        ✅
+                    </div>
+
+                    <h2>
+                        Novel Added Successfully
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="scrapedNovelResult"
+                class="novels-list"
+            ></div>
+
+        </section>
+
+<!-- =====================================================
+     MANUAL NOVELS
+====================================================== -->
+
+<section
+    id="manualNovelsSection"
+    class="novels-section"
+>
+
+    <div class="section-title">
+
+        <div>
+
+            <div class="section-icon">
+                ✏️
+            </div>
+
+            <h2>
+                My Manual Novels
+            </h2>
+
+        </div>
+
+    </div>
+
+    <div
+        id="manualNovelsList"
+        class="novels-list"
+    >
+
+        <p class="loading">
+            ⏳ Loading manual novels...
+        </p>
+
+    </div>
+
+</section>
+        <!-- =====================================================
+             NAVIGATION
+        ====================================================== -->
+
+        <section class="scraper-navigation">
+
+            <a
+                href="manual_novel.html"
+                class="add-button"
+                >
+                ✏️ Add Novel Manually
+            </a>
+
+            <a
+                href="index.html"
+                class="read-button"
+            >
+                📚 Go to Novel Library
+            </a>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================================================
+         FOOTER
+    ========================================================== -->
+
+    <footer>
+
+        <p>
+            📚 Novel Reader
+        </p>
+
+        <span>
+            Add novels and manage your reading library.
+        </span>
+
+    </footer>
+
+
+    <!-- =========================================================
+         JAVASCRIPT
+    ========================================================== -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

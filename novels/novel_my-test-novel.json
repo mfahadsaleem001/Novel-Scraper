@@ -1,0 +1,44 @@
+{
+    "source_website": "Manual Entry",
+    "source_url": "",
+    "title": "My Test Novel",
+    "author": "Fahad",
+    "genre": "Fantasy",
+    "status": "Ongoing",
+    "synopsis": "This is a test novel.",
+    "cover_image": "",
+    "total_chapters": 3,
+    "chapters": [
+        {
+            "chapter_number": 1,
+            "title": "The Beginning",
+            "date": "",
+            "views": 0,
+            "is_locked": false,
+            "url": "",
+            "content": "The night was unusually quiet, and the soft rain covered the city with a strange sense of mystery. Alex stood beside the window, watching the lights disappear behind the thick fog. Something about tonight felt different, as if an invisible force was quietly pushing him toward a destiny he had never expected.",
+            "scrape_status": "success"
+        },
+        {
+            "chapter_number": 2,
+            "title": "Chapter 2",
+            "date": "",
+            "views": 0,
+            "is_locked": false,
+            "url": "",
+            "content": "Suddenly, his phone rang. The screen showed an unknown number, but when he answered, no one spoke. After a few seconds, a calm voice finally whispered, “You need to leave now.” Before Alex could ask who was calling, the line went dead. At that exact moment, someone knocked three times on his apartment door.",
+            "scrape_status": "success"
+        },
+        {
+            "chapter_number": 3,
+            "title": "Chapter 3",
+            "date": "",
+            "views": 0,
+            "is_locked": false,
+            "url": "",
+            "content": "Alex froze. He had been living alone for two years, and nobody knew he was home tonight. Another knock followed, louder than before. Taking a deep breath, he slowly walked toward the door. He had no idea that opening it would change his life forever.",
+            "scrape_status": "success"
+        }
+    ],
+    "last_updated": "2026-09-03T14:08:46"
+}
