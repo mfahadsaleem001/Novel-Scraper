@@ -1,236 +1,533 @@
 <!DOCTYPE html>
-
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Add Novel Manually</title>
+    <title>Add Novel Manually | Novel Archive</title>
 
-<link rel="stylesheet" href="manual_novel.css">
+    <link rel="stylesheet" href="manual_novel.css">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
 </head>
 
 <body>
 
-<div class="manual-novel-container">
+    <div class="admin-layout">
 
-    <div class="manual-novel-header">
-        <h1>Add Novel Manually</h1>
-        <p>Create your own novel and add it to the library.</p>
-    </div>
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar">
 
-    <form id="manualNovelForm">
+            <div class="sidebar-brand">
 
-        <!-- Novel Information -->
-        <div class="form-section">
-
-            <h2>Novel Information</h2>
-
-            <div class="form-group">
-                <label for="novelTitle">Novel Title *</label>
-
-                <input
-                    type="text"
-                    id="novelTitle"
-                    name="title"
-                    placeholder="Enter novel title"
-                    required
-                >
-            </div>
-
-            <div class="form-row">
-
-                <div class="form-group">
-                    <label for="novelAuthor">Author</label>
-
-                    <input
-                        type="text"
-                        id="novelAuthor"
-                        name="author"
-                        placeholder="Enter author name"
-                    >
+                <div class="brand-mark">
+                    NA
                 </div>
-
-                <div class="form-group">
-                    <label for="novelGenre">Genre</label>
-
-                    <input
-                        type="text"
-                        id="novelGenre"
-                        name="genre"
-                        placeholder="e.g. Romance, Fantasy"
-                    >
-                </div>
-
-            </div>
-
-            <div class="form-group">
-                <label for="novelStatus">Status</label>
-
-                <select id="novelStatus" name="status">
-                    <option value="Ongoing">Ongoing</option>
-                    <option value="Completed">Completed</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="novelSynopsis">Synopsis</label>
-
-                <textarea
-                    id="novelSynopsis"
-                    name="synopsis"
-                    rows="6"
-                    placeholder="Enter novel synopsis..."
-                ></textarea>
-            </div>
-
-            <!-- Cover Image Upload -->
-            <div class="form-group">
-
-                <label for="coverImage">
-                    Cover Image
-                </label>
-
-                <input
-                    type="file"
-                    id="coverImage"
-                    name="cover_image"
-                    accept="image/*"
-                >
-
-                <p class="file-help">
-                    Select a cover image from your device.
-                </p>
-
-                <div id="coverPreviewContainer">
-                    <img
-                        id="coverPreview"
-                        src=""
-                        alt="Cover Preview"
-                        style="display: none;"
-                    >
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- Chapters -->
-        <div class="form-section">
-
-            <div class="chapter-section-header">
 
                 <div>
-                    <h2>Chapters</h2>
-                    <p>Add chapters to your novel.</p>
+                    <h2>Novel Archive</h2>
+                    <span>Administration</span>
+                </div>
+
+            </div>
+
+
+            <nav class="admin-navigation">
+
+                <p class="nav-label">
+                    MANAGEMENT
+                </p>
+
+                <a
+                    href="admin_dashboard.html"
+                    class="nav-item"
+                >
+                    <span class="nav-icon">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+
+                <a
+                    href="admin_novels.html"
+                    class="nav-item"
+                >
+                    <span class="nav-icon">▤</span>
+                    <span>All Novels</span>
+                </a>
+
+                <a
+                    href="scraper.html"
+                    class="nav-item"
+                >
+                    <span class="nav-icon">⌕</span>
+                    <span>Scrape Novel</span>
+                </a>
+
+                <a
+                    href="manual_novel.html"
+                    class="nav-item active"
+                >
+                    <span class="nav-icon">＋</span>
+                    <span>Add Novel</span>
+                </a>
+
+
+                <p class="nav-label nav-label-spaced">
+                    SYSTEM
+                </p>
+
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">♙</span>
+                    <span>Users</span>
+                </a>
+
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">⚙</span>
+                    <span>Settings</span>
+                </a>
+
+            </nav>
+
+
+            <div class="sidebar-bottom">
+
+                <div class="admin-profile">
+
+                    <div class="profile-avatar">
+                        A
+                    </div>
+
+                    <div class="profile-info">
+                        <strong>Administrator</strong>
+                        <span>Admin Account</span>
+                    </div>
+
                 </div>
 
                 <button
+                    class="logout-button"
                     type="button"
-                    id="addChapterBtn"
-                    class="add-chapter-btn"
+                    onclick="window.location.href='admin_login.html'"
                 >
-                    + Add Chapter
+                    Logout
                 </button>
 
             </div>
 
-            <div id="chaptersContainer">
+        </aside>
 
-                <!-- First Chapter -->
-                <div class="chapter-form">
 
-                    <div class="chapter-header">
+        <!-- MAIN CONTENT -->
+        <main class="admin-main">
 
-                        <h3>Chapter 1</h3>
+            <!-- PAGE HEADER -->
+            <header class="dashboard-header">
+
+                <div>
+
+                    <p class="page-eyebrow">
+                        NOVEL MANAGEMENT
+                    </p>
+
+                    <h1>
+                        Add Novel
+                    </h1>
+
+                    <p class="page-description">
+                        Create a novel manually and add it
+                        to your collection.
+                    </p>
+
+                </div>
+
+                <div class="header-date">
+
+                    <span>Administration</span>
+
+                    <strong>
+                        Novel Archive
+                    </strong>
+
+                </div>
+
+            </header>
+
+
+            <!-- BACK -->
+            <div class="top-navigation">
+
+                <button
+                    type="button"
+                    class="back-button"
+                    onclick="window.location.href='admin_novels.html'"
+                >
+                    ←
+                    <span>Back to All Novels</span>
+                </button>
+
+            </div>
+
+
+            <!-- FORM -->
+            <form id="manualNovelForm" class="manual-novel-form">
+
+
+                <!-- NOVEL INFORMATION -->
+                <section class="form-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <p class="section-eyebrow">
+                                NOVEL INFORMATION
+                            </p>
+
+                            <h2>
+                                Novel Details
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-card">
+
+                        <div class="form-grid">
+
+
+                            <div class="form-group full-width">
+
+                                <label for="novelTitle">
+                                    Novel Title *
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="novelTitle"
+                                    name="title"
+                                    placeholder="Enter novel title"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="novelAuthor">
+                                    Author
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="novelAuthor"
+                                    name="author"
+                                    placeholder="Enter author name"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="novelGenre">
+                                    Genre
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="novelGenre"
+                                    name="genre"
+                                    placeholder="e.g. Romance, Fantasy"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="novelStatus">
+                                    Status
+                                </label>
+
+                                <select
+                                    id="novelStatus"
+                                    name="status"
+                                >
+                                    <option value="Ongoing">
+                                        Ongoing
+                                    </option>
+
+                                    <option value="Completed">
+                                        Completed
+                                    </option>
+                                </select>
+
+                            </div>
+
+
+                            <div class="form-group full-width">
+
+                                <label for="novelSynopsis">
+                                    Synopsis
+                                </label>
+
+                                <textarea
+                                    id="novelSynopsis"
+                                    name="synopsis"
+                                    rows="7"
+                                    placeholder="Enter novel synopsis..."
+                                ></textarea>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- COVER IMAGE -->
+                <section class="form-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <p class="section-eyebrow">
+                                COVER
+                            </p>
+
+                            <h2>
+                                Novel Cover
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-card">
+
+                        <div class="cover-editor">
+
+                            <div
+                                id="coverPreviewContainer"
+                                class="cover-preview"
+                            >
+
+                                <img
+                                    id="coverPreview"
+                                    src=""
+                                    alt="Cover Preview"
+                                    style="display: none;"
+                                >
+
+                                <div
+                                    id="coverPlaceholder"
+                                    class="cover-placeholder"
+                                >
+                                    <span>NA</span>
+                                    <small>No Cover</small>
+                                </div>
+
+                            </div>
+
+
+                            <div class="cover-controls">
+
+                                <label for="coverImage">
+                                    Cover Image
+                                </label>
+
+                                <input
+                                    type="file"
+                                    id="coverImage"
+                                    name="cover_image"
+                                    accept="image/*"
+                                >
+
+                                <p class="file-help">
+                                    Select a cover image from your device.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- CHAPTERS -->
+                <section class="form-section">
+
+                    <div class="section-heading chapter-section-header">
+
+                        <div>
+
+                            <p class="section-eyebrow">
+                                CONTENT
+                            </p>
+
+                            <h2>
+                                Chapters
+                            </h2>
+
+                            <p class="section-description">
+                                Add chapters to your novel.
+                            </p>
+
+                        </div>
 
                         <button
                             type="button"
-                            class="remove-chapter-btn"
+                            id="addChapterBtn"
+                            class="add-chapter-btn"
                         >
-                            Remove
+                            ＋ Add Chapter
                         </button>
 
                     </div>
 
-                    <div class="form-row">
 
-                        <div class="form-group">
-                            <label>Chapter Number</label>
+                    <div
+                        id="chaptersContainer"
+                        class="chapters-container"
+                    >
 
-                            <input
-                                type="number"
-                                class="chapter-number"
-                                value="1"
-                                min="1"
-                                required
-                            >
-                        </div>
+                        <!-- FIRST CHAPTER -->
+                        <div class="chapter-form">
 
-                        <div class="form-group">
-                            <label>Chapter Title</label>
+                            <div class="chapter-header">
 
-                            <input
-                                type="text"
-                                class="chapter-title"
-                                value="Chapter 1"
-                                placeholder="Chapter title"
-                                required
-                            >
+                                <div>
+                                    <p class="chapter-label">
+                                        CHAPTER
+                                    </p>
+
+                                    <h3>
+                                        Chapter 1
+                                    </h3>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    class="remove-chapter-btn"
+                                >
+                                    Remove
+                                </button>
+
+                            </div>
+
+
+                            <div class="form-grid">
+
+                                <div class="form-group">
+
+                                    <label>
+                                        Chapter Number
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        class="chapter-number"
+                                        value="1"
+                                        min="1"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="form-group">
+
+                                    <label>
+                                        Chapter Title
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        class="chapter-title"
+                                        value="Chapter 1"
+                                        placeholder="Chapter title"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <div class="form-group full-width">
+
+                                    <label>
+                                        Chapter Content
+                                    </label>
+
+                                    <textarea
+                                        class="chapter-content"
+                                        rows="12"
+                                        placeholder="Write your chapter content here..."
+                                        required
+                                    ></textarea>
+
+                                </div>
+
+                            </div>
+
                         </div>
 
                     </div>
 
-                    <div class="form-group">
+                </section>
 
-                        <label>Chapter Content</label>
 
-                        <textarea
-                            class="chapter-content"
-                            rows="12"
-                            placeholder="Write your chapter content here..."
-                            required
-                        ></textarea>
+                <!-- MESSAGE -->
+                <div
+                    id="manualNovelMessage"
+                    class="manual-novel-message"
+                    aria-live="polite"
+                ></div>
 
-                    </div>
+
+                <!-- ACTIONS -->
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        id="cancelBtn"
+                        class="cancel-btn"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        id="saveNovelBtn"
+                        class="save-novel-btn"
+                    >
+                        Save Novel
+                    </button>
 
                 </div>
 
-            </div>
+            </form>
 
-        </div>
+        </main>
 
-
-        <!-- Save -->
-        <div class="form-actions">
-
-            <button
-                type="submit"
-                id="saveNovelBtn"
-                class="save-novel-btn"
-            >
-                Save Novel
-            </button>
-
-            <button
-                type="button"
-                id="cancelBtn"
-                class="cancel-btn"
-            >
-                Cancel
-            </button>
-
-        </div>
-
-        <div id="manualNovelMessage"></div>
-
-    </form>
-
-</div>
+    </div>
 
 
-<script src="manual_novel.js"></script>
+    <script src="manual_novel.js"></script>
+
 </body>
 </html>

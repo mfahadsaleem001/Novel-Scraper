@@ -7,6 +7,9 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 import uuid
 
+from backend.database import SessionLocal
+from backend.models import Novel, Chapter
+
 
 # ============================================================
 # APP
@@ -155,87 +158,57 @@ def load_novel_file(file_path):
 # ============================================================
 # GET ALL NOVELS
 # ============================================================
-
 @app.route(
     "/novels",
     methods=["GET"]
 )
 def get_novels():
 
-    novels = []
+    db = SessionLocal()
 
-
-    if not NOVELS_DIR.exists():
-
-        return jsonify(novels)
-
-
-    for file in sorted(
-        NOVELS_DIR.glob("*.json")
-    ):
-
-        data = load_novel_file(file)
-
-
-        if data is None:
-
-            continue
-
-
-        chapters = data.get(
-            "chapters",
-            []
+    try:
+        novels = (
+            db.query(Novel)
+            .order_by(Novel.id.asc())
+            .all()
         )
 
+        result = []
 
-        novels.append({
+        for novel in novels:
 
-            "filename": file.name,
+            result.append({
+                "filename": novel.filename,
+                "title": novel.title or "Untitled Novel",
+                "author": novel.author or "Unknown",
+                "genre": novel.genre or "Unknown",
+                "status": novel.status or "Unknown",
+                "total_chapters": novel.total_chapters or 0,
+                "cover_image": novel.cover_image or "",
+                "is_manual":
+                    novel.source_website == "Manual Entry"
+            })
 
-            "title": data.get(
-                "title",
-                "Untitled Novel"
-            ),
+        return jsonify(result)
 
-            "author": data.get(
-                "author",
-                "Unknown"
-            ),
+    except Exception as error:
 
-            "genre": data.get(
-                "genre",
-                "Unknown"
-            ),
+        print(
+            "Get Novels Error:",
+            repr(error)
+        )
 
-            "status": data.get(
-                "status",
-                "Unknown"
-            ),
+        return jsonify({
+            "error": "Could not load novels"
+        }), 500
 
-            "total_chapters": data.get(
-                "total_chapters",
-                len(chapters)
-            ),
-
-            "cover_image": data.get(
-                "cover_image",
-                ""
-            ),
-
-            "is_manual":
-                data.get(
-                    "source_website"
-                ) == "Manual Entry"
-        })
-
-
-    return jsonify(novels)
+    finally:
+        db.close()
 
 
 # ============================================================
 # GET SINGLE NOVEL
 # ============================================================
-
 @app.route(
     "/novel/<path:filename>",
     methods=["GET"]
@@ -243,73 +216,153 @@ def get_novels():
 def get_novel(filename):
 
     # --------------------------------------------------------
-    # Security check
+    # SECURITY CHECK
     # --------------------------------------------------------
-
     requested_file = Path(filename)
-
 
     if (
         requested_file.name != filename
         or requested_file.suffix.lower() != ".json"
     ):
-
         return jsonify({
             "error": "Invalid novel file"
         }), 400
 
+    # --------------------------------------------------------
+    # DATABASE
+    # --------------------------------------------------------
+    db = SessionLocal()
 
-    file_path = NOVELS_DIR / filename
+    try:
+        # ----------------------------------------------------
+        # FIND NOVEL
+        # ----------------------------------------------------
+        novel = (
+            db.query(Novel)
+            .filter(Novel.filename == filename)
+            .first()
+        )
 
+        if not novel:
+            return jsonify({
+                "error": "Novel not found"
+            }), 404
 
-    if not file_path.exists():
+        # ----------------------------------------------------
+        # BUILD CHAPTERS
+        # ----------------------------------------------------
+        chapters = []
+
+        for chapter in novel.chapters:
+
+            chapters.append({
+                "chapter_number":
+                    chapter.chapter_number,
+
+                "title":
+                    chapter.title or "",
+
+                "date":
+                    chapter.date or "",
+
+                "views":
+                    chapter.views or 0,
+
+                "is_locked":
+                    chapter.is_locked,
+
+                "url":
+                    chapter.url or "",
+
+                "content":
+                    chapter.content or "",
+
+                "scrape_status":
+                    chapter.scrape_status or ""
+            })
+
+        # ----------------------------------------------------
+        # BUILD NOVEL RESPONSE
+        # ----------------------------------------------------
+        novel_data = {
+            "filename":
+                novel.filename,
+
+            "source_website":
+                novel.source_website or "",
+
+            "source_url":
+                novel.source_url or "",
+
+            "title":
+                novel.title or "Untitled Novel",
+
+            "author":
+                novel.author or "Unknown",
+
+            "genre":
+                novel.genre or "Unknown",
+
+            "status":
+                novel.status or "Unknown",
+
+            "synopsis":
+                novel.synopsis or "",
+
+            "cover_image":
+                novel.cover_image or "",
+
+            "total_chapters":
+                novel.total_chapters or len(chapters),
+
+            "chapters":
+                chapters,
+
+            "last_updated":
+                novel.last_updated.isoformat()
+                if novel.last_updated
+                else ""
+        }
+
+        return jsonify(novel_data)
+
+    except Exception as error:
+
+        print(
+            "Get Novel Error:",
+            repr(error)
+        )
 
         return jsonify({
-            "error": "Novel not found"
-        }), 404
-
-
-    novel_data = load_novel_file(
-        file_path
-    )
-
-
-    if novel_data is None:
-
-        return jsonify({
-            "error": "Could not read novel file"
+            "error": "Could not load novel"
         }), 500
 
-
-    return jsonify(
-        novel_data
-    )
-
-
+    finally:
+        db.close()
+        
 # ============================================================
 # SCRAPE NOVEL
 # ============================================================
-
 @app.route(
     "/scrape",
     methods=["POST"]
 )
 def scrape_novel():
 
+    # --------------------------------------------------------
+    # GET REQUEST DATA
+    # --------------------------------------------------------
     data = request.get_json(
         silent=True
     )
-
 
     if not isinstance(
         data,
         dict
     ):
-
         return jsonify({
             "error": "Invalid request data"
         }), 400
-
 
     url = str(
         data.get(
@@ -318,13 +371,10 @@ def scrape_novel():
         )
     ).strip()
 
-
     if not url:
-
         return jsonify({
             "error": "Please enter a novel URL"
         }), 400
-
 
     if not url.startswith(
         (
@@ -332,19 +382,20 @@ def scrape_novel():
             "https://"
         )
     ):
-
         return jsonify({
             "error": "Please enter a valid URL"
         }), 400
 
-
+    # --------------------------------------------------------
+    # SCRAPE NOVEL
+    # --------------------------------------------------------
     try:
 
-        result = scraper.process_url(url)
-
+        result = scraper.process_url(
+            url
+        )
 
         if not result:
-
             return jsonify({
                 "error": (
                     "Could not scrape this URL. "
@@ -353,97 +404,382 @@ def scrape_novel():
                 )
             }), 400
 
+        novel_data = result
 
         # ----------------------------------------------------
-        # PROCESS_URL MAY RETURN:
-        #
-        # {
-        #     "filename": "...",
-        #     "data": {...}
-        # }
-        #
-        # OR DIRECT NOVEL DATA
+        # VALIDATE SCRAPED DATA
         # ----------------------------------------------------
-
-        if (
-            isinstance(result, dict)
-            and isinstance(
-                result.get("data"),
-                dict
-            )
+        if not isinstance(
+            novel_data,
+            dict
         ):
+            return jsonify({
+                "error":
+                    "Invalid scraped novel data"
+            }), 500
 
-            filename = result.get(
-                "filename",
+        title = str(
+            novel_data.get(
+                "title",
                 ""
             )
+        ).strip()
 
-            novel_data = result["data"]
+        if not title:
+            return jsonify({
+                "error":
+                    "Scraped novel title is missing"
+            }), 400
 
+        chapters = novel_data.get(
+            "chapters",
+            []
+        )
 
-        else:
+        if not isinstance(
+            chapters,
+            list
+        ):
+            return jsonify({
+                "error":
+                    "Invalid chapter data"
+            }), 500
 
-            novel_data = result
+        if len(chapters) == 0:
+            return jsonify({
+                "error":
+                    "No chapters found"
+            }), 400
 
-            filename = ""
+        # ----------------------------------------------------
+        # CREATE SAME FILENAME STYLE
+        # ----------------------------------------------------
+        safe_title = title.lower()
 
+        safe_title = "".join(
+            character
+            if character.isalnum()
+            else "-"
+            for character in safe_title
+        )
 
-        return jsonify({
+        safe_title = "-".join(
+            part
+            for part in safe_title.split("-")
+            if part
+        )
 
-            "message":
-                "Novel scraped successfully",
+        safe_title = safe_title[:150]
 
-            "status":
-                "success",
+        filename = (
+            f"novel_{safe_title}.json"
+        )
 
-            "filename":
-                filename,
+        # ----------------------------------------------------
+        # DATABASE
+        # ----------------------------------------------------
+        db = SessionLocal()
 
-            "novel": {
+        try:
 
-                "title":
-                    novel_data.get(
-                        "title",
-                        "Untitled Novel"
+            # ------------------------------------------------
+            # CHECK EXISTING NOVEL
+            # ------------------------------------------------
+            novel = (
+                db.query(Novel)
+                .filter(
+                    Novel.filename == filename
+                )
+                .first()
+            )
+
+            # ------------------------------------------------
+            # CREATE OR UPDATE NOVEL
+            # ------------------------------------------------
+            if not novel:
+
+                novel = Novel(
+                    filename=filename,
+                    title=title,
+                    author=str(
+                        novel_data.get(
+                            "author",
+                            ""
+                        )
+                    ).strip(),
+                    genre=str(
+                        novel_data.get(
+                            "genre",
+                            ""
+                        )
+                    ).strip(),
+                    status=str(
+                        novel_data.get(
+                            "status",
+                            ""
+                        )
+                    ).strip(),
+                    synopsis=str(
+                        novel_data.get(
+                            "synopsis",
+                            ""
+                        )
+                    ).strip(),
+                    cover_image=str(
+                        novel_data.get(
+                            "cover_image",
+                            ""
+                        )
+                    ).strip(),
+                    source_website=str(
+                        novel_data.get(
+                            "source_website",
+                            "CrushReadNovel"
+                        )
+                    ).strip(),
+                    source_url=str(
+                        novel_data.get(
+                            "source_url",
+                            url
+                        )
+                    ).strip(),
+                    total_chapters=len(
+                        chapters
                     ),
+                    last_updated=datetime.utcnow()
+                )
 
-                "author":
+                db.add(novel)
+
+                # Get novel ID
+                db.flush()
+
+            else:
+
+                novel.title = title
+
+                novel.author = str(
                     novel_data.get(
                         "author",
-                        "Unknown"
-                    ),
+                        ""
+                    )
+                ).strip()
 
-                "genre":
+                novel.genre = str(
                     novel_data.get(
                         "genre",
-                        "Unknown"
-                    ),
+                        ""
+                    )
+                ).strip()
 
-                "status":
+                novel.status = str(
                     novel_data.get(
                         "status",
-                        "Unknown"
-                    ),
+                        ""
+                    )
+                ).strip()
 
-                "total_chapters":
+                novel.synopsis = str(
                     novel_data.get(
-                        "total_chapters",
-                        len(
-                            novel_data.get(
-                                "chapters",
-                                []
-                            )
-                        )
-                    ),
+                        "synopsis",
+                        ""
+                    )
+                ).strip()
 
-                "cover_image":
+                novel.cover_image = str(
                     novel_data.get(
                         "cover_image",
                         ""
                     )
-            }
-        })
+                ).strip()
 
+                novel.source_website = str(
+                    novel_data.get(
+                        "source_website",
+                        "CrushReadNovel"
+                    )
+                ).strip()
+
+                novel.source_url = str(
+                    novel_data.get(
+                        "source_url",
+                        url
+                    )
+                ).strip()
+
+                novel.total_chapters = len(
+                    chapters
+                )
+
+                novel.last_updated = (
+                    datetime.utcnow()
+                )
+
+            # ------------------------------------------------
+            # REMOVE OLD CHAPTERS
+            # ------------------------------------------------
+            db.query(
+                Chapter
+            ).filter(
+                Chapter.novel_id == novel.id
+            ).delete(
+                synchronize_session=False
+            )
+
+            # ------------------------------------------------
+            # ADD SCRAPED CHAPTERS
+            # ------------------------------------------------
+            for index, chapter_data in enumerate(
+                chapters,
+                start=1
+            ):
+
+                if not isinstance(
+                    chapter_data,
+                    dict
+                ):
+                    continue
+
+                try:
+                    chapter_number = int(
+                        chapter_data.get(
+                            "chapter_number",
+                            index
+                        )
+                    )
+
+                except (
+                    TypeError,
+                    ValueError
+                ):
+                    continue
+
+                chapter = Chapter(
+                    novel_id=novel.id,
+
+                    chapter_number=
+                        chapter_number,
+
+                    title=str(
+                        chapter_data.get(
+                            "title",
+                            f"Chapter {chapter_number}"
+                        )
+                    ).strip(),
+
+                    date=str(
+                        chapter_data.get(
+                            "date",
+                            ""
+                        )
+                    ).strip(),
+
+                    views=int(
+                        chapter_data.get(
+                            "views",
+                            0
+                        ) or 0
+                    ),
+
+                    is_locked=bool(
+                        chapter_data.get(
+                            "is_locked",
+                            False
+                        )
+                    ),
+
+                    url=str(
+                        chapter_data.get(
+                            "url",
+                            ""
+                        )
+                    ).strip(),
+
+                    content=str(
+                        chapter_data.get(
+                            "content",
+                            ""
+                        )
+                    ).strip(),
+
+                    scrape_status=str(
+                        chapter_data.get(
+                            "scrape_status",
+                            ""
+                        )
+                    ).strip()
+                )
+
+                db.add(chapter)
+
+            # ------------------------------------------------
+            # COMMIT
+            # ------------------------------------------------
+            db.commit()
+
+            # ------------------------------------------------
+            # RESPONSE
+            # ------------------------------------------------
+            return jsonify({
+                "message":
+                    "Novel scraped successfully",
+
+                "status":
+                    "success",
+
+                "filename":
+                    filename,
+
+                "novel": {
+                    "title":
+                        title,
+
+                    "author":
+                        novel_data.get(
+                            "author",
+                            "Unknown"
+                        ),
+
+                    "genre":
+                        novel_data.get(
+                            "genre",
+                            "Unknown"
+                        ),
+
+                    "status":
+                        novel_data.get(
+                            "status",
+                            "Unknown"
+                        ),
+
+                    "total_chapters":
+                        len(chapters),
+
+                    "cover_image":
+                        novel_data.get(
+                            "cover_image",
+                            ""
+                        )
+                }
+            }), 201
+
+        except Exception as error:
+
+            db.rollback()
+
+            print(
+                "Scrape Database Error:",
+                repr(error)
+            )
+
+            return jsonify({
+                "error":
+                    "Could not save scraped novel to database"
+            }), 500
+
+        finally:
+
+            db.close()
 
     except Exception as error:
 
@@ -452,12 +788,108 @@ def scrape_novel():
             repr(error)
         )
 
-
         return jsonify({
-            "error": str(error)
+            "error":
+                str(error)
         }), 500
 
+# ============================================================
+# DELETE NOVEL
+# ============================================================
+@app.route(
+    "/novel/<path:filename>",
+    methods=["DELETE"]
+)
+def delete_novel(filename):
 
+    # --------------------------------------------------------
+    # SECURITY CHECK
+    # --------------------------------------------------------
+    requested_file = Path(filename)
+
+    if (
+        requested_file.name != filename
+        or requested_file.suffix.lower() != ".json"
+    ):
+        return jsonify({
+            "error": "Invalid novel file"
+        }), 400
+
+    # --------------------------------------------------------
+    # DATABASE
+    # --------------------------------------------------------
+    db = SessionLocal()
+
+    try:
+
+        # ----------------------------------------------------
+        # FIND NOVEL
+        # ----------------------------------------------------
+        novel = (
+            db.query(Novel)
+            .filter(
+                Novel.filename == filename
+            )
+            .first()
+        )
+
+        if not novel:
+            return jsonify({
+                "error": "Novel not found"
+            }), 404
+
+        # ----------------------------------------------------
+        # SAVE INFORMATION FOR RESPONSE
+        # ----------------------------------------------------
+        deleted_title = novel.title
+        deleted_id = novel.id
+
+        # ----------------------------------------------------
+        # DELETE NOVEL
+        # ----------------------------------------------------
+        # Chapter relationship has cascade delete,
+        # so related chapters are deleted automatically.
+        db.delete(novel)
+
+        # ----------------------------------------------------
+        # COMMIT
+        # ----------------------------------------------------
+        db.commit()
+
+        return jsonify({
+            "message":
+                "Novel deleted successfully",
+
+            "status":
+                "success",
+
+            "id":
+                deleted_id,
+
+            "filename":
+                filename,
+
+            "title":
+                deleted_title
+        }), 200
+
+    except Exception as error:
+
+        db.rollback()
+
+        print(
+            "Delete Novel Database Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error":
+                "Could not delete novel"
+        }), 500
+
+    finally:
+
+        db.close()
 # ============================================================
 # HELPER - SAVE COVER IMAGE
 # ============================================================
@@ -516,7 +948,6 @@ def save_cover_image(uploaded_file):
 # ============================================================
 # MANUAL NOVEL - ADD
 # ============================================================
-
 @app.route(
     "/manual-novel",
     methods=["POST"]
@@ -526,14 +957,12 @@ def add_manual_novel():
     # --------------------------------------------------------
     # GET FORM DATA
     # --------------------------------------------------------
-
     title = str(
         request.form.get(
             "title",
             ""
         )
     ).strip()
-
 
     author = str(
         request.form.get(
@@ -542,14 +971,12 @@ def add_manual_novel():
         )
     ).strip()
 
-
     genre = str(
         request.form.get(
             "genre",
             ""
         )
     ).strip()
-
 
     status = str(
         request.form.get(
@@ -558,7 +985,6 @@ def add_manual_novel():
         )
     ).strip()
 
-
     synopsis = str(
         request.form.get(
             "synopsis",
@@ -566,73 +992,56 @@ def add_manual_novel():
         )
     ).strip()
 
-
     # --------------------------------------------------------
     # GET CHAPTERS
     # --------------------------------------------------------
-
     chapters_raw = request.form.get(
         "chapters",
         "[]"
     )
 
-
     try:
-
         chapters = json.loads(
             chapters_raw
         )
 
     except json.JSONDecodeError:
-
         return jsonify({
             "error": "Invalid chapters data"
         }), 400
 
-
     # --------------------------------------------------------
     # GET COVER IMAGE
     # --------------------------------------------------------
-
     cover_file = request.files.get(
         "cover_image"
     )
 
-
     # --------------------------------------------------------
     # VALIDATE REQUEST
     # --------------------------------------------------------
-
     if not title:
-
         return jsonify({
             "error": "Novel title is required"
         }), 400
-
 
     if not isinstance(
         chapters,
         list
     ):
-
         return jsonify({
             "error": "Chapters must be a list"
         }), 400
 
-
     if len(chapters) == 0:
-
         return jsonify({
             "error": "At least one chapter is required"
         }), 400
 
-
     # --------------------------------------------------------
     # VALIDATE CHAPTERS
     # --------------------------------------------------------
-
     final_chapters = []
-
 
     for index, chapter in enumerate(
         chapters,
@@ -643,15 +1052,12 @@ def add_manual_novel():
             chapter,
             dict
         ):
-
             return jsonify({
                 "error":
                     f"Invalid chapter {index}"
             }), 400
 
-
         try:
-
             chapter_number = int(
                 chapter.get(
                     "chapter_number",
@@ -659,19 +1065,16 @@ def add_manual_novel():
                 )
             )
 
-
         except (
             TypeError,
             ValueError
         ):
-
             return jsonify({
                 "error": (
                     f"Invalid chapter number "
                     f"at chapter {index}"
                 )
             }), 400
-
 
         chapter_title = str(
             chapter.get(
@@ -680,7 +1083,6 @@ def add_manual_novel():
             )
         ).strip()
 
-
         content = str(
             chapter.get(
                 "content",
@@ -688,9 +1090,7 @@ def add_manual_novel():
             )
         ).strip()
 
-
         if not content:
-
             return jsonify({
                 "error": (
                     f"Chapter {chapter_number} "
@@ -698,9 +1098,7 @@ def add_manual_novel():
                 )
             }), 400
 
-
         final_chapters.append({
-
             "chapter_number":
                 chapter_number,
 
@@ -726,34 +1124,26 @@ def add_manual_novel():
                 "success"
         })
 
-
     # --------------------------------------------------------
     # SORT CHAPTERS
     # --------------------------------------------------------
-
     final_chapters.sort(
         key=lambda chapter:
         chapter["chapter_number"]
     )
 
-
     # --------------------------------------------------------
     # SAVE COVER IMAGE
     # --------------------------------------------------------
-
     try:
-
         cover_image = save_cover_image(
             cover_file
         )
 
-
     except ValueError as error:
-
         return jsonify({
             "error": str(error)
         }), 400
-
 
     except OSError as error:
 
@@ -767,254 +1157,231 @@ def add_manual_novel():
                 "Could not save cover image"
         }), 500
 
-
     # --------------------------------------------------------
     # CREATE SAFE FILENAME
     # --------------------------------------------------------
-
     safe_title = title.lower()
 
-
     safe_title = "".join(
-
         character
         if character.isalnum()
         else "-"
-
         for character in safe_title
     )
 
-
     safe_title = "-".join(
-
         part
-
         for part in safe_title.split("-")
-
         if part
     )
 
-
     safe_title = safe_title[:150]
-
 
     filename = (
         f"novel_{safe_title}.json"
     )
 
-
-    file_path = NOVELS_DIR / filename
-
-
     # --------------------------------------------------------
-    # FINAL NOVEL DATA
+    # DATABASE
     # --------------------------------------------------------
-
-    novel_data = {
-
-        "source_website":
-            "Manual Entry",
-
-        "source_url":
-            "",
-
-        "title":
-            title,
-
-        "author":
-            author,
-
-        "genre":
-            genre,
-
-        "status":
-            status,
-
-        "synopsis":
-            synopsis,
-
-        "cover_image":
-            cover_image,
-
-        "total_chapters":
-            len(final_chapters),
-
-        "chapters":
-            final_chapters,
-
-        "last_updated":
-            datetime.now().isoformat(
-                timespec="seconds"
-            )
-    }
-
-
-    # --------------------------------------------------------
-    # SAVE JSON
-    # --------------------------------------------------------
+    db = SessionLocal()
 
     try:
 
-        with open(
-            file_path,
-            "w",
-            encoding="utf-8"
-        ) as json_file:
+        # ----------------------------------------------------
+        # CHECK DUPLICATE FILENAME
+        # ----------------------------------------------------
+        existing_novel = (
+            db.query(Novel)
+            .filter(
+                Novel.filename == filename
+            )
+            .first()
+        )
 
-            json.dump(
-                novel_data,
-                json_file,
-                indent=4,
-                ensure_ascii=False
+        if existing_novel:
+
+            return jsonify({
+                "error":
+                    "A novel with this title already exists"
+            }), 409
+
+        # ----------------------------------------------------
+        # CREATE NOVEL
+        # ----------------------------------------------------
+        novel = Novel(
+            filename=filename,
+            title=title,
+            author=author,
+            genre=genre,
+            status=status,
+            synopsis=synopsis,
+            cover_image=cover_image,
+            source_website="Manual Entry",
+            source_url="",
+            total_chapters=len(
+                final_chapters
+            ),
+            last_updated=datetime.utcnow()
+        )
+
+        db.add(novel)
+
+        # Generate novel.id
+        db.flush()
+
+        # ----------------------------------------------------
+        # CREATE CHAPTERS
+        # ----------------------------------------------------
+        for chapter_data in final_chapters:
+
+            chapter = Chapter(
+                novel_id=novel.id,
+
+                chapter_number=
+                    chapter_data[
+                        "chapter_number"
+                    ],
+
+                title=
+                    chapter_data[
+                        "title"
+                    ],
+
+                date=
+                    chapter_data[
+                        "date"
+                    ],
+
+                views=
+                    chapter_data[
+                        "views"
+                    ],
+
+                is_locked=
+                    chapter_data[
+                        "is_locked"
+                    ],
+
+                url=
+                    chapter_data[
+                        "url"
+                    ],
+
+                content=
+                    chapter_data[
+                        "content"
+                    ],
+
+                scrape_status=
+                    chapter_data[
+                        "scrape_status"
+                    ]
             )
 
+            db.add(chapter)
 
-    except OSError as error:
+        # ----------------------------------------------------
+        # COMMIT
+        # ----------------------------------------------------
+        db.commit()
+
+        return jsonify({
+            "message":
+                "Novel added successfully",
+
+            "status":
+                "success",
+
+            "filename":
+                filename,
+
+            "novel": {
+                "title":
+                    title,
+
+                "author":
+                    author,
+
+                "genre":
+                    genre,
+
+                "status":
+                    status,
+
+                "total_chapters":
+                    len(final_chapters),
+
+                "cover_image":
+                    cover_image
+            }
+        }), 201
+
+    except Exception as error:
+
+        db.rollback()
 
         print(
-            "Manual Novel Save Error:",
+            "Manual Novel Database Error:",
             repr(error)
         )
 
-
         return jsonify({
             "error":
-                "Could not save novel file"
+                "Could not save novel to database"
         }), 500
 
+    finally:
 
-    # --------------------------------------------------------
-    # RESPONSE
-    # --------------------------------------------------------
-
-    return jsonify({
-
-        "message":
-            "Novel added successfully",
-
-        "status":
-            "success",
-
-        "filename":
-            filename,
-
-        "novel": {
-
-            "title":
-                title,
-
-            "author":
-                author,
-
-            "genre":
-                genre,
-
-            "status":
-                status,
-
-            "total_chapters":
-                len(final_chapters),
-
-            "cover_image":
-                cover_image
-        }
-
-    }), 201
+        db.close()
 
 
 # ============================================================
-# EDIT MANUAL NOVEL
+# EDIT NOVEL
 # ============================================================
-
 @app.route(
     "/manual-novel/<path:filename>",
     methods=["PUT"]
 )
 def edit_manual_novel(filename):
 
-    requested_file = Path(filename)
-
-
     # --------------------------------------------------------
     # SECURITY CHECK
     # --------------------------------------------------------
+    requested_file = Path(filename)
 
     if (
         requested_file.name != filename
         or requested_file.suffix.lower() != ".json"
     ):
-
         return jsonify({
             "error": "Invalid novel file"
         }), 400
 
-
-    file_path = NOVELS_DIR / filename
-
-
-    if not file_path.exists():
-
-        return jsonify({
-            "error": "Novel not found"
-        }), 404
-
-
-    # --------------------------------------------------------
-    # LOAD EXISTING NOVEL
-    # --------------------------------------------------------
-
-    try:
-
-        with open(
-            file_path,
-            "r",
-            encoding="utf-8"
-        ) as json_file:
-
-            existing_data = json.load(
-                json_file
-            )
-
-
-    except (
-        OSError,
-        json.JSONDecodeError
-    ):
-
-        return jsonify({
-            "error": "Could not read novel file"
-        }), 500
-
     # --------------------------------------------------------
     # GET REQUEST DATA
     # --------------------------------------------------------
-
     data = request.get_json(
         silent=True
     )
-
 
     if not isinstance(
         data,
         dict
     ):
-
         return jsonify({
             "error": "Invalid request data"
         }), 400
 
-
     # --------------------------------------------------------
     # NOVEL INFORMATION
     # --------------------------------------------------------
-
     title = str(
         data.get(
             "title",
             ""
         )
     ).strip()
-
 
     author = str(
         data.get(
@@ -1023,14 +1390,12 @@ def edit_manual_novel(filename):
         )
     ).strip()
 
-
     genre = str(
         data.get(
             "genre",
             ""
         )
     ).strip()
-
 
     status = str(
         data.get(
@@ -1039,14 +1404,12 @@ def edit_manual_novel(filename):
         )
     ).strip()
 
-
     synopsis = str(
         data.get(
             "synopsis",
             ""
         )
     ).strip()
-
 
     cover_image = str(
         data.get(
@@ -1055,47 +1418,37 @@ def edit_manual_novel(filename):
         )
     ).strip()
 
-
     chapters = data.get(
         "chapters",
         []
     )
 
-
     # --------------------------------------------------------
     # VALIDATION
     # --------------------------------------------------------
-
     if not title:
-
         return jsonify({
             "error": "Novel title is required"
         }), 400
-
 
     if not isinstance(
         chapters,
         list
     ):
-
         return jsonify({
             "error": "Chapters must be a list"
         }), 400
 
-
     if len(chapters) == 0:
-
         return jsonify({
             "error": "At least one chapter is required"
         }), 400
 
-
     # --------------------------------------------------------
     # VALIDATE CHAPTERS
     # --------------------------------------------------------
-
     final_chapters = []
-
+    chapter_numbers = set()
 
     for index, chapter in enumerate(
         chapters,
@@ -1106,15 +1459,12 @@ def edit_manual_novel(filename):
             chapter,
             dict
         ):
-
             return jsonify({
                 "error":
                     f"Invalid chapter {index}"
             }), 400
 
-
         try:
-
             chapter_number = int(
                 chapter.get(
                     "chapter_number",
@@ -1122,12 +1472,10 @@ def edit_manual_novel(filename):
                 )
             )
 
-
         except (
             TypeError,
             ValueError
         ):
-
             return jsonify({
                 "error": (
                     f"Invalid chapter number "
@@ -1135,6 +1483,20 @@ def edit_manual_novel(filename):
                 )
             }), 400
 
+        # ----------------------------------------------------
+        # DUPLICATE CHAPTER CHECK
+        # ----------------------------------------------------
+        if chapter_number in chapter_numbers:
+            return jsonify({
+                "error": (
+                    f"Duplicate chapter number: "
+                    f"{chapter_number}"
+                )
+            }), 400
+
+        chapter_numbers.add(
+            chapter_number
+        )
 
         chapter_title = str(
             chapter.get(
@@ -1143,7 +1505,6 @@ def edit_manual_novel(filename):
             )
         ).strip()
 
-
         content = str(
             chapter.get(
                 "content",
@@ -1151,9 +1512,7 @@ def edit_manual_novel(filename):
             )
         ).strip()
 
-
         if not content:
-
             return jsonify({
                 "error": (
                     f"Chapter {chapter_number} "
@@ -1161,9 +1520,7 @@ def edit_manual_novel(filename):
                 )
             }), 400
 
-
         final_chapters.append({
-
             "chapter_number":
                 chapter_number,
 
@@ -1171,135 +1528,207 @@ def edit_manual_novel(filename):
                 chapter_title,
 
             "date":
-                "",
+                str(
+                    chapter.get(
+                        "date",
+                        ""
+                    )
+                ).strip(),
 
             "views":
-                0,
+                int(
+                    chapter.get(
+                        "views",
+                        0
+                    ) or 0
+                ),
 
             "is_locked":
-                False,
+                bool(
+                    chapter.get(
+                        "is_locked",
+                        False
+                    )
+                ),
 
             "url":
-                "",
+                str(
+                    chapter.get(
+                        "url",
+                        ""
+                    )
+                ).strip(),
 
             "content":
                 content,
 
             "scrape_status":
-                "success"
+                str(
+                    chapter.get(
+                        "scrape_status",
+                        "success"
+                    )
+                ).strip()
         })
-
 
     # --------------------------------------------------------
     # SORT CHAPTERS
     # --------------------------------------------------------
-
     final_chapters.sort(
         key=lambda chapter:
         chapter["chapter_number"]
     )
 
-
     # --------------------------------------------------------
-    # UPDATE EXISTING DATA
+    # DATABASE
     # --------------------------------------------------------
-
-    existing_data["title"] = title
-
-    existing_data["author"] = author
-
-    existing_data["genre"] = genre
-
-    existing_data["status"] = status
-
-    existing_data["synopsis"] = synopsis
-
-    existing_data["cover_image"] = cover_image
-
-    existing_data["total_chapters"] = len(
-        final_chapters
-    )
-
-    existing_data["chapters"] = final_chapters
-
-    existing_data["last_updated"] = (
-        datetime.now().isoformat(
-            timespec="seconds"
-        )
-    )
-
-
-    # --------------------------------------------------------
-    # SAVE CHANGES
-    # --------------------------------------------------------
+    db = SessionLocal()
 
     try:
 
-        with open(
-            file_path,
-            "w",
-            encoding="utf-8"
-        ) as json_file:
-
-            json.dump(
-                existing_data,
-                json_file,
-                indent=4,
-                ensure_ascii=False
+        # ----------------------------------------------------
+        # FIND NOVEL
+        # ----------------------------------------------------
+        novel = (
+            db.query(Novel)
+            .filter(
+                Novel.filename == filename
             )
-
-
-    except OSError as error:
-
-        print(
-            "Edit Novel Save Error:",
-            repr(error)
+            .first()
         )
 
+        if not novel:
+            return jsonify({
+                "error": "Novel not found"
+            }), 404
+
+        # ----------------------------------------------------
+        # UPDATE NOVEL INFORMATION
+        # ----------------------------------------------------
+        novel.title = title
+        novel.author = author
+        novel.genre = genre
+        novel.status = status
+        novel.synopsis = synopsis
+        novel.cover_image = cover_image
+        novel.total_chapters = len(
+            final_chapters
+        )
+        novel.last_updated = datetime.utcnow()
+
+        # ----------------------------------------------------
+        # DELETE OLD CHAPTERS
+        # ----------------------------------------------------
+        db.query(Chapter).filter(
+            Chapter.novel_id == novel.id
+        ).delete(
+            synchronize_session=False
+        )
+
+        # ----------------------------------------------------
+        # ADD UPDATED CHAPTERS
+        # ----------------------------------------------------
+        for chapter_data in final_chapters:
+
+            chapter = Chapter(
+                novel_id=novel.id,
+
+                chapter_number=
+                    chapter_data[
+                        "chapter_number"
+                    ],
+
+                title=
+                    chapter_data[
+                        "title"
+                    ],
+
+                date=
+                    chapter_data[
+                        "date"
+                    ],
+
+                views=
+                    chapter_data[
+                        "views"
+                    ],
+
+                is_locked=
+                    chapter_data[
+                        "is_locked"
+                    ],
+
+                url=
+                    chapter_data[
+                        "url"
+                    ],
+
+                content=
+                    chapter_data[
+                        "content"
+                    ],
+
+                scrape_status=
+                    chapter_data[
+                        "scrape_status"
+                    ]
+            )
+
+            db.add(chapter)
+
+        # ----------------------------------------------------
+        # COMMIT CHANGES
+        # ----------------------------------------------------
+        db.commit()
+
+        return jsonify({
+            "message":
+                "Novel updated successfully",
+
+            "status":
+                "success",
+
+            "filename":
+                filename,
+
+            "novel": {
+                "title":
+                    title,
+
+                "author":
+                    author,
+
+                "genre":
+                    genre,
+
+                "status":
+                    status,
+
+                "total_chapters":
+                    len(final_chapters),
+
+                "cover_image":
+                    cover_image
+            }
+        }), 200
+
+    except Exception as error:
+
+        db.rollback()
+
+        print(
+            "Edit Novel Database Error:",
+            repr(error)
+        )
 
         return jsonify({
             "error":
                 "Could not save changes"
         }), 500
 
+    finally:
 
-    # --------------------------------------------------------
-    # RESPONSE
-    # --------------------------------------------------------
-
-    return jsonify({
-
-        "message":
-            "Novel updated successfully",
-
-        "status":
-            "success",
-
-        "filename":
-            filename,
-
-        "novel": {
-
-            "title":
-                title,
-
-            "author":
-                author,
-
-            "genre":
-                genre,
-
-            "status":
-                status,
-
-            "total_chapters":
-                len(final_chapters),
-
-            "cover_image":
-                cover_image
-        }
-
-    }), 200
+        db.close()
 
 
 # ============================================================

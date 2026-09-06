@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Novel Archive | Profile
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="user_profile.css"
+    >
+
+</head>
+
+
+<body>
+
+    <div class="user-layout">
+
+
+        <!-- ==================================================
+             SIDEBAR
+             ================================================== -->
+
+        <aside class="user-sidebar">
+
+
+            <!-- BRAND -->
+
+            <div class="sidebar-brand">
+
+                <div class="brand-mark">
+                    NA
+                </div>
+
+                <div class="brand-text">
+
+                    <strong>
+                        Novel Archive
+                    </strong>
+
+                    <span>
+                        Reading Space
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="user-navigation">
+
+                <div class="navigation-label">
+                    MENU
+                </div>
+
+
+                <a
+                    href="user_dashboard.html"
+                    class="user-nav-item"
+                >
+
+                    <span class="nav-icon">
+                        ◈
+                    </span>
+
+                    <span>
+                        Home
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="index.html"
+                    class="user-nav-item"
+                >
+
+                    <span class="nav-icon">
+                        ▦
+                    </span>
+
+                    <span>
+                        Browse Library
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="#"
+                    class="user-nav-item"
+                    id="myReadingLink"
+                >
+
+                    <span class="nav-icon">
+                        ♡
+                    </span>
+
+                    <span>
+                        My Reading
+                    </span>
+
+                </a>
+
+
+                <div class="navigation-label system-label">
+                    ACCOUNT
+                </div>
+
+
+                <a
+                    href="user_profile.html"
+                    class="user-nav-item active"
+                >
+
+                    <span class="nav-icon">
+                        ◉
+                    </span>
+
+                    <span>
+                        Profile
+                    </span>
+
+                </a>
+
+            </nav>
+
+
+            <!-- SIDEBAR BOTTOM -->
+
+            <div class="sidebar-bottom">
+
+                <div class="user-profile-mini">
+
+                    <div
+                        class="user-avatar"
+                        id="sidebarAvatar"
+                    >
+                        U
+                    </div>
+
+                    <div class="user-mini-info">
+
+                        <strong id="sidebarUserName">
+                            Reader
+                        </strong>
+
+                        <span>
+                            Novel Archive User
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="logout-button"
+                    id="logoutButton"
+                >
+
+                    <span>
+                        ↪
+                    </span>
+
+                    Logout
+
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- ==================================================
+             MAIN CONTENT
+             ================================================== -->
+
+        <main class="user-main">
+
+
+            <!-- ==================================================
+                 HEADER
+                 ================================================== -->
+
+            <header class="user-header">
+
+                <div class="header-left">
+
+                    <span class="header-label">
+                        ACCOUNT
+                    </span>
+
+                    <h1>
+                        Your Profile
+                    </h1>
+
+                    <p>
+                        Manage your Novel Archive account
+                        information and preferences.
+                    </p>
+
+                </div>
+
+
+                <div class="header-right">
+
+                    <a
+                        href="user_dashboard.html"
+                        class="back-button"
+                    >
+                        ← Dashboard
+                    </a>
+
+                </div>
+
+            </header>
+
+
+            <!-- ==================================================
+                 PROFILE OVERVIEW
+                 ================================================== -->
+
+            <section class="profile-overview">
+
+
+                <div class="profile-avatar-large">
+                    <span id="profileAvatar">
+                        U
+                    </span>
+                </div>
+
+
+                <div class="profile-identity">
+
+                    <span class="profile-label">
+                        NOVEL ARCHIVE MEMBER
+                    </span>
+
+                    <h2 id="profileName">
+                        Reader
+                    </h2>
+
+                    <p id="profileEmail">
+                        No email available
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================================
+                 ACCOUNT INFORMATION
+                 ================================================== -->
+
+            <section class="profile-section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="section-label">
+                            PERSONAL INFORMATION
+                        </span>
+
+                        <h2>
+                            Account Details
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <div class="profile-card">
+
+
+                    <!-- NAME -->
+
+                    <div class="profile-field">
+
+                        <label for="profileNameInput">
+                            Full Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="profileNameInput"
+                            placeholder="Your full name"
+                            autocomplete="name"
+                        >
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="profile-field">
+
+                        <label for="profileEmailInput">
+                            Email Address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="profileEmailInput"
+                            placeholder="Your email address"
+                            autocomplete="email"
+                        >
+
+                    </div>
+
+
+                    <!-- SAVE -->
+
+                    <div class="profile-actions">
+
+                        <button
+                            type="button"
+                            class="save-button"
+                            id="saveProfileButton"
+                        >
+                            Save Changes
+                        </button>
+
+                        <span
+                            id="profileMessage"
+                            class="profile-message"
+                        ></span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================================
+                 SECURITY
+                 ================================================== -->
+
+            <section class="profile-section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="section-label">
+                            SECURITY
+                        </span>
+
+                        <h2>
+                            Password
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <div class="profile-card">
+
+
+                    <div class="profile-security-info">
+
+                        <div class="security-icon">
+                            ◆
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Account Password
+                            </h3>
+
+                            <p>
+                                Your password can be updated
+                                securely from your account settings.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        id="changePasswordButton"
+                    >
+                        Change Password
+                    </button>
+
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================================
+                 READING
+                 ================================================== -->
+
+            <section class="profile-section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <span class="section-label">
+                            READING
+                        </span>
+
+                        <h2>
+                            Your Reading Space
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <div class="reading-links">
+
+
+                    <a
+                        href="index.html"
+                        class="reading-link"
+                    >
+
+                        <span class="reading-link-icon">
+                            ▦
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Browse Library
+                            </strong>
+
+                            <span>
+                                Discover novels and start reading.
+                            </span>
+
+                        </div>
+
+                        <span class="reading-arrow">
+                            →
+                        </span>
+
+                    </a>
+
+
+                    <button
+                        type="button"
+                        class="reading-link"
+                        id="myReadingButton"
+                    >
+
+                        <span class="reading-link-icon">
+                            ♡
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                My Reading
+                            </strong>
+
+                            <span>
+                                View your reading activity.
+                            </span>
+
+                        </div>
+
+                        <span class="reading-arrow">
+                            →
+                        </span>
+
+                    </button>
+
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================================
+                 FOOTER
+                 ================================================== -->
+
+            <footer class="user-footer">
+
+                <div>
+
+                    <strong>
+                        Novel Archive
+                    </strong>
+
+                    <span>
+                        Read. Discover. Enjoy.
+                    </span>
+
+                </div>
+
+                <span>
+                    Your Personal Reading Space
+                </span>
+
+            </footer>
+
+
+        </main>
+
+    </div>
+
+
+    <script src="user_profile.js"></script>
+
+</body>
+
+</html>

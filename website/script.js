@@ -336,11 +336,7 @@ function showScrapedNovel(
                     <button
                         type="button"
                         class="read-button"
-                        onclick="openNovel(
-                            '${escapeHtml(
-                                novelFilename
-                            )}'
-                        )"
+                        id="scrapedReadButton"
                     >
                         📖 Read Novel
                     </button>
@@ -348,7 +344,7 @@ function showScrapedNovel(
                     <button
                         type="button"
                         class="edit-novel-button"
-                        onclick="editNovel(${JSON.stringify(novelFilename)})"
+                        id="scrapedEditButton"
                     >
                         ✏️ Edit
                     </button>
@@ -356,13 +352,8 @@ function showScrapedNovel(
                 </div>
 
             </div>
-
         </div>
     `;
-
-    // --------------------------------------------------------
-    // IMAGE FALLBACK
-    // --------------------------------------------------------
 
     const image =
         container.querySelector(
@@ -376,6 +367,34 @@ function showScrapedNovel(
             this.src =
                 "https://via.placeholder.com/220x300?text=No+Cover";
         };
+    }
+
+    const readButton =
+        document.getElementById(
+            "scrapedReadButton"
+        );
+
+    if (readButton) {
+        readButton.addEventListener(
+            "click",
+            function () {
+                openNovel(novelFilename);
+            }
+        );
+    }
+
+    const editButton =
+        document.getElementById(
+            "scrapedEditButton"
+        );
+
+    if (editButton) {
+        editButton.addEventListener(
+            "click",
+            function () {
+                editNovel(novelFilename);
+            }
+        );
     }
 
     section.hidden = false;
@@ -498,15 +517,18 @@ async function loadNovels() {
 // ============================================================
 
 function createNovelCard(novel) {
+
     const card =
         document.createElement("div");
 
     card.className =
         "novel-card";
 
+
     const cover =
         novel.cover_image ||
         "https://via.placeholder.com/220x300?text=No+Cover";
+
 
     card.innerHTML = `
         <img
@@ -558,39 +580,95 @@ function createNovelCard(novel) {
                 )}
             </p>
 
-            <button
-                class="read-button"
-                type="button"
-            >
-                📖 Read Novel
-            </button>
+            <div class="novel-card-actions">
+
+                <button
+                    class="read-button"
+                    type="button"
+                >
+                    📖 Read
+                </button>
+
+                <button
+                    class="edit-button"
+                    type="button"
+                >
+                    ✏️ Edit
+                </button>
+
+            </div>
 
         </div>
     `;
 
-    // --------------------------------------------------------
-    // READ BUTTON
-    // --------------------------------------------------------
 
-    const button =
+    // ========================================================
+    // READ BUTTON
+    // ========================================================
+
+    const readButton =
         card.querySelector(
             ".read-button"
         );
 
-    if (button) {
-        button.addEventListener(
+    if (readButton) {
+
+        readButton.addEventListener(
             "click",
-            () => {
-                openNovel(
-                    novel.filename
-                );
+            function () {
+
+                if (!novel.filename) {
+
+                    console.error(
+                        "Novel filename is missing:",
+                        novel
+                    );
+
+                    return;
+                }
+
+
+                window.location.href =
+                    `novel.html?file=${encodeURIComponent(
+                        novel.filename
+                    )}`;
+
             }
         );
     }
 
-    // --------------------------------------------------------
+
+    // ========================================================
+    // EDIT BUTTON
+    // ========================================================
+
+    const editButton =
+        card.querySelector(
+            ".edit-button"
+        );
+
+    if (editButton) {
+
+        editButton.addEventListener(
+            "click",
+            function () {
+
+                if (!novel.filename) {
+                    return;
+                }
+
+                editNovel(
+                    novel.filename
+                );
+
+            }
+        );
+    }
+
+
+    // ========================================================
     // IMAGE FALLBACK
-    // --------------------------------------------------------
+    // ========================================================
 
     const image =
         card.querySelector(
@@ -598,40 +676,26 @@ function createNovelCard(novel) {
         );
 
     if (image) {
-        image.onerror = function () {
-            this.onerror = null;
 
-            this.src =
-                "https://via.placeholder.com/220x300?text=No+Cover";
-        };
+        image.onerror =
+            function () {
+
+                this.onerror = null;
+
+                this.src =
+                    "https://via.placeholder.com/220x300?text=No+Cover";
+            };
     }
+
 
     return card;
 }
-
-// ============================================================
-// OPEN NOVEL
-// ============================================================
-
-function openNovel(filename) {
-    if (!filename) {
-        console.error(
-            "Novel filename is missing."
-        );
-        return;
-    }
-
-    window.location.href =
-        `novel.html?file=${encodeURIComponent(
-            filename
-        )}`;
-}
-
 // ============================================================
 // NOVEL PAGE
 // ============================================================
 
 async function initializeNovelPage() {
+
     const params =
         new URLSearchParams(
             window.location.search
@@ -641,20 +705,24 @@ async function initializeNovelPage() {
         params.get("file");
 
     if (!filename) {
+
         showNovelError(
             "Novel file was not specified."
         );
+
         return;
     }
 
     await loadNovel(filename);
 }
 
+
 // ============================================================
 // LOAD SINGLE NOVEL
 // ============================================================
 
 async function loadNovel(filename) {
+
     const loading =
         document.getElementById(
             "loading"
@@ -670,24 +738,29 @@ async function loadNovel(filename) {
             "error"
         );
 
+
     // --------------------------------------------------------
     // SHOW LOADING
     // --------------------------------------------------------
 
     if (loading) {
+
         loading.style.display =
             "block";
     }
 
     if (content) {
+
         content.style.display =
             "none";
     }
 
     if (error) {
+
         error.style.display =
             "none";
     }
+
 
     try {
 
@@ -698,23 +771,31 @@ async function loadNovel(filename) {
                 )}`
             );
 
+
         let novel;
 
+
         try {
+
             novel =
                 await response.json();
+
         } catch {
+
             throw new Error(
                 "Server returned an invalid response."
             );
         }
 
+
         if (!response.ok) {
+
             throw new Error(
                 novel.error ||
                 "Novel not found."
             );
         }
+
 
         // ----------------------------------------------------
         // NOVEL INFORMATION
@@ -756,6 +837,7 @@ async function loadNovel(filename) {
             "No synopsis available."
         );
 
+
         // ----------------------------------------------------
         // COVER IMAGE
         // ----------------------------------------------------
@@ -777,6 +859,7 @@ async function loadNovel(filename) {
 
             cover.onerror =
                 function () {
+
                     this.onerror = null;
 
                     this.src =
@@ -784,12 +867,15 @@ async function loadNovel(filename) {
                 };
         }
 
+
         // ----------------------------------------------------
         // CHAPTERS
         // ----------------------------------------------------
 
         const chapters =
-            Array.isArray(novel.chapters)
+            Array.isArray(
+                novel.chapters
+            )
                 ? novel.chapters
                 : [];
 
@@ -799,18 +885,23 @@ async function loadNovel(filename) {
         currentChapterIndex =
             -1;
 
-        displayChapters(chapters);
+        displayChapters(
+            chapters
+        );
+
 
         // ----------------------------------------------------
         // SHOW CONTENT
         // ----------------------------------------------------
 
         if (loading) {
+
             loading.style.display =
                 "none";
         }
 
         if (content) {
+
             content.style.display =
                 "block";
         }
@@ -823,6 +914,7 @@ async function loadNovel(filename) {
         );
 
         if (loading) {
+
             loading.style.display =
                 "none";
         }
@@ -2165,6 +2257,7 @@ document.addEventListener(
 // ============================================================
 
 async function loadManualNovels() {
+
     const container =
         document.getElementById(
             "manualNovelsList"
@@ -2229,8 +2322,7 @@ async function loadManualNovels() {
         // DISPLAY MANUAL NOVELS
         // ----------------------------------------------------
 
-        container.innerHTML =
-            "";
+        container.innerHTML = "";
 
         manualNovels.forEach(
             novel => {
@@ -2303,7 +2395,6 @@ async function loadManualNovels() {
                             <button
                                 type="button"
                                 class="read-button"
-                                onclick="editNovel(${JSON.stringify(novel.filename)})"
                             >
                                 📖 Read
                             </button>
@@ -2311,8 +2402,6 @@ async function loadManualNovels() {
                             <button
                                 type="button"
                                 class="edit-novel-button"
-                                onclick="editNovel(
-                                    onclick="openNovel(${JSON.stringify(novel.filename)})"
                             >
                                 ✏️ Edit
                             </button>
@@ -2321,6 +2410,38 @@ async function loadManualNovels() {
 
                     </div>
                 `;
+
+                const readButton =
+                    card.querySelector(
+                        ".read-button"
+                    );
+
+                if (readButton) {
+                    readButton.addEventListener(
+                        "click",
+                        function () {
+                            openNovel(
+                                novel.filename
+                            );
+                        }
+                    );
+                }
+
+                const editButton =
+                    card.querySelector(
+                        ".edit-novel-button"
+                    );
+
+                if (editButton) {
+                    editButton.addEventListener(
+                        "click",
+                        function () {
+                            editNovel(
+                                novel.filename
+                            );
+                        }
+                    );
+                }
 
                 container.appendChild(
                     card
@@ -2365,3 +2486,4 @@ function editNovel(filename) {
 function editManualNovel(filename) {
     editNovel(filename);
 }
+

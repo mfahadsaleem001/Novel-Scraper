@@ -1,205 +1,214 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Novel Reader | Library</title>
+<title>Novel Archive | Library</title>
 
-    <link rel="stylesheet" href="style.css">
+<link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+>
+
+<link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+>
+
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+<header class="header">
 
-    <!-- ============================================================
-         HEADER
-    ============================================================ -->
+    <div class="header-brand">
 
-    <header class="header">
-
-        <div class="logo">
-            📚 Novel Reader
+        <div class="brand-mark">
+            NA
         </div>
 
-        <div class="header-text">
-            Discover • Read • Enjoy
+        <div class="brand-info">
+            <h2>Novel Archive</h2>
+            <span>READING LIBRARY</span>
         </div>
 
-    </header>
+    </div>
+
+    <div class="header-text">
+        Discover · Read · Enjoy
+    </div>
+
+</header>
 
 
-    <!-- ============================================================
-         MAIN CONTENT
-    ============================================================ -->
+<main class="main-container">
 
-    <main class="main-container">
+    <!-- HERO -->
 
+    <section class="hero">
 
-        <!-- ========================================================
-             HERO SECTION
-        ======================================================== -->
+        <p class="hero-eyebrow">
+            NOVEL ARCHIVE
+        </p>
 
-        <section class="hero">
+        <h1>
+            Discover Stories.<br>
+            <span>Start Reading.</span>
+        </h1>
 
-            <div class="hero-badge">
-                📚 Your Reading Collection
-            </div>
+        <p>
+            Explore your collection of novels,
+            discover new stories, and find your
+            next book to read.
+        </p>
 
-            <h1>
-                Discover Stories.<br>
-                <span>Start Reading.</span>
-            </h1>
-
-            <p>
-                Explore captivating novels by genre or author
-                and find your next story to read.
-            </p>
-
-        </section>
+    </section>
 
 
+    <!-- BROWSE -->
 
-        <!-- ========================================================
-             SEARCH & GENRE FILTERS
-        ======================================================== -->
+    <section class="browse-controls">
 
-        <section class="browse-controls">
+        <div class="search-box">
 
+            <span class="search-icon">
+                ⌕
+            </span>
 
-            <!-- SEARCH -->
+            <input
+                type="search"
+                id="searchInput"
+                placeholder="Search novels by title or author..."
+                autocomplete="off"
+            >
 
-            <div class="search-box">
-
-                <span class="search-icon">
-                    🔍
-                </span>
-
-                <input
-                    type="search"
-                    id="searchInput"
-                    placeholder="Search novels by title or author..."
-                    autocomplete="off"
-                >
-
-            </div>
+        </div>
 
 
+        <div class="genre-section">
 
-            <!-- GENRE FILTER -->
+            <div class="genre-header">
 
-            <div class="genre-section">
+                <div>
 
-                <div class="genre-header">
+                    <p class="section-eyebrow">
+                        COLLECTION
+                    </p>
 
                     <h2>
                         Browse by Genre
                     </h2>
 
-                    <span id="genreCount">
-                        All Genres
-                    </span>
-
                 </div>
 
-
-                <div
-                    id="genreFilters"
-                    class="genre-filters"
-                >
-
-                    <button
-                        type="button"
-                        class="genre-button active"
-                        data-genre="all"
-                    >
-                        All
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- ========================================================
-             NOVEL LIBRARY
-        ======================================================== -->
-
-        <section class="novels-section">
-
-            <div class="section-title">
-
-                <div>
-
-                    <div class="section-icon">
-                        📚
-                    </div>
-
-                    <div>
-                        <h2>
-                            Novel Library
-                        </h2>
-                    </div>
-
-                </div>
-
-
-                <span
-                    id="novelCount"
-                    class="novel-count"
-                >
-                    Loading...
+                <span id="genreCount">
+                    All Genres
                 </span>
 
             </div>
 
 
-            <!-- NOVELS -->
-
             <div
-                id="novelsList"
-                class="novels-list"
+                id="genreFilters"
+                class="genre-filters"
             >
 
-                <p class="loading">
-                    Loading novels...
-                </p>
+                <button
+                    type="button"
+                    class="genre-button active"
+                    data-genre="all"
+                >
+                    All
+                </button>
 
             </div>
 
-        </section>
+        </div>
 
-    </main>
-
-
-
-    <!-- ============================================================
-         FOOTER
-    ============================================================ -->
-
-    <footer>
-
-        <p>
-            📚 Novel Reader
-        </p>
-
-        <span>
-            Read. Discover. Enjoy.
-        </span>
-
-    </footer>
+    </section>
 
 
+    <!-- NOVEL LIBRARY -->
 
-    <!-- ============================================================
-         JAVASCRIPT
-    ============================================================ -->
+    <section class="novels-section">
 
-    <script src="script.js"></script>
+        <div class="section-title">
 
+            <div>
+
+                <p class="section-eyebrow">
+                    LIBRARY
+                </p>
+
+                <h2>
+                    Novel Collection
+                </h2>
+
+            </div>
+
+            <span
+                id="novelCount"
+                class="novel-count"
+            >
+                Loading...
+            </span>
+
+        </div>
+
+
+        <div
+            id="novelsList"
+            class="novels-list"
+        >
+
+            <p class="loading">
+                Loading novels...
+            </p>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    <div class="footer-brand">
+
+        <div class="brand-mark">
+            NA
+        </div>
+
+        <div>
+            <strong>
+                Novel Archive
+            </strong>
+
+            <span>
+                Reading Library
+            </span>
+        </div>
+
+    </div>
+
+    <span>
+        Read · Discover · Enjoy
+    </span>
+
+</footer>
+
+
+<script src="script.js"></script>
 </body>
 
 </html>

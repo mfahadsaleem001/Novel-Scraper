@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Novel Archive | Dashboard
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="user_dashboard.css"
+    >
+</head>
+
+<body>
+
+    <main class="user-layout">
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        <aside class="user-sidebar">
+
+            <div class="sidebar-brand">
+
+                <div class="brand-mark">
+                    NA
+                </div>
+
+                <div class="brand-text">
+
+                    <strong>
+                        Novel Archive
+                    </strong>
+
+                    <span>
+                        Reading Space
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <nav class="user-navigation">
+
+                <div class="navigation-label">
+                    READING
+                </div>
+
+
+                <a
+                    href="user_dashboard.html"
+                    class="navigation-link active"
+                >
+                    <span class="navigation-icon">
+                        ⌂
+                    </span>
+
+                    <span>
+                        Home
+                    </span>
+                </a>
+
+
+                <a
+                    href="index.html"
+                    class="navigation-link"
+                >
+                    <span class="navigation-icon">
+                        ◫
+                    </span>
+
+                    <span>
+                        Browse Library
+                    </span>
+                </a>
+
+
+                <a
+                    href="user_reading.html"
+                    class="navigation-link"
+                    id="myReadingLink"
+                >
+                    <span class="navigation-icon">
+                        ♡
+                    </span>
+
+                    <span>
+                        My Reading
+                    </span>
+                </a>
+
+
+                <div class="navigation-label system-label">
+                    ACCOUNT
+                </div>
+
+
+                <a
+                    href="user_profile.html"
+                    class="navigation-link"
+                    id="profileLink"
+                >
+                    <span class="navigation-icon">
+                        ○
+                    </span>
+
+                    <span>
+                        Profile
+                    </span>
+                </a>
+
+            </nav>
+
+
+            <!-- =================================================
+                 SIDEBAR USER
+            ================================================== -->
+
+            <div class="sidebar-bottom">
+
+                <div class="sidebar-user">
+
+                    <div class="sidebar-avatar">
+                        U
+                    </div>
+
+                    <div class="sidebar-user-info">
+
+                        <strong>
+                            Reader
+                        </strong>
+
+                        <span>
+                            Member
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="logout-button"
+                    id="logoutButton"
+                >
+                    <span>
+                        ↪
+                    </span>
+
+                    Logout
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =====================================================
+             MAIN CONTENT
+        ====================================================== -->
+
+        <section class="user-main">
+
+
+            <!-- =================================================
+                 HEADER
+            ================================================== -->
+
+            <header class="user-header">
+
+                <div class="header-content">
+
+                    <span class="header-label">
+                        NOVEL ARCHIVE
+                    </span>
+
+                    <h1 id="welcomeMessage">
+                        Welcome Back, Reader
+                    </h1>
+
+                    <p>
+                        Discover a story and continue
+                        your reading journey.
+                    </p>
+
+                </div>
+
+
+                <div class="header-side">
+
+                    <span>
+                        YOUR READING SPACE
+                    </span>
+
+                    <strong>
+                        Explore • Read • Enjoy
+                    </strong>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================================
+                 CONTENT
+            ================================================== -->
+
+            <div class="user-content">
+
+
+                <!-- =================================================
+                     SEARCH
+                ================================================== -->
+
+                <section class="dashboard-search-section">
+
+                    <div class="dashboard-search-box">
+
+                        <span class="dashboard-search-icon">
+                            ⌕
+                        </span>
+
+                        <input
+                            type="search"
+                            id="dashboardSearch"
+                            placeholder="Search novels by title, author, or genre..."
+                            autocomplete="off"
+                        >
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     STATS
+                ================================================== -->
+
+                <section class="dashboard-stats">
+
+
+                    <div class="dashboard-stat-card">
+
+                        <div class="stat-icon">
+                            📚
+                        </div>
+
+                        <div class="stat-content">
+
+                            <span>
+                                TOTAL NOVELS
+                            </span>
+
+                            <strong id="totalNovels">
+                                0
+                            </strong>
+
+                            <small>
+                                Available to read
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="dashboard-stat-card">
+
+                        <div class="stat-icon">
+                            📖
+                        </div>
+
+                        <div class="stat-content">
+
+                            <span>
+                                TOTAL CHAPTERS
+                            </span>
+
+                            <strong id="totalChapters">
+                                0
+                            </strong>
+
+                            <small>
+                                Chapters in library
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="dashboard-stat-card">
+
+                        <div class="stat-icon">
+                            ◷
+                        </div>
+
+                        <div class="stat-content">
+
+                            <span>
+                                ONGOING
+                            </span>
+
+                            <strong id="ongoingNovels">
+                                0
+                            </strong>
+
+                            <small>
+                                Stories in progress
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="dashboard-stat-card">
+
+                        <div class="stat-icon">
+                            ✓
+                        </div>
+
+                        <div class="stat-content">
+
+                            <span>
+                                COMPLETED
+                            </span>
+
+                            <strong id="completedNovels">
+                                0
+                            </strong>
+
+                            <small>
+                                Finished stories
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     CONTINUE READING
+                ================================================== -->
+
+                <section class="dashboard-section">
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="section-label">
+                                YOUR JOURNEY
+                            </span>
+
+                            <h2>
+                                Continue Reading
+                            </h2>
+
+                            <p>
+                                Pick up where you left off.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="continue-reading-card">
+
+                        <div class="continue-icon">
+                            📖
+                        </div>
+
+                        <div class="continue-content">
+
+                            <span class="continue-label">
+                                READY FOR A NEW STORY?
+                            </span>
+
+                            <h3>
+                                Your reading journey starts here.
+                            </h3>
+
+                            <p>
+                                Browse the Novel Archive and
+                                discover your next favorite story.
+                            </p>
+
+                            <a
+                                href="index.html"
+                                class="browse-button"
+                            >
+                                Browse Library
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     RECENTLY ADDED
+                ================================================== -->
+
+                <section class="dashboard-section">
+
+                    <div class="section-heading section-heading-row">
+
+                        <div>
+
+                            <span class="section-label">
+                                COLLECTION
+                            </span>
+
+                            <h2>
+                                Recently Added
+                            </h2>
+
+                            <p>
+                                Explore the latest novels added
+                                to the archive.
+                            </p>
+
+                        </div>
+
+
+                        <a
+                            href="index.html"
+                            class="view-all-link"
+                        >
+                            View All
+                            <span>
+                                →
+                            </span>
+                        </a>
+
+                    </div>
+
+
+                    <div
+                        id="recentNovels"
+                        class="novel-grid"
+                    >
+
+                        <div class="dashboard-loading">
+                            Loading novels...
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =================================================
+                     SEARCH RESULTS
+                ================================================== -->
+
+                <section
+                    id="searchResultsSection"
+                    class="dashboard-section search-results-section"
+                >
+
+                    <div class="section-heading">
+
+                        <div>
+
+                            <span class="section-label">
+                                SEARCH
+                            </span>
+
+                            <h2>
+                                Search Results
+                            </h2>
+
+                            <p>
+                                Novels matching your search.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="searchResults"
+                        class="novel-grid"
+                    >
+                    </div>
+
+                </section>
+
+            </div>
+
+
+            <!-- =================================================
+                 FOOTER
+            ================================================== -->
+
+            <footer class="user-footer">
+
+                <span>
+                    Novel Archive
+                </span>
+
+                <span>
+                    Read. Discover. Enjoy.
+                </span>
+
+            </footer>
+
+        </section>
+
+    </main>
+
+
+    <script src="user_dashboard.js"></script>
+
+</body>
+
+</html>

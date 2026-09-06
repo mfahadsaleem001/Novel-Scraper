@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novel Archive | Saved Novels</title>
+
+<link rel="stylesheet" href="user_favorites.css">
+
+</head>
+
+<body>
+
+<div class="user-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="user-sidebar">
+
+        <div class="sidebar-brand">
+            <div class="brand-mark">NA</div>
+
+            <div class="brand-text">
+                <strong>Novel Archive</strong>
+                <span>Reading Space</span>
+            </div>
+        </div>
+
+
+        <nav class="user-navigation">
+
+            <div class="navigation-section">
+                <span class="navigation-label">LIBRARY</span>
+
+                <a href="user_dashboard.html" class="user-nav-link">
+                    <span class="nav-icon">⌂</span>
+                    <span>Home</span>
+                </a>
+
+                <a href="index.html" class="user-nav-link">
+                    <span class="nav-icon">▦</span>
+                    <span>Browse Library</span>
+                </a>
+
+                <a href="user_reading.html" class="user-nav-link">
+                    <span class="nav-icon">◫</span>
+                    <span>My Reading</span>
+                </a>
+
+                <a href="user_favorites.html" class="user-nav-link active">
+                    <span class="nav-icon">♡</span>
+                    <span>Saved Novels</span>
+                </a>
+            </div>
+
+
+            <div class="navigation-section">
+                <span class="navigation-label">ACCOUNT</span>
+
+                <a href="user_profile.html" class="user-nav-link">
+                    <span class="nav-icon">○</span>
+                    <span>Profile</span>
+                </a>
+            </div>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="sidebar-user">
+
+                <div class="sidebar-avatar">U</div>
+
+                <div class="sidebar-user-info">
+                    <strong id="sidebarUserName">Reader</strong>
+                    <span>Novel Archive User</span>
+                </div>
+
+            </div>
+
+
+            <button type="button" id="logoutButton" class="logout-button">
+                <span>↪</span>
+                <span>Logout</span>
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="user-main">
+
+        <header class="user-header">
+
+            <div class="header-heading">
+
+                <span class="header-label">SAVED NOVELS</span>
+
+                <h1>Your Favorite Stories</h1>
+
+                <p>
+                    Keep your favorite stories close and return
+                    to them whenever you want.
+                </p>
+
+            </div>
+
+
+            <div class="header-date">
+                <span>Novel Archive</span>
+                <strong>Saved Collection</strong>
+            </div>
+
+        </header>
+
+
+        <!-- SAVED SUMMARY -->
+        <section class="saved-summary">
+
+            <div class="saved-summary-content">
+
+                <span class="section-label">YOUR COLLECTION</span>
+
+                <h2>Saved Novels</h2>
+
+                <p>
+                    Your favorite stories will be collected here
+                    for quick and easy access.
+                </p>
+
+            </div>
+
+
+            <div class="saved-count-box">
+
+                <span id="savedNovelCount">0</span>
+
+                <small>Saved Novels</small>
+
+            </div>
+
+        </section>
+
+
+        <!-- SAVED NOVELS -->
+        <section class="saved-section">
+
+            <div class="section-heading">
+
+                <div>
+                    <span class="section-label">YOUR FAVORITES</span>
+                    <h2>Saved Stories</h2>
+                </div>
+
+                <a href="user_reading.html" class="section-link">
+                    My Reading
+                </a>
+
+            </div>
+
+
+            <div id="savedNovels" class="saved-novels">
+
+                <div class="saved-empty-state">
+
+                    <div class="empty-icon">♡</div>
+
+                    <h3>No saved novels yet</h3>
+
+                    <p>
+                        You haven't saved any novels yet.
+                        Explore the library and save the stories
+                        you want to read later.
+                    </p>
+
+                    <a href="index.html" class="primary-action">
+                        Browse Library
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- READING CONNECTION -->
+        <section class="reading-connection">
+
+            <div class="connection-content">
+
+                <span class="section-label">MY READING</span>
+
+                <h2>Continue your reading journey</h2>
+
+                <p>
+                    View your reading progress and history from
+                    your personal reading space.
+                </p>
+
+                <a href="user_reading.html" class="secondary-action">
+                    Go to My Reading
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- DISCOVER -->
+        <section class="discover-card">
+
+            <div class="discover-content">
+
+                <span class="section-label">DISCOVER MORE</span>
+
+                <h2>Find another story to love</h2>
+
+                <p>
+                    Browse the Novel Archive collection and discover
+                    your next favorite novel.
+                </p>
+
+                <a href="index.html" class="primary-action">
+                    Explore Library
+                </a>
+
+            </div>
+
+
+            <div class="discover-mark">
+                NA
+            </div>
+
+        </section>
+
+
+        <!-- FOOTER -->
+        <footer class="user-footer">
+
+            <span>Novel Archive</span>
+
+            <span>Read. Discover. Enjoy.</span>
+
+        </footer>
+
+    </main>
+
+</div>
+
+
+<script>
+    const logoutButton = document.getElementById("logoutButton");
+
+    if (logoutButton) {
+        logoutButton.addEventListener("click", function () {
+
+            localStorage.removeItem("novelArchiveUserName");
+            localStorage.removeItem("novelArchiveUserEmail");
+
+            window.location.href = "user_signin.html";
+        });
+    }
+
+    const userName = localStorage.getItem("novelArchiveUserName");
+    const sidebarUserName = document.getElementById("sidebarUserName");
+
+    if (userName && sidebarUserName) {
+        sidebarUserName.textContent = userName;
+    }
+</script>
+```
+
+</body>
+
+</html>

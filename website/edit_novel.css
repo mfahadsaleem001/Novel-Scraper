@@ -29,6 +29,10 @@ body {
     color: var(--charcoal);
 }
 
+/* =========================================================
+   LAYOUT
+========================================================= */
+
 .admin-layout {
     min-height: 100vh;
     display: flex;
@@ -41,11 +45,11 @@ body {
 .admin-sidebar {
     width: 255px;
     min-width: 255px;
-    min-height: 100vh;
     background: var(--charcoal);
     color: #fff;
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
 }
 
 .sidebar-brand {
@@ -62,19 +66,18 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-
     font-family: "Cormorant Garamond", serif;
     font-size: 20px;
     font-weight: 700;
     letter-spacing: 1px;
+    flex-shrink: 0;
 }
 
 .sidebar-brand h2 {
     font-family: "Cormorant Garamond", serif;
     font-size: 23px;
-    line-height: 1;
     font-weight: 700;
+    line-height: 1;
 }
 
 .sidebar-brand span {
@@ -86,7 +89,9 @@ body {
     text-transform: uppercase;
 }
 
-/* Navigation */
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
 .admin-navigation {
     padding: 0 14px;
@@ -95,7 +100,6 @@ body {
 .nav-label {
     padding: 0 12px;
     margin-bottom: 10px;
-
     color: #817873;
     font-size: 10px;
     font-weight: 700;
@@ -108,20 +112,15 @@ body {
 
 .nav-item {
     min-height: 44px;
-
     display: flex;
     align-items: center;
     gap: 13px;
-
     padding: 0 12px;
     margin-bottom: 5px;
-
     color: #c9c1bb;
     text-decoration: none;
-
     font-size: 13px;
     font-weight: 600;
-
     transition: 0.2s ease;
 }
 
@@ -146,7 +145,9 @@ body {
     color: #fff;
 }
 
-/* Sidebar bottom */
+/* =========================================================
+   SIDEBAR BOTTOM
+========================================================= */
 
 .sidebar-bottom {
     margin-top: auto;
@@ -164,14 +165,11 @@ body {
 .profile-avatar {
     width: 37px;
     height: 37px;
-
     border-radius: 50%;
     background: var(--burgundy);
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     font-family: "Cormorant Garamond", serif;
     font-size: 19px;
     font-weight: 700;
@@ -192,18 +190,13 @@ body {
 
 .logout-button {
     width: 100%;
-
-    padding: 10px;
-
     border: 1px solid rgba(255, 255, 255, 0.12);
     background: transparent;
     color: #bdb5b0;
-
+    padding: 10px;
     cursor: pointer;
-
     font-family: "Manrope", sans-serif;
     font-size: 12px;
-
     transition: 0.2s ease;
 }
 
@@ -220,50 +213,42 @@ body {
 .admin-main {
     flex: 1;
     min-width: 0;
-
     padding: 46px 52px 65px;
-
     max-width: 1450px;
 }
 
-/* Header */
+/* =========================================================
+   HEADER
+========================================================= */
 
 .dashboard-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-
     gap: 30px;
     margin-bottom: 28px;
 }
 
 .page-eyebrow {
     color: var(--burgundy);
-
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 2px;
-
     margin-bottom: 7px;
 }
 
 .dashboard-header h1 {
     font-family: "Cormorant Garamond", serif;
-
     font-size: 48px;
     line-height: 1;
     font-weight: 700;
-
     color: var(--charcoal);
 }
 
 .page-description {
     max-width: 580px;
-
     margin-top: 10px;
-
     color: var(--muted);
-
     font-size: 13px;
     line-height: 1.7;
 }
@@ -275,9 +260,7 @@ body {
 
 .header-date span {
     display: block;
-
     color: var(--muted);
-
     font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 1.4px;
@@ -285,17 +268,14 @@ body {
 
 .header-date strong {
     display: block;
-
     margin-top: 5px;
-
     font-family: "Cormorant Garamond", serif;
     font-size: 19px;
-
     color: var(--burgundy);
 }
 
 /* =========================================================
-   BACK BUTTON
+   TOP NAVIGATION
 ========================================================= */
 
 .top-navigation {
@@ -305,17 +285,12 @@ body {
 .back-button {
     border: 0;
     background: transparent;
-
     color: var(--burgundy);
-
     display: inline-flex;
     align-items: center;
     gap: 8px;
-
     padding: 7px 0;
-
     cursor: pointer;
-
     font-family: "Manrope", sans-serif;
     font-size: 12px;
     font-weight: 700;
@@ -325,69 +300,87 @@ body {
     color: var(--burgundy-dark);
 }
 
-/* =========================================================
-   FORM
-========================================================= */
-
-.manual-novel-form {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
+.back-button:first-letter {
+    font-size: 18px;
 }
 
-.form-section {
+/* =========================================================
+   SECTION
+========================================================= */
+
+.edit-section {
     width: 100%;
 }
 
 .section-heading {
-    margin-bottom: 17px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 18px;
 }
 
-.section-eyebrow {
+.section-eyebrow,
+.form-eyebrow {
     color: var(--gold);
-
     font-size: 9px;
     font-weight: 700;
     letter-spacing: 1.8px;
     text-transform: uppercase;
-
     margin-bottom: 5px;
 }
 
 .section-heading h2 {
     font-family: "Cormorant Garamond", serif;
-
     font-size: 31px;
     font-weight: 700;
-
-    color: var(--charcoal);
 }
 
-.section-description {
+/* =========================================================
+   FORM
+========================================================= */
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    padding: 27px;
+}
+
+.form-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 23px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border);
+}
+
+.form-card-header h3 {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.form-description {
     margin-top: 5px;
-
     color: var(--muted);
-
     font-size: 11px;
     line-height: 1.6;
 }
 
 /* =========================================================
-   FORM CARD
+   FORM GRID
 ========================================================= */
-
-.form-card {
-    background: var(--paper);
-
-    border: 1px solid var(--border);
-
-    padding: 28px;
-}
 
 .form-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-
     gap: 20px;
 }
 
@@ -401,11 +394,8 @@ body {
 
 .form-group label {
     display: block;
-
     margin-bottom: 8px;
-
     color: var(--charcoal);
-
     font-size: 11px;
     font-weight: 700;
 }
@@ -414,19 +404,13 @@ body {
 .form-group select,
 .form-group textarea {
     width: 100%;
-
     border: 1px solid var(--border);
-
     background: #fff;
     color: var(--charcoal);
-
     padding: 12px 13px;
-
     outline: none;
-
     font-family: "Manrope", sans-serif;
     font-size: 12px;
-
     transition: border-color 0.2s ease;
 }
 
@@ -436,10 +420,8 @@ body {
 }
 
 .form-group textarea {
-    min-height: 145px;
-
     resize: vertical;
-
+    min-height: 145px;
     line-height: 1.7;
 }
 
@@ -455,7 +437,7 @@ body {
 }
 
 /* =========================================================
-   COVER
+   COVER EDITOR
 ========================================================= */
 
 .cover-editor {
@@ -467,14 +449,10 @@ body {
 .cover-preview {
     width: 150px;
     aspect-ratio: 2 / 3;
-
     flex-shrink: 0;
-
-    border: 1px solid var(--border);
     background: var(--ivory);
-
+    border: 1px solid var(--border);
     overflow: hidden;
-
     display: flex;
     align-items: center;
     justify-content: center;
@@ -483,9 +461,7 @@ body {
 .cover-preview img {
     width: 100%;
     height: 100%;
-
     object-fit: contain;
-
     display: block;
 }
 
@@ -494,258 +470,180 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
     color: var(--muted);
 }
 
 .cover-placeholder span {
     font-family: "Cormorant Garamond", serif;
-
-    font-size: 36px;
+    font-size: 34px;
     font-weight: 700;
-
     color: var(--burgundy);
 }
 
 .cover-placeholder small {
     margin-top: 2px;
-
     font-size: 9px;
-
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
 .cover-controls {
-    padding-top: 3px;
+    padding-top: 4px;
 }
 
 .cover-controls label {
     display: block;
-
     margin-bottom: 9px;
-
     color: var(--charcoal);
-
     font-size: 11px;
     font-weight: 700;
 }
 
 .cover-controls input[type="file"] {
     max-width: 100%;
-
     font-family: "Manrope", sans-serif;
     font-size: 11px;
-
     color: var(--muted);
 }
 
-.file-help {
+.cover-controls p {
     margin-top: 9px;
-
     color: var(--muted);
-
     font-size: 10px;
-    line-height: 1.5;
 }
 
 /* =========================================================
-   CHAPTER SECTION
+   BUTTONS
 ========================================================= */
 
-.chapter-section-header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-
-    gap: 20px;
-}
-
-.add-chapter-btn {
-    min-height: 42px;
-
-    padding: 0 17px;
-
-    border: 1px solid var(--burgundy);
-
-    background: var(--burgundy);
-    color: #fff;
-
+.secondary-button {
+    border: 1px solid var(--border);
+    background: var(--ivory);
+    color: var(--burgundy);
+    padding: 10px 15px;
     cursor: pointer;
-
     font-family: "Manrope", sans-serif;
     font-size: 11px;
     font-weight: 700;
-
     transition: 0.2s ease;
 }
 
-.add-chapter-btn:hover {
-    background: var(--burgundy-dark);
-    border-color: var(--burgundy-dark);
+.secondary-button:hover {
+    background: var(--burgundy-soft);
+    border-color: var(--burgundy);
 }
+
+/* =========================================================
+   CHAPTERS
+========================================================= */
 
 .chapters-container {
     display: flex;
     flex-direction: column;
-
-    gap: 15px;
+    gap: 10px;
 }
 
-/* Individual chapter */
-
-.chapter-form {
-    background: var(--paper);
-
-    border: 1px solid var(--border);
-
-    padding: 25px;
+.empty-chapters {
+    border: 1px dashed var(--border);
+    background: var(--ivory);
+    padding: 35px 20px;
+    text-align: center;
 }
 
-.chapter-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 20px;
-
-    margin-bottom: 20px;
-    padding-bottom: 14px;
-
-    border-bottom: 1px solid var(--border);
-}
-
-.chapter-label {
+.empty-chapters-icon {
     color: var(--gold);
-
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 1.7px;
+    font-size: 27px;
+    margin-bottom: 8px;
 }
 
-.chapter-header h3 {
-    margin-top: 3px;
-
+.empty-chapters h4 {
     font-family: "Cormorant Garamond", serif;
-
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 21px;
 }
 
-.remove-chapter-btn {
-    border: 1px solid #d9c7c7;
-
-    background: transparent;
-    color: var(--danger);
-
-    padding: 9px 13px;
-
-    cursor: pointer;
-
-    font-family: "Manrope", sans-serif;
-    font-size: 10px;
-    font-weight: 700;
-
-    transition: 0.2s ease;
-}
-
-.remove-chapter-btn:hover {
-    background: #faf0f0;
-    border-color: var(--danger);
+.empty-chapters p {
+    max-width: 430px;
+    margin: 6px auto 0;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.6;
 }
 
 /* =========================================================
    MESSAGE
 ========================================================= */
 
-#manualNovelMessage {
-    font-size: 12px;
-    line-height: 1.6;
-}
-
-.manual-novel-message {
+.form-message {
     display: none;
-
     padding: 12px 14px;
-
     border: 1px solid var(--border);
     background: var(--paper);
+    font-size: 11px;
+    line-height: 1.5;
 }
 
-.manual-novel-message.success {
+.form-message.success {
     display: block;
-
     color: #3e6a4b;
-
     border-color: #b8cdbd;
     background: #f1f6f2;
 }
 
-.manual-novel-message.error {
+.form-message.error {
     display: block;
-
     color: var(--danger);
-
     border-color: #d8bcbc;
     background: #faf1f1;
 }
 
 /* =========================================================
-   ACTIONS
+   FORM ACTIONS
 ========================================================= */
 
 .form-actions {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-
     gap: 10px;
-
-    padding-top: 2px;
+    padding-top: 5px;
 }
 
-.save-novel-btn,
-.cancel-btn {
-    min-height: 45px;
-
-    padding: 0 23px;
-
+.cancel-button,
+.save-button {
+    min-height: 44px;
+    padding: 0 22px;
     cursor: pointer;
-
     font-family: "Manrope", sans-serif;
     font-size: 11px;
     font-weight: 700;
-
     transition: 0.2s ease;
 }
 
-.save-novel-btn {
-    border: 1px solid var(--burgundy);
-
-    background: var(--burgundy);
-    color: #fff;
-}
-
-.save-novel-btn:hover {
-    background: var(--burgundy-dark);
-    border-color: var(--burgundy-dark);
-}
-
-.save-novel-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.cancel-btn {
+.cancel-button {
     border: 1px solid var(--border);
-
     background: transparent;
     color: var(--muted);
 }
 
-.cancel-btn:hover {
+.cancel-button:hover {
     background: var(--paper);
     color: var(--charcoal);
+}
+
+.save-button {
+    border: 1px solid var(--burgundy);
+    background: var(--burgundy);
+    color: #fff;
+}
+
+.save-button:hover {
+    background: var(--burgundy-dark);
+    border-color: var(--burgundy-dark);
+}
+
+.save-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 /* =========================================================
@@ -754,14 +652,15 @@ body {
 
 @media (max-width: 1050px) {
 
+    .admin-main {
+        padding: 40px 35px 55px;
+    }
+
     .admin-sidebar {
         width: 225px;
         min-width: 225px;
     }
 
-    .admin-main {
-        padding: 40px 35px 55px;
-    }
 }
 
 @media (max-width: 850px) {
@@ -784,13 +683,11 @@ body {
         display: flex;
         flex-wrap: wrap;
         gap: 5px;
-
         padding-bottom: 18px;
     }
 
     .nav-label {
         width: 100%;
-
         margin-top: 5px;
         margin-bottom: 2px;
     }
@@ -807,7 +704,6 @@ body {
         display: flex;
         align-items: center;
         justify-content: space-between;
-
         gap: 15px;
     }
 
@@ -828,6 +724,7 @@ body {
         text-align: left;
         padding-top: 0;
     }
+
 }
 
 @media (max-width: 650px) {
@@ -840,10 +737,6 @@ body {
         font-size: 40px;
     }
 
-    .form-card {
-        padding: 20px;
-    }
-
     .form-grid {
         grid-template-columns: 1fr;
     }
@@ -852,21 +745,12 @@ body {
         grid-column: auto;
     }
 
-    .chapter-section-header {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    .add-chapter-btn {
-        width: 100%;
-    }
-
-    .chapter-form {
+    .form-card {
         padding: 20px;
     }
 
-    .chapter-header {
-        align-items: flex-start;
+    .form-card-header {
+        flex-direction: column;
     }
 
     .cover-editor {
@@ -874,7 +758,7 @@ body {
     }
 
     .cover-preview {
-        width: 140px;
+        width: 135px;
     }
 
     .form-actions {
@@ -882,10 +766,11 @@ body {
         align-items: stretch;
     }
 
-    .save-novel-btn,
-    .cancel-btn {
+    .cancel-button,
+    .save-button {
         width: 100%;
     }
+
 }
 
 @media (max-width: 480px) {
@@ -914,20 +799,12 @@ body {
         font-size: 36px;
     }
 
-    .form-card,
-    .chapter-form {
+    .form-card {
         padding: 16px;
     }
 
-    .section-heading h2 {
-        font-size: 27px;
+    .form-card-header h3 {
+        font-size: 22px;
     }
 
-    .chapter-header {
-        flex-direction: column;
-    }
-
-    .remove-chapter-btn {
-        width: 100%;
-    }
 }
