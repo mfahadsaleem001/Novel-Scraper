@@ -3,12 +3,16 @@ from flask_cors import CORS
 from pathlib import Path
 import json
 import importlib.util
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from werkzeug.utils import secure_filename
 import uuid
+from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
+import jwt
+import os
 
 from backend.database import SessionLocal
-from backend.models import Novel, Chapter
+from backend.models import User, Novel, Chapter
 
 
 # ============================================================
@@ -24,6 +28,11 @@ CORS(app)
 # ============================================================
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+JWT_SECRET_KEY = os.getenv(
+    "JWT_SECRET_KEY",
+    "development-secret-change-me"
+)
 
 NOVELS_DIR = BASE_DIR / "novels"
 
@@ -72,6 +81,101 @@ scraper = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(scraper)
 
 
+
+# ============================================================
+# ADMIN AUTHENTICATION
+# ============================================================
+
+def admin_required(function):
+
+    @wraps(function)
+    def decorated_function(*args, **kwargs):
+
+        authorization = request.headers.get(
+            "Authorization"
+        )
+
+        if not authorization:
+
+            return jsonify({
+                "error": "Authentication required."
+            }), 401
+
+        if not authorization.startswith("Bearer "):
+
+            return jsonify({
+                "error": "Invalid authorization format."
+            }), 401
+
+        token = authorization.split(
+            " ",
+            1
+        )[1]
+
+        try:
+
+            payload = jwt.decode(
+                token,
+                JWT_SECRET_KEY,
+                algorithms=["HS256"]
+            )
+
+            user_id = payload.get(
+                "user_id"
+            )
+
+            if not user_id:
+
+                return jsonify({
+                    "error": "Invalid authentication token."
+                }), 401
+
+        except jwt.ExpiredSignatureError:
+
+            return jsonify({
+                "error": "Authentication token has expired."
+            }), 401
+
+        except jwt.InvalidTokenError:
+
+            return jsonify({
+                "error": "Invalid authentication token."
+            }), 401
+
+        db = SessionLocal()
+
+        try:
+
+            admin = (
+                db.query(User)
+                .filter(User.id == user_id)
+                .first()
+            )
+
+            if not admin:
+
+                return jsonify({
+                    "error": "Admin account not found."
+                }), 401
+
+            if admin.role != "admin":
+
+                return jsonify({
+                    "error": "Admin access required."
+                }), 403
+
+            return function(
+                *args,
+                **kwargs
+            )
+
+        finally:
+
+            db.close()
+
+    return decorated_function
+
+
 # ============================================================
 # HOME
 # ============================================================
@@ -89,17 +193,13 @@ def home():
 # SERVE UPLOADED COVER IMAGES
 # ============================================================
 
-@app.route(
-    "/uploads/<path:filename>",
-    methods=["GET"]
-)
+@app.route("/uploads/<path:filename>",methods=["GET"])
 def uploaded_file(filename):
 
     return send_from_directory(
         UPLOADS_DIR,
         filename
     )
-
 
 # ============================================================
 # HELPER - LOAD NOVEL JSON
@@ -158,10 +258,7 @@ def load_novel_file(file_path):
 # ============================================================
 # GET ALL NOVELS
 # ============================================================
-@app.route(
-    "/novels",
-    methods=["GET"]
-)
+@app.route("/novels",methods=["GET"])
 def get_novels():
 
     db = SessionLocal()
@@ -209,10 +306,8 @@ def get_novels():
 # ============================================================
 # GET SINGLE NOVEL
 # ============================================================
-@app.route(
-    "/novel/<path:filename>",
-    methods=["GET"]
-)
+@app.route("/novel/<path:filename>",methods=["GET"])
+@admin_required
 def get_novel(filename):
 
     # --------------------------------------------------------
@@ -343,10 +438,8 @@ def get_novel(filename):
 # ============================================================
 # SCRAPE NOVEL
 # ============================================================
-@app.route(
-    "/scrape",
-    methods=["POST"]
-)
+@app.route("/scrape",methods=["POST"])
+@admin_required
 def scrape_novel():
 
     # --------------------------------------------------------
@@ -948,10 +1041,8 @@ def save_cover_image(uploaded_file):
 # ============================================================
 # MANUAL NOVEL - ADD
 # ============================================================
-@app.route(
-    "/manual-novel",
-    methods=["POST"]
-)
+@app.route("/manual-novel", methods=["POST"])
+@admin_required
 def add_manual_novel():
 
     # --------------------------------------------------------
@@ -1339,10 +1430,8 @@ def add_manual_novel():
 # ============================================================
 # EDIT NOVEL
 # ============================================================
-@app.route(
-    "/manual-novel/<path:filename>",
-    methods=["PUT"]
-)
+@app.route("/manual-novel/<path:filename>",methods=["PUT"])
+@admin_required
 def edit_manual_novel(filename):
 
     # --------------------------------------------------------
@@ -1730,7 +1819,486 @@ def edit_manual_novel(filename):
 
         db.close()
 
+# ============================================================
+# ADMIN SIGNUP
+# ============================================================
 
+@app.route("/admin/signup", methods=["POST"])
+def admin_signup():
+
+    data = request.get_json()
+
+    if not data:
+        return jsonify({
+            "error": "Request data is required."
+        }), 400
+
+    name = data.get(
+        "name",
+        ""
+    ).strip()
+
+    email = data.get(
+        "email",
+        ""
+    ).strip().lower()
+
+    password = data.get(
+        "password",
+        ""
+    )
+
+    # ========================================================
+    # VALIDATION
+    # ========================================================
+
+    if not name or not email or not password:
+        return jsonify({
+            "error": "Name, email and password are required."
+        }), 400
+
+    # ========================================================
+    # DATABASE
+    # ========================================================
+
+    db = SessionLocal()
+
+    try:
+
+        # ----------------------------------------------------
+        # CHECK IF AN ADMIN ALREADY EXISTS
+        # ----------------------------------------------------
+
+        existing_admin = (
+            db.query(User)
+            .filter(
+                User.role == "admin"
+            )
+            .first()
+        )
+
+        # ----------------------------------------------------
+        # ADMIN ALREADY EXISTS
+        # ----------------------------------------------------
+
+        if existing_admin:
+            return jsonify({
+                "error":
+                    "Admin signup is disabled because an admin account already exists."
+            }), 403
+
+        # ----------------------------------------------------
+        # CHECK EMAIL
+        # ----------------------------------------------------
+
+        existing_user = (
+            db.query(User)
+            .filter(
+                User.email == email
+            )
+            .first()
+        )
+
+        if existing_user:
+            return jsonify({
+                "error":
+                    "An account with this email already exists."
+            }), 409
+
+        # ----------------------------------------------------
+        # CREATE FIRST ADMIN
+        # ----------------------------------------------------
+
+        admin = User(
+            name=name,
+            email=email,
+            password_hash=generate_password_hash(
+                password
+            ),
+            role="admin"
+        )
+
+        db.add(admin)
+
+        db.commit()
+
+        db.refresh(admin)
+
+        # ----------------------------------------------------
+        # SUCCESS RESPONSE
+        # ----------------------------------------------------
+
+        return jsonify({
+            "message":
+                "Admin account created successfully.",
+
+            "user": {
+                "id":
+                    admin.id,
+
+                "name":
+                    admin.name,
+
+                "email":
+                    admin.email,
+
+                "role":
+                    admin.role
+            }
+
+        }), 201
+
+    # ========================================================
+    # ERROR HANDLING
+    # ========================================================
+
+    except Exception as error:
+
+        db.rollback()
+
+        print(
+            "Admin Signup Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error":
+                "Could not create admin account."
+        }), 500
+
+    # ========================================================
+    # CLOSE DATABASE
+    # ========================================================
+
+    finally:
+
+        db.close()
+
+# ============================================================
+# ADMIN LOGIN
+# ============================================================
+
+@app.route("/admin/login", methods=["POST"])
+def admin_login():
+
+    data = request.get_json()
+
+    if not data:
+        return jsonify({
+            "error": "Request data is required."
+        }), 400
+
+    email = data.get(
+        "email",
+        ""
+    ).strip().lower()
+
+    password = data.get(
+        "password",
+        ""
+    )
+
+    # ========================================================
+    # VALIDATION
+    # ========================================================
+
+    if not email or not password:
+        return jsonify({
+            "error": "Email and password are required."
+        }), 400
+
+    # ========================================================
+    # DATABASE
+    # ========================================================
+
+    db = SessionLocal()
+
+    try:
+
+        admin = (
+            db.query(User)
+            .filter(
+                User.email == email
+            )
+            .first()
+        )
+
+        # ====================================================
+        # USER NOT FOUND
+        # ====================================================
+
+        if not admin:
+            return jsonify({
+                "error": "Invalid email or password."
+            }), 401
+
+        # ====================================================
+        # ADMIN ROLE CHECK
+        # ====================================================
+
+        if admin.role != "admin":
+            return jsonify({
+                "error": "Access denied. Admin account required."
+            }), 403
+
+        # ====================================================
+        # PASSWORD CHECK
+        # ====================================================
+
+        if not check_password_hash(
+            admin.password_hash,
+            password
+        ):
+            return jsonify({
+                "error": "Invalid email or password."
+            }), 401
+
+        # ====================================================
+        # CREATE JWT TOKEN
+        # ====================================================
+
+        token = jwt.encode(
+            {
+                "user_id": admin.id,
+                "role": admin.role,
+                "exp": (
+                    datetime.now(timezone.utc)
+                    + timedelta(hours=8)
+                )
+            },
+            JWT_SECRET_KEY,
+            algorithm="HS256"
+        )
+
+        # ====================================================
+        # SUCCESS RESPONSE
+        # ====================================================
+
+        return jsonify({
+            "message": "Admin login successful.",
+            "token": token,
+            "user": {
+                "id": admin.id,
+                "name": admin.name,
+                "email": admin.email,
+                "role": admin.role
+            }
+        }), 200
+
+    # ========================================================
+    # ERROR HANDLING
+    # ========================================================
+
+    except Exception as error:
+
+        print(
+            "Admin Login Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error": "Could not process admin login."
+        }), 500
+
+    # ========================================================
+    # CLOSE DATABASE
+    # ========================================================
+
+    finally:
+
+        db.close()
+        
+# ============================================================
+# ADMIN DASHBOARD
+# ============================================================
+
+@app.route("/admin/dashboard", methods=["GET"])
+def admin_dashboard():
+
+    db = SessionLocal()
+
+    try:
+
+        total_novels = db.query(Novel).count()
+
+        total_chapters = db.query(Chapter).count()
+
+        ongoing_novels = (
+            db.query(Novel)
+            .filter(Novel.status.ilike("ongoing"))
+            .count()
+        )
+
+        completed_novels = (
+            db.query(Novel)
+            .filter(Novel.status.ilike("completed"))
+            .count()
+        )
+
+        recent_novels = (
+            db.query(Novel)
+            .order_by(Novel.created_at.desc())
+            .limit(5)
+            .all()
+        )
+
+        recent_novels_data = []
+
+        for novel in recent_novels:
+
+            recent_novels_data.append({
+                "id": novel.id,
+                "filename": novel.filename,
+                "title": novel.title,
+                "author": novel.author,
+                "genre": novel.genre,
+                "status": novel.status,
+                "cover_image": novel.cover_image,
+                "total_chapters": novel.total_chapters,
+                "created_at": (
+                    novel.created_at.isoformat()
+                    if novel.created_at
+                    else None
+                )
+            })
+
+        return jsonify({
+            "total_novels": total_novels,
+            "total_chapters": total_chapters,
+            "ongoing_novels": ongoing_novels,
+            "completed_novels": completed_novels,
+            "recent_novels": recent_novels_data
+        }), 200
+
+    except Exception as error:
+
+        return jsonify({
+            "error": str(error)
+        }), 500
+
+    finally:
+
+        db.close()
+
+# ============================================================
+# ADMIN USERS
+# ============================================================
+
+@app.route("/admin/users", methods=["GET"])
+@admin_required
+def admin_users():
+
+    db = SessionLocal()
+
+    try:
+
+        users = (
+            db.query(User)
+            .order_by(User.created_at.desc())
+            .all()
+        )
+
+        users_data = []
+
+        for user in users:
+
+            users_data.append({
+                "id": user.id,
+                "name": user.name,
+                "email": user.email,
+                "role": user.role,
+                "created_at": (
+                    user.created_at.isoformat()
+                    if user.created_at
+                    else None
+                )
+            })
+
+        return jsonify({
+            "users": users_data
+        }), 200
+
+    except Exception as error:
+
+        print(
+            "Admin Users Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error": "Could not load users."
+        }), 500
+
+    finally:
+
+        db.close()
+
+
+# ============================================================
+# ADMIN NOVELS
+# ============================================================
+
+@app.route("/admin/novels", methods=["GET"])
+@admin_required
+def admin_novels():
+
+    db = SessionLocal()
+
+    try:
+
+        novels = (
+            db.query(Novel)
+            .order_by(Novel.created_at.desc())
+            .all()
+        )
+
+        novels_data = []
+
+        for novel in novels:
+
+            novels_data.append({
+                "id": novel.id,
+                "filename": novel.filename,
+                "title": novel.title or "Untitled Novel",
+                "author": novel.author or "Unknown",
+                "genre": novel.genre or "Unknown",
+                "status": novel.status or "Unknown",
+                "synopsis": novel.synopsis or "",
+                "cover_image": novel.cover_image or "",
+                "source_website": novel.source_website or "",
+                "source_url": novel.source_url or "",
+                "total_chapters": novel.total_chapters or 0,
+                "created_at": (
+                    novel.created_at.isoformat()
+                    if novel.created_at
+                    else None
+                ),
+                "last_updated": (
+                    novel.last_updated.isoformat()
+                    if novel.last_updated
+                    else None
+                )
+            })
+
+        return jsonify({
+            "novels": novels_data
+        }), 200
+
+    except Exception as error:
+
+        print(
+            "Admin Novels Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error": "Could not load novels."
+        }), 500
+
+    finally:
+
+        db.close()
+        
 # ============================================================
 # RUN SERVER
 # ============================================================
@@ -1758,7 +2326,6 @@ if __name__ == "__main__":
     )
 
     print("=" * 60)
-
 
     app.run(
         host="127.0.0.1",

@@ -1,62 +1,129 @@
-const API_URL = "http://127.0.0.1:5000";
+const API_URL =
+"http://127.0.0.1:5000";
 
+// =====================================================
+// LOAD ADMIN DASHBOARD DATA
+// =====================================================
 
 async function loadDashboardData() {
 
     try {
 
-        const response =
-            await fetch(
-                `${API_URL}/novels`
+        // ==================================================
+        // GET ADMIN TOKEN
+        // ==================================================
+
+        const token =
+            sessionStorage.getItem("adminToken");
+
+
+        // ==================================================
+        // CHECK TOKEN
+        // ==================================================
+
+        if (!token) {
+
+            console.error(
+                "Admin token not found."
             );
 
+            window.location.href =
+                "admin_login.html";
+
+            return;
+        }
+
+
+        // ==================================================
+        // REQUEST DASHBOARD DATA
+        // ==================================================
+
+        const response =
+            await fetch(
+                `${API_URL}/admin/dashboard`,
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+
+        // ==================================================
+        // HANDLE UNAUTHORIZED ACCESS
+        // ==================================================
+
+        if (
+            response.status === 401 ||
+            response.status === 403
+        ) {
+
+            sessionStorage.removeItem(
+                "adminToken"
+            );
+
+            sessionStorage.removeItem(
+                "adminUser"
+            );
+
+            window.location.href =
+                "admin_login.html";
+
+            return;
+        }
+
+
+        // ==================================================
+        // CHECK RESPONSE
+        // ==================================================
+
         if (!response.ok) {
+
             throw new Error(
-                "Could not load novels."
+                "Could not load dashboard data."
             );
         }
 
-        const novels =
+
+        // ==================================================
+        // GET JSON DATA
+        // ==================================================
+
+        const data =
             await response.json();
 
 
-        // ==============================
+        // ==================================================
         // BASIC STATISTICS
-        // ==============================
+        // ==================================================
 
         const totalNovels =
-            novels.length;
+            Number(
+                data.total_novels || 0
+            );
 
         const totalChapters =
-            novels.reduce(
-                (total, novel) =>
-                    total +
-                    Number(
-                        novel.total_chapters || 0
-                    ),
-                0
+            Number(
+                data.total_chapters || 0
+            );
+
+        const ongoingNovels =
+            Number(
+                data.ongoing_novels || 0
+            );
+
+        const completedNovels =
+            Number(
+                data.completed_novels || 0
             );
 
 
-        const ongoingNovels =
-            novels.filter(
-                novel =>
-                    String(
-                        novel.status || ""
-                    ).toLowerCase() ===
-                    "ongoing"
-            ).length;
-
-
-        const completedNovels =
-            novels.filter(
-                novel =>
-                    String(
-                        novel.status || ""
-                    ).toLowerCase() ===
-                    "completed"
-            ).length;
-
+        // ==================================================
+        // UPDATE STAT CARDS
+        // ==================================================
 
         const statNumbers =
             document.querySelectorAll(
@@ -65,31 +132,40 @@ async function loadDashboardData() {
 
 
         if (statNumbers[0]) {
+
             statNumbers[0].textContent =
                 totalNovels;
         }
 
+
         if (statNumbers[1]) {
+
             statNumbers[1].textContent =
                 totalChapters;
         }
 
+
         if (statNumbers[2]) {
+
             statNumbers[2].textContent =
                 ongoingNovels;
         }
 
+
         if (statNumbers[3]) {
+
             statNumbers[3].textContent =
                 completedNovels;
         }
 
 
-        // ==============================
+        // ==================================================
         // RECENT NOVELS
-        // ==============================
+        // ==================================================
 
-        loadRecentNovels(novels);
+        loadRecentNovels(
+            data.recent_novels || []
+        );
 
 
     } catch (error) {
@@ -103,148 +179,192 @@ async function loadDashboardData() {
 
 }
 
+// =====================================================
+// LOAD RECENT NOVELS
+// =====================================================
 
-function loadRecentNovels(novels) {
+function loadRecentNovels(
+novels
+) {
 
-    const container =
-        document.querySelector(
-            ".recent-novels"
-        );
-
-    if (!container) {
-        return;
-    }
-
-
-    if (!novels.length) {
-
-        container.innerHTML = `
-            <div class="empty-collection">
-
-                <div class="empty-icon">
-                    ◇
-                </div>
-
-                <h3>
-                    Your collection is empty
-                </h3>
-
-                <p>
-                    Scrape or add your first
-                    novel to begin building
-                    your collection.
-                </p>
-
-            </div>
-        `;
-
-        return;
-    }
+const container =
+    document.querySelector(
+        ".recent-novels"
+    );
 
 
-    const recentNovels =
-        novels.slice(-5).reverse();
+if (!container) {
 
+    return;
+
+}
+
+
+if (!novels.length) {
 
     container.innerHTML = `
-        <div class="recent-novels-list">
-            ${recentNovels
-                .map(
-                    novel => `
-                        <div class="recent-novel-item">
 
-                            <div class="recent-novel-cover">
+        <div class="empty-collection">
 
-                                <img
-                                    src="${
-                                        novel.cover_image ||
-                                        "https://via.placeholder.com/70x95?text=No+Cover"
-                                    }"
-                                    alt="Novel Cover"
-                                    onerror="
-                                        this.onerror=null;
-                                        this.src='https://via.placeholder.com/70x95?text=No+Cover';
-                                    "
-                                >
+            <div class="empty-icon">
+                ◇
+            </div>
 
-                            </div>
+            <h3>
+                Your collection is empty
+            </h3>
 
-                            <div class="recent-novel-info">
+            <p>
+                Scrape or add your first
+                novel to begin building
+                your collection.
+            </p>
 
-                                <h3>
-                                    ${
-                                        escapeHtml(
-                                            novel.title ||
-                                            "Untitled Novel"
-                                        )
-                                    }
-                                </h3>
-
-                                <p>
-                                    ${
-                                        escapeHtml(
-                                            novel.author ||
-                                            "Unknown Author"
-                                        )
-                                    }
-                                </p>
-
-                                <span>
-                                    ${
-                                        Number(
-                                            novel.total_chapters ||
-                                            0
-                                        )
-                                    }
-                                    Chapters
-                                </span>
-
-                            </div>
-
-                        </div>
-                    `
-                )
-                .join("")}
         </div>
+
     `;
 
-}
-
-
-function escapeHtml(value) {
-
-    return String(value)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+    return;
 
 }
 
+
+// Backend already returns
+// the latest 5 novels.
+
+const recentNovels =
+    novels;
+
+
+container.innerHTML = `
+
+    <div class="recent-novels-list">
+
+        ${recentNovels
+            .map(
+                novel => `
+
+                    <div class="recent-novel-item">
+
+                        <div class="recent-novel-cover">
+
+                            <img
+                                src="${
+                                    novel.cover_image ||
+                                    "https://via.placeholder.com/70x95?text=No+Cover"
+                                }"
+                                alt="Novel Cover"
+                                onerror="
+                                    this.onerror=null;
+                                    this.src='https://via.placeholder.com/70x95?text=No+Cover';
+                                "
+                            >
+
+                        </div>
+
+
+                        <div class="recent-novel-info">
+
+                            <h3>
+                                ${
+                                    escapeHtml(
+                                        novel.title ||
+                                        "Untitled Novel"
+                                    )
+                                }
+                            </h3>
+
+
+                            <p>
+                                ${
+                                    escapeHtml(
+                                        novel.author ||
+                                        "Unknown Author"
+                                    )
+                                }
+                            </p>
+
+
+                            <span>
+                                ${
+                                    Number(
+                                        novel.total_chapters ||
+                                        0
+                                    )
+                                }
+                                ${
+                                    Number(
+                                        novel.total_chapters ||
+                                        0
+                                    ) === 1
+                                        ? "Chapter"
+                                        : "Chapters"
+                                }
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                `
+            )
+            .join("")}
+
+    </div>
+
+`;
+
+}
+
+// =====================================================
+// ESCAPE HTML
+// =====================================================
+
+function escapeHtml(
+value
+) {
+
+return String(value)
+
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+
+    .replace(
+        /</g,
+        "&lt;"
+    )
+
+    .replace(
+        />/g,
+        "&gt;"
+    )
+
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+// =====================================================
+// LOAD DASHBOARD
+// =====================================================
 
 document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+"DOMContentLoaded",
+function () {
 
-        loadDashboardData();
+    loadDashboardData();
 
-    }
+}
+
 );
 
 // =====================================================
@@ -252,160 +372,234 @@ document.addEventListener(
 // =====================================================
 
 document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+"DOMContentLoaded",
+function () {
 
-        // Sidebar navigation
-        const navItems =
-            document.querySelectorAll(
-                ".admin-navigation .nav-item"
-            );
+    // -------------------------------------------------
+    // Sidebar navigation
+    // -------------------------------------------------
 
-        navItems.forEach(
-            function (item) {
-
-                const text =
-                    item
-                        .querySelector("span:last-child")
-                        ?.textContent
-                        .trim();
-
-                item.addEventListener(
-                    "click",
-                    function (event) {
-
-                        event.preventDefault();
-
-                        if (text === "Dashboard") {
-                            window.location.href =
-                                "admin_dashboard.html";
-                        }
-
-                        if (text === "All Novels") {
-                            window.location.href =
-                                "admin_novels.html";
-                        }
-
-                        if (text === "Scrape Novel") {
-                            window.location.href =
-                                "scraper.html";
-                        }
-
-                        if (text === "Add Novel") {
-                            window.location.href =
-                                "manual_novel.html";
-                        }
-
-                        if (text === "Users") {
-                            alert(
-                                "User management will be added next."
-                            );
-                        }
-
-                        if (text === "Settings") {
-                            alert(
-                                "Settings will be added next."
-                            );
-
-                        }
-
-                    }
-                );
-
-            }
+    const navItems =
+        document.querySelectorAll(
+            ".admin-navigation .nav-item"
         );
 
 
-        // Quick Action buttons
-        const actionCards =
-            document.querySelectorAll(
-                ".action-card"
-            );
+    navItems.forEach(
+        function (item) {
 
-        actionCards.forEach(
-            function (card) {
-
-                const title =
-                    card
-                        .querySelector("strong")
-                        ?.textContent
-                        .trim();
-
-                card.addEventListener(
-                    "click",
-                    function () {
-
-                        if (
-                            title ===
-                            "Scrape Novel"
-                        ) {
-                            window.location.href =
-                                "scraper.html";
-                        }
-
-                        if (
-                            title ===
-                            "Add Novel"
-                        ) {
-                            window.location.href =
-                                "manual_novel.html";
-                        }
-
-                        if (
-                            title ===
-                            "View Novels"
-                        ) {
-                            window.location.href =
-                                "admin_novels.html";
-                        }
-
-                    }
-                );
-
-            }
-        );
+            const text =
+                item
+                    .querySelector(
+                        "span:last-child"
+                    )
+                    ?.textContent
+                    .trim();
 
 
-        // View All button
-        const viewAllButton =
-            document.querySelector(
-                ".view-all-button"
-            );
-
-        if (viewAllButton) {
-
-            viewAllButton.addEventListener(
+            item.addEventListener(
                 "click",
-                function () {
+                function (event) {
 
-                    window.location.href =
-                        "admin_novels.html";
+                    event.preventDefault();
+
+
+                    if (
+                        text ===
+                        "Dashboard"
+                    ) {
+
+                        window.location.href =
+                            "admin_dashboard.html";
+
+                    }
+
+
+                    if (
+                        text ===
+                        "All Novels"
+                    ) {
+
+                        window.location.href =
+                            "admin_novels.html";
+
+                    }
+
+
+                    if (
+                        text ===
+                        "Scrape Novel"
+                    ) {
+
+                        window.location.href =
+                            "scraper.html";
+
+                    }
+
+
+                    if (
+                        text ===
+                        "Add Novel"
+                    ) {
+
+                        window.location.href =
+                            "manual_novel.html";
+
+                    }
+
+
+                    if (
+                        text ===
+                        "Users"
+                    ) {
+
+                        alert(
+                            "User management will be added next."
+                        );
+
+                    }
+
+
+                    if (
+                        text ===
+                        "Settings"
+                    ) {
+
+                        alert(
+                            "Settings will be added next."
+                        );
+
+                    }
 
                 }
             );
 
         }
+    );
 
 
-        // Logout button
-        const logoutButton =
-            document.querySelector(
-                ".logout-button"
-            );
+    // -------------------------------------------------
+    // Quick Action buttons
+    // -------------------------------------------------
 
-        if (logoutButton) {
+    const actionCards =
+        document.querySelectorAll(
+            ".action-card"
+        );
 
-            logoutButton.addEventListener(
+
+    actionCards.forEach(
+        function (card) {
+
+            const title =
+                card
+                    .querySelector(
+                        "strong"
+                    )
+                    ?.textContent
+                    .trim();
+
+
+            card.addEventListener(
                 "click",
                 function () {
 
-                    window.location.href =
-                        "admin_login.html";
+
+                    if (
+                        title ===
+                        "Scrape Novel"
+                    ) {
+
+                        window.location.href =
+                            "scraper.html";
+
+                    }
+
+
+                    if (
+                        title ===
+                        "Add Novel"
+                    ) {
+
+                        window.location.href =
+                            "manual_novel.html";
+
+                    }
+
+
+                    if (
+                        title ===
+                        "View Novels"
+                    ) {
+
+                        window.location.href =
+                            "admin_novels.html";
+
+                    }
 
                 }
             );
 
         }
+    );
+
+
+    // -------------------------------------------------
+    // View All button
+    // -------------------------------------------------
+
+    const viewAllButton =
+        document.querySelector(
+            ".view-all-button"
+        );
+
+
+    if (viewAllButton) {
+
+        viewAllButton.addEventListener(
+            "click",
+            function () {
+
+                window.location.href =
+                    "admin_novels.html";
+
+            }
+        );
 
     }
+
+
+    // -------------------------------------------------
+    // Logout button
+    // -------------------------------------------------
+
+    const logoutButton =
+        document.querySelector(
+            ".logout-button"
+        );
+
+
+    if (logoutButton) {
+
+        logoutButton.addEventListener(
+            "click",
+            function () {
+                
+                sessionStorage.removeItem(
+                    "adminToken"
+                );
+
+                sessionStorage.removeItem(
+                    "adminUser"
+                );
+                
+                window.location.href =
+                    "admin_login.html";
+
+            }
+        );
+
+    }
+
+}
 );
