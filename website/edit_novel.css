@@ -808,3 +808,185 @@ body {
     }
 
 }
+
+/* ============================================================
+   PROFESSIONAL CHAPTER CONTROLS
+   ============================================================ */
+
+.chapter-lock-row {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--ivory, #f7f1e7);
+    border: 1px solid var(--border, #ded4c8);
+    border-radius: 12px;
+}
+
+.chapter-lock-row label {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    color: var(--charcoal, #292525);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Professional Toggle Switch */
+.chapter-locked {
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    width: 46px;
+    height: 25px;
+    flex: 0 0 46px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid #cfc4b8;
+    border-radius: 999px;
+    background: #d8d0c7;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.chapter-locked::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    background: #fffdf8;
+    box-shadow: 0 1px 3px rgba(41, 37, 37, 0.2);
+    transition: transform 0.2s ease;
+}
+
+.chapter-locked:checked {
+    background: var(--burgundy, #6f1d3a);
+    border-color: var(--burgundy, #6f1d3a);
+}
+
+.chapter-locked:checked::after {
+    transform: translateX(21px);
+}
+
+.chapter-locked:focus-visible {
+    outline: 3px solid var(--burgundy-soft, #f1e4e8);
+    outline-offset: 2px;
+}
+
+
+/* Chapter Action Buttons */
+.chapter-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border, #ded4c8);
+}
+
+
+/* Edit Chapter Button */
+.edit-chapter-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 42px;
+    padding: 10px 17px;
+    border: 1px solid var(--burgundy, #6f1d3a);
+    border-radius: 10px;
+    background: var(--burgundy, #6f1d3a);
+    color: #fffdf8;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.edit-chapter-btn:hover {
+    background: var(--burgundy-dark, #4a1026);
+    border-color: var(--burgundy-dark, #4a1026);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 12px rgba(74, 16, 38, 0.16);
+}
+
+.edit-chapter-btn:active {
+    transform: translateY(0);
+}
+
+.edit-chapter-btn:focus-visible {
+    outline: 3px solid var(--burgundy-soft, #f1e4e8);
+    outline-offset: 2px;
+}
+
+
+/* Remove Chapter Button */
+.remove-chapter-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 42px;
+    padding: 10px 17px;
+    border: 1px solid #a14b5d;
+    border-radius: 10px;
+    background: transparent;
+    color: #8b3048;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.remove-chapter-btn:hover {
+    background: #f7e8eb;
+    border-color: #8b3048;
+    color: #6f1d3a;
+    transform: translateY(-1px);
+}
+
+.remove-chapter-btn:active {
+    transform: translateY(0);
+}
+
+.remove-chapter-btn:focus-visible {
+    outline: 3px solid #f1d9df;
+    outline-offset: 2px;
+}
+
+
+/* Mobile */
+@media (max-width: 600px) {
+    .chapter-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .edit-chapter-btn,
+    .remove-chapter-btn {
+        width: 100%;
+    }
+
+    .chapter-lock-row {
+        padding: 13px 14px;
+    }
+}

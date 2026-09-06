@@ -34,6 +34,11 @@ JWT_SECRET_KEY = os.getenv(
     "development-secret-change-me"
 )
 
+ADMIN_RESET_KEY = os.getenv(
+    "ADMIN_RESET_KEY",
+    ""
+)
+
 NOVELS_DIR = BASE_DIR / "novels"
 
 UPLOADS_DIR = BASE_DIR / "uploads"
@@ -306,7 +311,7 @@ def get_novels():
 # ============================================================
 # GET SINGLE NOVEL
 # ============================================================
-@app.route("/novel/<path:filename>",methods=["GET"])
+@app.route("/novel/<path:filename>", methods=["GET"])
 @admin_required
 def get_novel(filename):
 
@@ -1825,8 +1830,8 @@ def edit_manual_novel(filename):
 
 @app.route("/admin/signup", methods=["POST"])
 def admin_signup():
-
-    data = request.get_json()
+    
+    data = request.get_json(silent=True)
 
     if not data:
         return jsonify({
@@ -2113,6 +2118,7 @@ def admin_login():
 # ============================================================
 
 @app.route("/admin/dashboard", methods=["GET"])
+@admin_required
 def admin_dashboard():
 
     db = SessionLocal()
@@ -2299,6 +2305,1034 @@ def admin_novels():
 
         db.close()
         
+# ============================================================
+# ADMIN NOVEL DETAILS
+# ============================================================
+
+@app.route("/admin/novels/<int:novel_id>", methods=["GET"])
+@admin_required
+def admin_novel_details(novel_id):
+
+    db = SessionLocal()
+
+    try:
+
+        novel = (
+            db.query(Novel)
+            .filter(Novel.id == novel_id)
+            .first()
+        )
+
+        if not novel:
+            return jsonify({
+                "error": "Novel not found."
+            }), 404
+
+        chapters = (
+            db.query(Chapter)
+            .filter(
+                Chapter.novel_id == novel.id
+            )
+            .order_by(
+                Chapter.chapter_number.asc()
+            )
+            .all()
+        )
+
+        chapters_data = []
+
+        for chapter in chapters:
+
+            chapters_data.append({
+                "id": chapter.id,
+                "chapter_number": chapter.chapter_number,
+                "title": chapter.title or "",
+                "date": chapter.date or "",
+                "views": chapter.views or 0,
+                "is_locked": chapter.is_locked,
+                "url": chapter.url or "",
+                "content": chapter.content or "",
+                "scrape_status": chapter.scrape_status or "",
+                "created_at": (
+                    chapter.created_at.isoformat()
+                    if chapter.created_at
+                    else None
+                )
+            })
+
+        return jsonify({
+            "novel": {
+                "id": novel.id,
+                "filename": novel.filename,
+                "title": novel.title or "Untitled Novel",
+                "author": novel.author or "Unknown",
+                "genre": novel.genre or "Unknown",
+                "status": novel.status or "Unknown",
+                "synopsis": novel.synopsis or "",
+                "cover_image": novel.cover_image or "",
+                "source_website": novel.source_website or "",
+                "source_url": novel.source_url or "",
+                "total_chapters": len(chapters),
+                "created_at": (
+                    novel.created_at.isoformat()
+                    if novel.created_at
+                    else None
+                ),
+                "last_updated": (
+                    novel.last_updated.isoformat()
+                    if novel.last_updated
+                    else None
+                ),
+                "chapters": chapters_data
+            }
+        }), 200
+
+    except Exception as error:
+
+        print(
+            "Admin Novel Details Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error": "Could not load novel details."
+        }), 500
+
+    finally:
+
+        db.close()
+        
+# ============================================================
+# ADMIN NOVEL EDIT
+# ============================================================
+
+@app.route("/admin/novels/<int:novel_id>", methods=["PUT"])
+@admin_required
+def admin_edit_novel(novel_id):
+    
+    print("ADMIN EDIT ROUTE HIT")
+    data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({
+            "error": "Request data is required."
+        }), 400
+
+    db = SessionLocal()
+
+    try:
+
+        novel = (
+            db.query(Novel)
+            .filter(Novel.id == novel_id)
+            .first()
+        )
+
+        if not novel:
+            return jsonify({
+                "error": "Novel not found."
+            }), 404
+
+        # ----------------------------------------------------
+        # Update title
+        # ----------------------------------------------------
+
+        if "title" in data:
+            title = str(data.get("title", "")).strip()
+
+            if not title:
+                return jsonify({
+                    "error": "Novel title is required."
+                }), 400
+
+            novel.title = title
+
+        # ----------------------------------------------------
+        # Update author
+        # ----------------------------------------------------
+
+        if "author" in data:
+            novel.author = (
+                str(data.get("author", "")).strip()
+            )
+
+        # ----------------------------------------------------
+        # Update genre
+        # ----------------------------------------------------
+
+        if "genre" in data:
+            novel.genre = (
+                str(data.get("genre", "")).strip()
+            )
+
+        # ----------------------------------------------------
+        # Update status
+        # ----------------------------------------------------
+
+        if "status" in data:
+            novel.status = (
+                str(data.get("status", "")).strip()
+            )
+
+        # ----------------------------------------------------
+        # Update synopsis
+        # ----------------------------------------------------
+
+        if "synopsis" in data:
+            novel.synopsis = (
+                str(data.get("synopsis", "")).strip()
+            )
+
+        # ----------------------------------------------------
+        # Update source website
+        # ----------------------------------------------------
+
+        if "source_website" in data:
+            novel.source_website = (
+                str(data.get("source_website", "")).strip()
+            )
+
+        # ----------------------------------------------------
+        # Update source URL
+        # ----------------------------------------------------
+
+        if "source_url" in data:
+            novel.source_url = (
+                str(data.get("source_url", "")).strip()
+            )
+
+        # ----------------------------------------------------
+        # Update last modified time
+        # ----------------------------------------------------
+
+        novel.last_updated = datetime.now(timezone.utc)
+
+        db.commit()
+        db.refresh(novel)
+
+        return jsonify({
+            "message": "Novel updated successfully.",
+            "novel": {
+                "id": novel.id,
+                "filename": novel.filename,
+                "title": novel.title or "",
+                "author": novel.author or "",
+                "genre": novel.genre or "",
+                "status": novel.status or "",
+                "synopsis": novel.synopsis or "",
+                "cover_image": novel.cover_image or "",
+                "source_website": novel.source_website or "",
+                "source_url": novel.source_url or "",
+                "total_chapters": novel.total_chapters or 0,
+                "last_updated": (
+                    novel.last_updated.isoformat()
+                    if novel.last_updated
+                    else None
+                )
+            }
+        }), 200
+
+    except Exception as error:
+
+        db.rollback()
+
+        print(
+            "Admin Novel Edit Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error": "Could not update novel."
+        }), 500
+
+    finally:
+
+        db.close()
+        
+# ============================================================
+# ADMIN ADD CHAPTER
+# ============================================================
+
+@app.route("/admin/novels/<int:novel_id>/chapters", methods=["POST"])
+@admin_required
+def admin_add_chapter(novel_id):
+
+    data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({
+            "error": "Valid JSON request body is required."
+        }), 400
+
+    db = SessionLocal()
+
+    try:
+
+        novel = (
+            db.query(Novel)
+            .filter(Novel.id == novel_id)
+            .first()
+        )
+
+        if not novel:
+            return jsonify({
+                "error": "Novel not found."
+            }), 404
+
+        chapter_number = data.get("chapter_number")
+        title = str(data.get("title", "")).strip()
+        content = str(data.get("content", "")).strip()
+
+        if chapter_number is None:
+            return jsonify({
+                "error": "Chapter number is required."
+            }), 400
+
+        try:
+            chapter_number = int(chapter_number)
+        except (TypeError, ValueError):
+            return jsonify({
+                "error": "Chapter number must be an integer."
+            }), 400
+
+        if chapter_number <= 0:
+            return jsonify({
+                "error": "Chapter number must be greater than 0."
+            }), 400
+
+        if not title:
+            return jsonify({
+                "error": "Chapter title is required."
+            }), 400
+
+        if not content:
+            return jsonify({
+                "error": "Chapter content is required."
+            }), 400
+
+        existing_chapter = (
+            db.query(Chapter)
+            .filter(
+                Chapter.novel_id == novel.id,
+                Chapter.chapter_number == chapter_number
+            )
+            .first()
+        )
+
+        if existing_chapter:
+            return jsonify({
+                "error": "A chapter with this number already exists."
+            }), 409
+
+        chapter = Chapter(
+            novel_id=novel.id,
+            chapter_number=chapter_number,
+            title=title,
+            date=str(data.get("date", "")).strip(),
+            views=0,
+            is_locked=bool(data.get("is_locked", False)),
+            url=str(data.get("url", "")).strip(),
+            content=content,
+            scrape_status="manual"
+        )
+
+        db.add(chapter)
+
+        novel.total_chapters = (
+            db.query(Chapter)
+            .filter(Chapter.novel_id == novel.id)
+            .count()
+            + 1
+        )
+
+        novel.last_updated = datetime.now(timezone.utc)
+
+        db.commit()
+        db.refresh(chapter)
+
+        return jsonify({
+            "message": "Chapter added successfully.",
+            "chapter": {
+                "id": chapter.id,
+                "chapter_number": chapter.chapter_number,
+                "title": chapter.title,
+                "date": chapter.date,
+                "views": chapter.views,
+                "is_locked": chapter.is_locked,
+                "url": chapter.url,
+                "content": chapter.content,
+                "scrape_status": chapter.scrape_status,
+                "created_at": (
+                    chapter.created_at.isoformat()
+                    if chapter.created_at
+                    else None
+                )
+            }
+        }), 201
+
+    except Exception as error:
+
+        db.rollback()
+
+        print(
+            "Admin Add Chapter Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error": "Could not add chapter."
+        }), 500
+
+    finally:
+
+        db.close()
+
+# ============================================================
+# ADMIN EDIT CHAPTER
+# ============================================================
+
+@app.route("/admin/novels/<int:novel_id>/chapters/<int:chapter_id>",methods=["PUT"])
+@admin_required
+def admin_edit_chapter(novel_id, chapter_id):
+
+    data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({
+            "error": "Valid JSON request body is required."
+        }), 400
+
+    db = SessionLocal()
+
+    try:
+
+        novel = (
+            db.query(Novel)
+            .filter(Novel.id == novel_id)
+            .first()
+        )
+
+        if not novel:
+            return jsonify({
+                "error": "Novel not found."
+            }), 404
+
+        chapter = (
+            db.query(Chapter)
+            .filter(
+                Chapter.id == chapter_id,
+                Chapter.novel_id == novel.id
+            )
+            .first()
+        )
+
+        if not chapter:
+            return jsonify({
+                "error": "Chapter not found."
+            }), 404
+
+        # ----------------------------------------------------
+        # Update chapter number
+        # ----------------------------------------------------
+
+        if "chapter_number" in data:
+
+            try:
+                chapter_number = int(
+                    data.get("chapter_number")
+                )
+            except (TypeError, ValueError):
+
+                return jsonify({
+                    "error": "Chapter number must be an integer."
+                }), 400
+
+            if chapter_number <= 0:
+                return jsonify({
+                    "error": "Chapter number must be greater than 0."
+                }), 400
+
+            existing_chapter = (
+                db.query(Chapter)
+                .filter(
+                    Chapter.novel_id == novel.id,
+                    Chapter.chapter_number == chapter_number,
+                    Chapter.id != chapter.id
+                )
+                .first()
+            )
+
+            if existing_chapter:
+                return jsonify({
+                    "error": "A chapter with this number already exists."
+                }), 409
+
+            chapter.chapter_number = chapter_number
+
+        # ----------------------------------------------------
+        # Update title
+        # ----------------------------------------------------
+
+        if "title" in data:
+
+            title = str(
+                data.get("title", "")
+            ).strip()
+
+            if not title:
+                return jsonify({
+                    "error": "Chapter title is required."
+                }), 400
+
+            chapter.title = title
+
+        # ----------------------------------------------------
+        # Update content
+        # ----------------------------------------------------
+
+        if "content" in data:
+
+            content = str(
+                data.get("content", "")
+            ).strip()
+
+            if not content:
+                return jsonify({
+                    "error": "Chapter content is required."
+                }), 400
+
+            chapter.content = content
+
+        # ----------------------------------------------------
+        # Update date
+        # ----------------------------------------------------
+
+        if "date" in data:
+
+            chapter.date = str(
+                data.get("date", "")
+            ).strip()
+
+        # ----------------------------------------------------
+        # Update URL
+        # ----------------------------------------------------
+
+        if "url" in data:
+
+            chapter.url = str(
+                data.get("url", "")
+            ).strip()
+
+        # ----------------------------------------------------
+        # Update lock status
+        # ----------------------------------------------------
+
+        if "is_locked" in data:
+
+            chapter.is_locked = bool(
+                data.get("is_locked")
+            )
+
+        novel.last_updated = datetime.now(timezone.utc)
+
+        db.commit()
+        db.refresh(chapter)
+
+        return jsonify({
+            "message": "Chapter updated successfully.",
+            "chapter": {
+                "id": chapter.id,
+                "chapter_number": chapter.chapter_number,
+                "title": chapter.title or "",
+                "date": chapter.date or "",
+                "views": chapter.views or 0,
+                "is_locked": chapter.is_locked,
+                "url": chapter.url or "",
+                "content": chapter.content or "",
+                "scrape_status": chapter.scrape_status or "",
+                "created_at": (
+                    chapter.created_at.isoformat()
+                    if chapter.created_at
+                    else None
+                )
+            }
+        }), 200
+
+    except Exception as error:
+
+        db.rollback()
+
+        print(
+            "Admin Edit Chapter Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error": "Could not update chapter."
+        }), 500
+
+    finally:
+
+        db.close()
+        
+# ============================================================
+# ADMIN DELETE CHAPTER
+# ============================================================
+
+@app.route(
+    "/admin/novels/<int:novel_id>/chapters/<int:chapter_id>",
+    methods=["DELETE"]
+)
+@admin_required
+def admin_delete_chapter(novel_id, chapter_id):
+
+    db = SessionLocal()
+
+    try:
+
+        novel = (
+            db.query(Novel)
+            .filter(Novel.id == novel_id)
+            .first()
+        )
+
+        if not novel:
+            return jsonify({
+                "error": "Novel not found."
+            }), 404
+
+        chapter = (
+            db.query(Chapter)
+            .filter(
+                Chapter.id == chapter_id,
+                Chapter.novel_id == novel.id
+            )
+            .first()
+        )
+
+        if not chapter:
+            return jsonify({
+                "error": "Chapter not found."
+            }), 404
+
+        deleted_chapter_number = chapter.chapter_number
+
+        db.delete(chapter)
+
+        db.flush()
+
+        remaining_chapters = (
+            db.query(Chapter)
+            .filter(
+                Chapter.novel_id == novel.id
+            )
+            .order_by(
+                Chapter.chapter_number.asc()
+            )
+            .all()
+        )
+
+        # ----------------------------------------------------
+        # Re-number remaining chapters
+        # ----------------------------------------------------
+
+        for index, remaining_chapter in enumerate(
+            remaining_chapters,
+            start=1
+        ):
+            remaining_chapter.chapter_number = index
+
+        novel.total_chapters = len(
+            remaining_chapters
+        )
+
+        novel.last_updated = datetime.now(timezone.utc)
+
+        db.commit()
+
+        return jsonify({
+            "message": "Chapter deleted successfully.",
+            "deleted_chapter_number": deleted_chapter_number,
+            "remaining_chapters": len(
+                remaining_chapters
+            )
+        }), 200
+
+    except Exception as error:
+
+        db.rollback()
+
+        print(
+            "Admin Delete Chapter Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error": "Could not delete chapter."
+        }), 500
+
+    finally:
+
+        db.close()
+        
+# ============================================================
+# ADMIN COVER UPLOAD / REPLACE
+# ============================================================
+
+@app.route(
+    "/admin/novels/<int:novel_id>/cover",
+    methods=["POST"]
+)
+@admin_required
+def admin_upload_cover(novel_id):
+
+    db = SessionLocal()
+
+    try:
+
+        novel = (
+            db.query(Novel)
+            .filter(Novel.id == novel_id)
+            .first()
+        )
+
+        if not novel:
+            return jsonify({
+                "error": "Novel not found."
+            }), 404
+
+        uploaded_file = request.files.get("cover")
+
+        if not uploaded_file:
+            return jsonify({
+                "error": "Cover image is required."
+            }), 400
+
+        try:
+            new_cover_url = save_cover_image(
+                uploaded_file
+            )
+        except ValueError as error:
+            return jsonify({
+                "error": str(error)
+            }), 400
+
+        if not new_cover_url:
+            return jsonify({
+                "error": "Could not save cover image."
+            }), 400
+
+        # ----------------------------------------------------
+        # Delete old uploaded cover if it belongs to uploads
+        # ----------------------------------------------------
+
+        old_cover_url = novel.cover_image or ""
+
+        if "/uploads/covers/" in old_cover_url:
+
+            old_filename = old_cover_url.split(
+                "/uploads/covers/",
+                1
+            )[1]
+
+            old_cover_path = (
+                COVERS_DIR / Path(old_filename).name
+            )
+
+            if old_cover_path.exists():
+
+                try:
+                    old_cover_path.unlink()
+                except OSError as error:
+                    print(
+                        "Could not delete old cover:",
+                        repr(error)
+                    )
+
+        # ----------------------------------------------------
+        # Save new cover URL
+        # ----------------------------------------------------
+
+        novel.cover_image = new_cover_url
+        novel.last_updated = datetime.now(timezone.utc)
+
+        db.commit()
+        db.refresh(novel)
+
+        return jsonify({
+            "message": "Cover image updated successfully.",
+            "cover_image": novel.cover_image
+        }), 200
+
+    except Exception as error:
+
+        db.rollback()
+
+        print(
+            "Admin Cover Upload Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error": "Could not update cover image."
+        }), 500
+
+    finally:
+
+        db.close()
+        
+# ============================================================
+# ADMIN SETTINGS
+# ============================================================
+
+@app.route("/admin/settings", methods=["PUT"])
+@admin_required
+def admin_settings():
+
+    data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({
+            "error": "Valid JSON request body is required."
+        }), 400
+
+    db = SessionLocal()
+
+    try:
+
+        # Get current admin from JWT
+        authorization = request.headers.get("Authorization")
+        token = authorization.split(" ", 1)[1]
+
+        payload = jwt.decode(
+            token,
+            JWT_SECRET_KEY,
+            algorithms=["HS256"]
+        )
+
+        admin_id = payload.get("user_id")
+
+        admin = (
+            db.query(User)
+            .filter(User.id == admin_id)
+            .first()
+        )
+
+        if not admin:
+            return jsonify({
+                "error": "Admin account not found."
+            }), 404
+
+        # ----------------------------------------------------
+        # Change Name
+        # ----------------------------------------------------
+
+        if "name" in data:
+
+            name = str(
+                data.get("name", "")
+            ).strip()
+
+            if not name:
+                return jsonify({
+                    "error": "Name cannot be empty."
+                }), 400
+
+            admin.name = name
+
+        # ----------------------------------------------------
+        # Change Email
+        # ----------------------------------------------------
+
+        if "email" in data:
+
+            email = str(
+                data.get("email", "")
+            ).strip().lower()
+
+            if not email:
+                return jsonify({
+                    "error": "Email cannot be empty."
+                }), 400
+
+            existing_user = (
+                db.query(User)
+                .filter(
+                    User.email == email,
+                    User.id != admin.id
+                )
+                .first()
+            )
+
+            if existing_user:
+                return jsonify({
+                    "error": "This email is already in use."
+                }), 409
+
+            admin.email = email
+
+        # ----------------------------------------------------
+        # Change Password
+        # ----------------------------------------------------
+
+        if "new_password" in data:
+
+            current_password = data.get(
+                "current_password",
+                ""
+            )
+
+            new_password = data.get(
+                "new_password",
+                ""
+            )
+
+            if not current_password:
+                return jsonify({
+                    "error": "Current password is required."
+                }), 400
+
+            if not new_password:
+                return jsonify({
+                    "error": "New password is required."
+                }), 400
+
+            if not check_password_hash(
+                admin.password_hash,
+                current_password
+            ):
+                return jsonify({
+                    "error": "Current password is incorrect."
+                }), 401
+
+            if len(new_password) < 8:
+                return jsonify({
+                    "error": "New password must be at least 8 characters."
+                }), 400
+
+            admin.password_hash = generate_password_hash(
+                new_password
+            )
+
+        db.commit()
+        db.refresh(admin)
+
+        return jsonify({
+            "message": "Admin settings updated successfully.",
+            "user": {
+                "id": admin.id,
+                "name": admin.name,
+                "email": admin.email,
+                "role": admin.role
+            }
+        }), 200
+
+    except Exception as error:
+
+        db.rollback()
+
+        print(
+            "Admin Settings Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error": "Could not update admin settings."
+        }), 500
+
+    finally:
+
+        db.close()
+        
+# ============================================================
+# ADMIN PASSWORD RESET
+# ============================================================
+
+@app.route("/admin/reset-password", methods=["POST"])
+def admin_reset_password():
+
+    data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({
+            "error": "Valid JSON request body is required."
+        }), 400
+
+    recovery_key = str(
+        data.get("recovery_key", "")
+    ).strip()
+
+    new_password = data.get(
+        "new_password",
+        ""
+    )
+
+    if not recovery_key:
+        return jsonify({
+            "error": "Recovery key is required."
+        }), 400
+
+    if not ADMIN_RESET_KEY:
+        return jsonify({
+            "error": "Admin password reset is not configured."
+        }), 500
+
+    if recovery_key != ADMIN_RESET_KEY:
+        return jsonify({
+            "error": "Invalid recovery key."
+        }), 401
+
+    if not new_password:
+        return jsonify({
+            "error": "New password is required."
+        }), 400
+
+    if len(new_password) < 8:
+        return jsonify({
+            "error": "New password must be at least 8 characters."
+        }), 400
+
+    db = SessionLocal()
+
+    try:
+
+        admin = (
+            db.query(User)
+            .filter(User.role == "admin")
+            .first()
+        )
+
+        if not admin:
+            return jsonify({
+                "error": "Admin account not found."
+            }), 404
+
+        admin.password_hash = generate_password_hash(
+            new_password
+        )
+
+        db.commit()
+
+        return jsonify({
+            "message": "Admin password reset successfully."
+        }), 200
+
+    except Exception as error:
+
+        db.rollback()
+
+        print(
+            "Admin Password Reset Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error": "Could not reset admin password."
+        }), 500
+
+    finally:
+
+        db.close()
 # ============================================================
 # RUN SERVER
 # ============================================================

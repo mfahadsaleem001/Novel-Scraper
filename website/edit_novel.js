@@ -1,14 +1,24 @@
 const API_URL = "http://127.0.0.1:5000";
 
 // ============================================================
-// GET FILE NAME
+// GET URL PARAMETERS
 // ============================================================
 
-const params = new URLSearchParams(
-    window.location.search
-);
+const params = new URLSearchParams(window.location.search);
 
+const novelId = params.get("id");
 const filename = params.get("file");
+
+// ============================================================
+// ADMIN AUTH
+// ============================================================
+
+const adminToken =
+    sessionStorage.getItem("adminToken");
+
+if (!adminToken) {
+    window.location.href = "admin_login.html";
+}
 
 // ============================================================
 // ELEMENTS
@@ -17,46 +27,103 @@ const filename = params.get("file");
 const form =
     document.getElementById("editNovelForm");
 
+const novelIdInput =
+    document.getElementById("novelId");
+
+const titleInput =
+    document.getElementById("title");
+
+const authorInput =
+    document.getElementById("author");
+
+const genreInput =
+    document.getElementById("genre");
+
+const statusInput =
+    document.getElementById("status");
+
+const synopsisInput =
+    document.getElementById("synopsis");
+
+const coverImageInput =
+    document.getElementById("coverImage");
+
+const coverPreview =
+    document.getElementById("coverPreview");
+
+const coverPlaceholder =
+    document.getElementById("coverPlaceholder");
+
+const sourceWebsiteInput =
+    document.getElementById("sourceWebsite");
+
+const sourceUrlInput =
+    document.getElementById("sourceUrl");
+
 const chaptersContainer =
-    document.getElementById(
-        "chaptersContainer"
-    );
+    document.getElementById("chaptersContainer");
 
-const addChapterBtn =
-    document.getElementById(
-        "addChapterBtn"
-    );
+const addChapterButton =
+    document.getElementById("addChapterButton");
 
-const saveButton =
-    document.getElementById(
-        "saveNovelBtn"
-    );
-
-const cancelBtn =
-    document.getElementById(
-        "cancelBtn"
-    );
+const saveNovelButton =
+    document.getElementById("saveNovelButton");
 
 const messageBox =
-    document.getElementById(
-        "editNovelMessage"
-    );
+    document.getElementById("message");
 
 // ============================================================
-// CHECK FILE
+// CURRENT NOVEL
 // ============================================================
 
-if (!filename) {
+let currentNovel = null;
+
+// IDs of chapters that existed when page was loaded
+let originalChapterIds = new Set();
+
+// ============================================================
+// INITIAL LOAD
+// ============================================================
+
+if (!novelId) {
 
     showMessage(
-        "Novel file was not specified.",
+        "Novel ID was not provided.",
         "error"
     );
 
+    disableSave();
+
 } else {
 
-    loadNovelForEdit();
+    if (novelIdInput) {
+        novelIdInput.value = novelId;
+    }
 
+    loadNovelForEdit();
+}
+
+// ============================================================
+// AUTH ERROR HANDLER
+// ============================================================
+
+function handleAuthError(response) {
+
+    if (
+        response.status === 401 ||
+        response.status === 403
+    ) {
+
+        sessionStorage.removeItem("adminToken");
+        sessionStorage.removeItem("adminUser");
+
+        window.location.href =
+            "admin_login.html";
+
+        return true;
+    }
+
+    return false;
 }
 
 // ============================================================
@@ -64,86 +131,141 @@ if (!filename) {
 // ============================================================
 
 async function loadNovelForEdit() {
-
     try {
+        showMessage(
+            "Loading novel...",
+            "info"
+        );
 
-        const response =
-            await fetch(
-                `${API_URL}/novel/${encodeURIComponent(
-                    filename
-                )}`
-            );
+        const response = await fetch(
+            `${API_URL}/admin/novels/${encodeURIComponent(novelId)}`,
+            {
+                method: "GET",
+                headers: {
+                    "Authorization":
+                        `Bearer ${adminToken}`
+                }
+            }
+        );
 
-        const novel =
+        if (handleAuthError(response)) {
+            return;
+        }
+
+        const responseData =
             await response.json();
 
         if (!response.ok) {
-
             throw new Error(
-                novel.error ||
-                "Could not load novel."
+                responseData.error ||
+                "Could not load novel details."
             );
+        }
 
+        // Backend response is:
+        // { novel: { ... } }
+        const data = responseData.novel;
+
+        if (!data) {
+            throw new Error(
+                "Novel data was not found in the server response."
+            );
+        }
+
+        currentNovel = data;
+
+        // ====================================================
+        // NOVEL INFORMATION
+        // ====================================================
+
+        if (novelIdInput) {
+            novelIdInput.value =
+                data.id || novelId;
+        }
+
+        if (titleInput) {
+            titleInput.value =
+                data.title || "";
+        }
+
+        if (authorInput) {
+            authorInput.value =
+                data.author || "";
+        }
+
+        if (genreInput) {
+            genreInput.value =
+                data.genre || "";
+        }
+
+        if (statusInput) {
+            statusInput.value =
+                data.status || "";
+        }
+
+        if (synopsisInput) {
+            synopsisInput.value =
+                data.synopsis || "";
+        }
+
+        if (sourceWebsiteInput) {
+            sourceWebsiteInput.value =
+                data.source_website || "";
+        }
+
+        if (sourceUrlInput) {
+            sourceUrlInput.value =
+                data.source_url || "";
         }
 
         // ====================================================
-        // LOAD NOVEL INFORMATION
+        // COVER
         // ====================================================
 
-        document.getElementById(
-            "novelTitle"
-        ).value =
-            novel.title || "";
-
-        document.getElementById(
-            "novelAuthor"
-        ).value =
-            novel.author || "";
-
-        document.getElementById(
-            "novelGenre"
-        ).value =
-            novel.genre || "";
-
-        document.getElementById(
-            "novelStatus"
-        ).value =
-            novel.status || "Ongoing";
-
-        document.getElementById(
-            "novelSynopsis"
-        ).value =
-            novel.synopsis || "";
-
-        document.getElementById(
-            "coverImage"
-        ).value =
-            novel.cover_image || "";
+        displayCover(
+            data.cover_image
+        );
 
         // ====================================================
-        // LOAD CHAPTERS
+        // CHAPTERS
         // ====================================================
 
         chaptersContainer.innerHTML = "";
 
         const chapters =
-            Array.isArray(novel.chapters)
-                ? novel.chapters
+            Array.isArray(data.chapters)
+                ? data.chapters
                 : [];
 
-        chapters.forEach(
-            function (chapter) {
+        // Store original chapter IDs
+        originalChapterIds =
+            new Set(
+                chapters
+                    .filter(
+                        chapter => chapter.id
+                    )
+                    .map(
+                        chapter =>
+                            String(chapter.id)
+                    )
+            );
 
-                addChapter(
-                    chapter.chapter_number,
-                    chapter.title,
-                    chapter.content
-                );
+        if (!chapters.length) {
+            showEmptyChapters();
+        } else {
+            chapters.forEach(
+                function (chapter) {
+                    addChapter(
+                        chapter
+                    );
+                }
+            );
+        }
 
-            }
+        showMessage(
+            "",
+            "info"
         );
-
-        updateChapterHeadings();
 
     } catch (error) {
 
@@ -158,25 +280,143 @@ async function loadNovelForEdit() {
             "error"
         );
 
-        if (saveButton) {
-
-            saveButton.disabled = true;
-
-        }
-
+        disableSave();
     }
-
 }
 
 // ============================================================
-// ADD CHAPTER
+// DISPLAY COVER
 // ============================================================
 
-function addChapter(
-    number,
-    title,
-    content
-) {
+function displayCover(coverUrl) {
+
+    if (!coverUrl) {
+
+        coverPreview.src = "";
+
+        coverPreview.style.display =
+            "none";
+
+        coverPlaceholder.style.display =
+            "flex";
+
+        return;
+    }
+
+    coverPreview.src =
+        coverUrl;
+
+    coverPreview.style.display =
+        "block";
+
+    coverPlaceholder.style.display =
+        "none";
+
+    coverPreview.onerror =
+        function () {
+
+            coverPreview.style.display =
+                "none";
+
+            coverPlaceholder.style.display =
+                "flex";
+        };
+}
+
+// ============================================================
+// NEW COVER PREVIEW
+// ============================================================
+
+if (coverImageInput) {
+
+    coverImageInput.addEventListener(
+        "change",
+        function () {
+
+            const file =
+                coverImageInput.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            const allowedTypes = [
+                "image/jpeg",
+                "image/png",
+                "image/webp",
+                "image/gif"
+            ];
+
+            if (
+                !allowedTypes.includes(
+                    file.type
+                )
+            ) {
+
+                showMessage(
+                    "Invalid image format. Allowed formats: JPG, JPEG, PNG, WEBP or GIF.",
+                    "error"
+                );
+
+                coverImageInput.value =
+                    "";
+
+                return;
+            }
+
+            const previewUrl =
+                URL.createObjectURL(file);
+
+            coverPreview.src =
+                previewUrl;
+
+            coverPreview.style.display =
+                "block";
+
+            coverPlaceholder.style.display =
+                "none";
+        }
+    );
+}
+
+// ============================================================
+// EMPTY CHAPTERS
+// ============================================================
+
+function showEmptyChapters() {
+
+    chaptersContainer.innerHTML = `
+        <div class="empty-chapters">
+            <div class="empty-chapters-icon">
+                ≡
+            </div>
+
+            <h4>
+                No chapters found
+            </h4>
+
+            <p>
+                Add a chapter using the button above.
+            </p>
+        </div>
+    `;
+}
+
+// ============================================================
+// ADD CHAPTER FORM
+// ============================================================
+
+function addChapter(chapter = null) {
+
+    // Remove empty message if present
+    const emptyMessage =
+        chaptersContainer.querySelector(
+            ".empty-chapters"
+        );
+
+    if (emptyMessage) {
+        emptyMessage.remove();
+    }
 
     const chapterDiv =
         document.createElement("div");
@@ -184,11 +424,55 @@ function addChapter(
     chapterDiv.className =
         "chapter-form";
 
+    // Existing chapter
+    if (
+        chapter &&
+        chapter.id
+    ) {
+
+        chapterDiv.dataset.chapterId =
+            String(chapter.id);
+    }
+
+    const chapterNumber =
+        chapter &&
+        chapter.chapter_number
+            ? chapter.chapter_number
+            : getNextChapterNumber();
+
+    const chapterTitle =
+        chapter
+            ? chapter.title || ""
+            : `Chapter ${chapterNumber}`;
+
+    const chapterContent =
+        chapter
+            ? chapter.content || ""
+            : "";
+
+    const chapterDate =
+        chapter
+            ? chapter.date || ""
+            : "";
+
+    const chapterUrl =
+        chapter
+            ? chapter.url || ""
+            : "";
+
+    const isLocked =
+        chapter
+            ? Boolean(chapter.is_locked)
+            : false;
+
     chapterDiv.innerHTML = `
+
         <div class="chapter-header">
 
             <h3>
-                Chapter ${escapeHtml(number)}
+                Chapter ${escapeHtml(
+                    chapterNumber
+                )}
             </h3>
 
         </div>
@@ -204,7 +488,9 @@ function addChapter(
                 <input
                     type="number"
                     class="chapter-number"
-                    value="${escapeHtml(number)}"
+                    value="${escapeAttribute(
+                        chapterNumber
+                    )}"
                     min="1"
                     required
                 >
@@ -220,8 +506,8 @@ function addChapter(
                 <input
                     type="text"
                     class="chapter-title"
-                    value="${escapeHtml(
-                        title || ""
+                    value="${escapeAttribute(
+                        chapterTitle
                     )}"
                     required
                 >
@@ -241,8 +527,62 @@ function addChapter(
                 rows="12"
                 required
             >${escapeHtml(
-                content || ""
+                chapterContent
             )}</textarea>
+
+        </div>
+
+        <div class="form-row">
+
+            <div class="form-group">
+
+                <label>
+                    Chapter Date
+                </label>
+
+                <input
+                    type="text"
+                    class="chapter-date"
+                    value="${escapeAttribute(
+                        chapterDate
+                    )}"
+                    placeholder="Optional"
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label>
+                    Chapter URL
+                </label>
+
+                <input
+                    type="text"
+                    class="chapter-url"
+                    value="${escapeAttribute(
+                        chapterUrl
+                    )}"
+                    placeholder="Optional"
+                >
+
+            </div>
+
+        </div>
+
+        <div class="chapter-lock-row">
+
+            <label>
+
+                <input
+                    type="checkbox"
+                    class="chapter-locked"
+                    ${isLocked ? "checked" : ""}
+                >
+
+                Lock Chapter
+
+            </label>
 
         </div>
 
@@ -263,65 +603,102 @@ function addChapter(
             </button>
 
         </div>
+
     `;
 
     chaptersContainer.appendChild(
         chapterDiv
     );
+}
 
+// ============================================================
+// GET NEXT CHAPTER NUMBER
+// ============================================================
+
+function getNextChapterNumber() {
+
+    const chapterElements =
+        chaptersContainer.querySelectorAll(
+            ".chapter-form"
+        );
+
+    let highestNumber = 0;
+
+    chapterElements.forEach(
+        function (chapter) {
+
+            const input =
+                chapter.querySelector(
+                    ".chapter-number"
+                );
+
+            const number =
+                parseInt(
+                    input?.value,
+                    10
+                );
+
+            if (
+                Number.isInteger(number) &&
+                number > highestNumber
+            ) {
+
+                highestNumber =
+                    number;
+            }
+        }
+    );
+
+    return highestNumber + 1;
 }
 
 // ============================================================
 // ADD NEW CHAPTER BUTTON
 // ============================================================
 
-addChapterBtn.addEventListener(
-    "click",
-    function () {
+if (addChapterButton) {
 
-        const chapters =
-            document.querySelectorAll(
-                ".chapter-form"
-            );
+    addChapterButton.addEventListener(
+        "click",
+        function () {
 
-        const nextNumber =
-            chapters.length + 1;
+            const nextNumber =
+                getNextChapterNumber();
 
-        addChapter(
-            nextNumber,
-            `Chapter ${nextNumber}`,
-            ""
-        );
+            addChapter({
+                chapter_number:
+                    nextNumber,
 
-        updateChapterHeadings();
+                title:
+                    `Chapter ${nextNumber}`,
 
-        // Scroll to new chapter
-
-        const newChapter =
-            chaptersContainer.lastElementChild;
-
-        if (newChapter) {
-
-            newChapter.scrollIntoView({
-                behavior: "smooth",
-                block: "center"
+                content: ""
             });
 
-            const titleInput =
-                newChapter.querySelector(
-                    ".chapter-title"
-                );
+            updateChapterHeadings();
 
-            if (titleInput) {
+            const newChapter =
+                chaptersContainer.lastElementChild;
 
-                titleInput.focus();
+            if (newChapter) {
 
+                newChapter.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+
+                const titleField =
+                    newChapter.querySelector(
+                        ".chapter-title"
+                    );
+
+                if (titleField) {
+                    titleField.focus();
+                }
             }
-
         }
-
-    }
-);
+    );
+}
 
 // ============================================================
 // CHAPTER ACTIONS
@@ -331,18 +708,19 @@ chaptersContainer.addEventListener(
     "click",
     function (event) {
 
-        // ----------------------------------------------------
+        // ====================================================
         // EDIT CHAPTER
-        // ----------------------------------------------------
+        // ====================================================
 
-        if (
-            event.target.classList.contains(
-                "edit-chapter-btn"
-            )
-        ) {
+        const editButton =
+            event.target.closest(
+                ".edit-chapter-btn"
+            );
+
+        if (editButton) {
 
             const chapter =
-                event.target.closest(
+                editButton.closest(
                     ".chapter-form"
                 );
 
@@ -350,66 +728,76 @@ chaptersContainer.addEventListener(
                 return;
             }
 
-            const titleInput =
+            const titleField =
                 chapter.querySelector(
                     ".chapter-title"
                 );
 
-            if (titleInput) {
+            if (titleField) {
 
-                titleInput.focus();
+                titleField.focus();
 
-                titleInput.scrollIntoView({
+                titleField.scrollIntoView({
                     behavior: "smooth",
                     block: "center"
                 });
-
             }
 
             return;
-
         }
 
-        // ----------------------------------------------------
+        // ====================================================
         // REMOVE CHAPTER
-        // ----------------------------------------------------
+        // ====================================================
 
-        if (
-            event.target.classList.contains(
-                "remove-chapter-btn"
-            )
-        ) {
+        const removeButton =
+            event.target.closest(
+                ".remove-chapter-btn"
+            );
 
-            const chapters =
-                document.querySelectorAll(
-                    ".chapter-form"
-                );
-
-            if (chapters.length <= 1) {
-
-                alert(
-                    "At least one chapter is required."
-                );
-
-                return;
-
-            }
+        if (removeButton) {
 
             const chapter =
-                event.target.closest(
+                removeButton.closest(
                     ".chapter-form"
                 );
 
-            if (chapter) {
-
-                chapter.remove();
-
+            if (!chapter) {
+                return;
             }
+
+            const titleField =
+                chapter.querySelector(
+                    ".chapter-title"
+                );
+
+            const chapterTitle =
+                titleField
+                    ? titleField.value
+                    : "this chapter";
+
+            const confirmed =
+                confirm(
+                    `Remove "${chapterTitle}"?\n\nThe chapter will be deleted when you save the novel.`
+                );
+
+            if (!confirmed) {
+                return;
+            }
+
+            chapter.remove();
 
             updateChapterHeadings();
 
-        }
+            const remaining =
+                chaptersContainer.querySelectorAll(
+                    ".chapter-form"
+                );
 
+            if (!remaining.length) {
+                showEmptyChapters();
+            }
+        }
     }
 );
 
@@ -420,7 +808,7 @@ chaptersContainer.addEventListener(
 function updateChapterHeadings() {
 
     const chapters =
-        document.querySelectorAll(
+        chaptersContainer.querySelectorAll(
             ".chapter-form"
         );
 
@@ -428,7 +816,9 @@ function updateChapterHeadings() {
         function (chapter) {
 
             const heading =
-                chapter.querySelector("h3");
+                chapter.querySelector(
+                    "h3"
+                );
 
             const numberInput =
                 chapter.querySelector(
@@ -442,207 +832,599 @@ function updateChapterHeadings() {
 
                 heading.textContent =
                     `Chapter ${numberInput.value}`;
-
             }
-
         }
     );
-
 }
 
 // ============================================================
-// SAVE CHANGES
+// SAVE NOVEL
 // ============================================================
 
-form.addEventListener(
-    "submit",
-    async function (event) {
+if (form) {
 
-        event.preventDefault();
+    form.addEventListener(
+        "submit",
+        async function (event) {
 
-        const title =
-            document.getElementById(
-                "novelTitle"
-            ).value.trim();
+            event.preventDefault();
 
-        const author =
-            document.getElementById(
-                "novelAuthor"
-            ).value.trim();
+            if (!currentNovel) {
 
-        const genre =
-            document.getElementById(
-                "novelGenre"
-            ).value.trim();
+                showMessage(
+                    "Novel data has not loaded yet.",
+                    "error"
+                );
 
-        const status =
-            document.getElementById(
-                "novelStatus"
-            ).value;
+                return;
+            }
 
-        const synopsis =
-            document.getElementById(
-                "novelSynopsis"
-            ).value.trim();
+            const id =
+                currentNovel.id;
 
-        const coverImage =
-            document.getElementById(
-                "coverImage"
-            ).value.trim();
+            if (!id) {
 
-        // ----------------------------------------------------
-        // COLLECT CHAPTERS
-        // ----------------------------------------------------
+                showMessage(
+                    "Novel ID is missing.",
+                    "error"
+                );
 
-        const chapterElements =
-            document.querySelectorAll(
-                ".chapter-form"
-            );
+                return;
+            }
 
-        const chapters = [];
+            // =================================================
+            // NOVEL DATA
+            // =================================================
 
-        chapterElements.forEach(
-            function (chapter) {
+            const title =
+                titleInput.value.trim();
 
-                chapters.push({
+            const author =
+                authorInput.value.trim();
 
-                    chapter_number:
-                        parseInt(
-                            chapter.querySelector(
-                                ".chapter-number"
-                            ).value
-                        ),
+            const genre =
+                genreInput.value.trim();
 
-                    title:
-                        chapter.querySelector(
+            const status =
+                statusInput.value;
+
+            const synopsis =
+                synopsisInput.value.trim();
+
+            const sourceWebsite =
+                sourceWebsiteInput.value.trim();
+
+            const sourceUrl =
+                sourceUrlInput.value.trim();
+
+            if (!title) {
+
+                showMessage(
+                    "Novel title is required.",
+                    "error"
+                );
+
+                titleInput.focus();
+
+                return;
+            }
+
+            // =================================================
+            // COLLECT CHAPTERS
+            // =================================================
+
+            const chapterElements =
+                chaptersContainer.querySelectorAll(
+                    ".chapter-form"
+                );
+
+            const chapters = [];
+
+            chapterElements.forEach(
+                function (chapterElement) {
+
+                    const numberInput =
+                        chapterElement.querySelector(
+                            ".chapter-number"
+                        );
+
+                    const titleField =
+                        chapterElement.querySelector(
                             ".chapter-title"
-                        ).value.trim(),
+                        );
 
-                    content:
-                        chapter.querySelector(
+                    const contentInput =
+                        chapterElement.querySelector(
                             ".chapter-content"
-                        ).value.trim()
+                        );
 
-                });
+                    const dateInput =
+                        chapterElement.querySelector(
+                            ".chapter-date"
+                        );
 
+                    const urlInput =
+                        chapterElement.querySelector(
+                            ".chapter-url"
+                        );
+
+                    const lockedInput =
+                        chapterElement.querySelector(
+                            ".chapter-locked"
+                        );
+
+                    chapters.push({
+
+                        id:
+                            chapterElement.dataset.chapterId ||
+                            null,
+
+                        chapter_number:
+                            parseInt(
+                                numberInput?.value,
+                                10
+                            ),
+
+                        title:
+                            titleField
+                                ? titleField.value.trim()
+                                : "",
+
+                        content:
+                            contentInput
+                                ? contentInput.value.trim()
+                                : "",
+
+                        date:
+                            dateInput
+                                ? dateInput.value.trim()
+                                : "",
+
+                        url:
+                            urlInput
+                                ? urlInput.value.trim()
+                                : "",
+
+                        is_locked:
+                            lockedInput
+                                ? lockedInput.checked
+                                : false
+                    });
+                }
+            );
+
+            // =================================================
+            // VALIDATE CHAPTERS
+            // =================================================
+
+            for (
+                const chapter of chapters
+            ) {
+
+                if (
+                    !Number.isInteger(
+                        chapter.chapter_number
+                    ) ||
+                    chapter.chapter_number < 1
+                ) {
+
+                    showMessage(
+                        "Chapter number must be greater than 0.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                if (!chapter.title) {
+
+                    showMessage(
+                        "Chapter title is required.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                if (!chapter.content) {
+
+                    showMessage(
+                        "Chapter content is required.",
+                        "error"
+                    );
+
+                    return;
+                }
             }
-        );
 
-        // ----------------------------------------------------
-        // BUTTON LOADING
-        // ----------------------------------------------------
+            // =================================================
+            // CHECK DUPLICATE NUMBERS
+            // =================================================
 
-        saveButton.disabled = true;
+            const chapterNumbers =
+                chapters.map(
+                    chapter =>
+                        chapter.chapter_number
+                );
 
-        saveButton.textContent =
-            "Saving Changes...";
+            if (
+                new Set(chapterNumbers).size !==
+                chapterNumbers.length
+            ) {
 
-        messageBox.textContent = "";
+                showMessage(
+                    "Duplicate chapter numbers are not allowed.",
+                    "error"
+                );
 
-        try {
+                return;
+            }
 
-            const response =
-                await fetch(
-                    `${API_URL}/manual-novel/${encodeURIComponent(
-                        filename
-                    )}`,
-                    {
-                        method: "PUT",
+            // =================================================
+            // DISABLE SAVE
+            // =================================================
 
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
+            saveNovelButton.disabled =
+                true;
 
-                        body: JSON.stringify({
+            saveNovelButton.textContent =
+                "Saving Changes...";
 
-                            title: title,
+            showMessage(
+                "Saving changes...",
+                "info"
+            );
 
-                            author: author,
+            try {
 
-                            genre: genre,
+                // =============================================
+                // 1. UPDATE NOVEL
+                // =============================================
 
-                            status: status,
+                const novelResponse =
+                    await fetch(
+                        `${API_URL}/admin/novels/${id}`,
+                        {
+                            method: "PUT",
 
-                            synopsis: synopsis,
+                            headers: {
+                                "Content-Type":
+                                    "application/json",
 
-                            cover_image:
-                                coverImage,
+                                "Authorization":
+                                    `Bearer ${adminToken}`
+                            },
 
-                            chapters:
-                                chapters
+                            body:
+                                JSON.stringify({
 
-                        })
+                                    title,
 
+                                    author,
+
+                                    genre,
+
+                                    status,
+
+                                    synopsis,
+
+                                    source_website:
+                                        sourceWebsite,
+
+                                    source_url:
+                                        sourceUrl
+                                })
+                        }
+                    );
+
+                if (
+                    handleAuthError(
+                        novelResponse
+                    )
+                ) {
+                    return;
+                }
+
+                const novelResult =
+                    await novelResponse.json();
+
+                if (!novelResponse.ok) {
+
+                    throw new Error(
+                        novelResult.error ||
+                        "Failed to update novel."
+                    );
+                }
+
+                // =============================================
+                // 2. COVER
+                // =============================================
+
+                const selectedCover =
+                    coverImageInput.files[0];
+
+                if (selectedCover) {
+
+                    const formData =
+                        new FormData();
+
+                    formData.append(
+                        "cover",
+                        selectedCover
+                    );
+
+                    const coverResponse =
+                        await fetch(
+                            `${API_URL}/admin/novels/${id}/cover`,
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Authorization":
+                                        `Bearer ${adminToken}`
+                                },
+
+                                body:
+                                    formData
+                            }
+                        );
+
+                    if (
+                        handleAuthError(
+                            coverResponse
+                        )
+                    ) {
+                        return;
                     }
+
+                    const coverResult =
+                        await coverResponse.json();
+
+                    if (!coverResponse.ok) {
+
+                        throw new Error(
+                            coverResult.error ||
+                            "Failed to upload cover."
+                        );
+                    }
+                }
+
+                // =============================================
+                // 3. UPDATE EXISTING / ADD NEW CHAPTERS
+                // =============================================
+
+                const currentChapterIds =
+                    new Set();
+
+                for (
+                    const chapter of chapters
+                ) {
+
+                    // =========================================
+                    // EXISTING CHAPTER
+                    // =========================================
+
+                    if (chapter.id) {
+
+                        currentChapterIds.add(
+                            String(chapter.id)
+                        );
+
+                        const chapterResponse =
+                            await fetch(
+                                `${API_URL}/admin/novels/${id}/chapters/${chapter.id}`,
+                                {
+                                    method: "PUT",
+
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json",
+
+                                        "Authorization":
+                                            `Bearer ${adminToken}`
+                                    },
+
+                                    body:
+                                        JSON.stringify({
+
+                                            chapter_number:
+                                                chapter.chapter_number,
+
+                                            title:
+                                                chapter.title,
+
+                                            content:
+                                                chapter.content,
+
+                                            date:
+                                                chapter.date,
+
+                                            url:
+                                                chapter.url,
+
+                                            is_locked:
+                                                chapter.is_locked
+                                        })
+                                }
+                            );
+
+                        if (
+                            handleAuthError(
+                                chapterResponse
+                            )
+                        ) {
+                            return;
+                        }
+
+                        const chapterResult =
+                            await chapterResponse.json();
+
+                        if (
+                            !chapterResponse.ok
+                        ) {
+
+                            throw new Error(
+                                chapterResult.error ||
+                                "Failed to update chapter."
+                            );
+                        }
+
+                    } else {
+
+                        // =====================================
+                        // NEW CHAPTER
+                        // =====================================
+
+                        const addResponse =
+                            await fetch(
+                                `${API_URL}/admin/novels/${id}/chapters`,
+                                {
+                                    method: "POST",
+
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json",
+
+                                        "Authorization":
+                                            `Bearer ${adminToken}`
+                                    },
+
+                                    body:
+                                        JSON.stringify({
+
+                                            chapter_number:
+                                                chapter.chapter_number,
+
+                                            title:
+                                                chapter.title,
+
+                                            content:
+                                                chapter.content,
+
+                                            date:
+                                                chapter.date,
+
+                                            url:
+                                                chapter.url,
+
+                                            is_locked:
+                                                chapter.is_locked
+                                        })
+                                }
+                            );
+
+                        if (
+                            handleAuthError(
+                                addResponse
+                            )
+                        ) {
+                            return;
+                        }
+
+                        const addResult =
+                            await addResponse.json();
+
+                        if (!addResponse.ok) {
+
+                            throw new Error(
+                                addResult.error ||
+                                "Failed to add chapter."
+                            );
+                        }
+                    }
+                }
+
+                // =============================================
+                // 4. DELETE REMOVED CHAPTERS
+                // =============================================
+
+                for (
+                    const originalId
+                    of originalChapterIds
+                ) {
+
+                    if (
+                        !currentChapterIds.has(
+                            originalId
+                        )
+                    ) {
+
+                        const deleteResponse =
+                            await fetch(
+                                `${API_URL}/admin/novels/${id}/chapters/${originalId}`,
+                                {
+                                    method: "DELETE",
+
+                                    headers: {
+                                        "Authorization":
+                                            `Bearer ${adminToken}`
+                                    }
+                                }
+                            );
+
+                        if (
+                            handleAuthError(
+                                deleteResponse
+                            )
+                        ) {
+                            return;
+                        }
+
+                        const deleteResult =
+                            await deleteResponse.json();
+
+                        if (
+                            !deleteResponse.ok
+                        ) {
+
+                            throw new Error(
+                                deleteResult.error ||
+                                "Failed to delete chapter."
+                            );
+                        }
+                    }
+                }
+
+                // =============================================
+                // SUCCESS
+                // =============================================
+
+                showMessage(
+                    "Novel updated successfully!",
+                    "success"
                 );
 
-            const result =
-                await response.json();
-
-            if (!response.ok) {
-
-                throw new Error(
-                    result.error ||
-                    "Failed to update novel."
+                alert(
+                    "Novel updated successfully!"
                 );
 
+                window.location.href =
+                    "admin_novels.html";
+
+            } catch (error) {
+
+                console.error(
+                    "Edit Novel Error:",
+                    error
+                );
+
+                showMessage(
+                    error.message ||
+                    "Could not update novel.",
+                    "error"
+                );
+
+            } finally {
+
+                saveNovelButton.disabled =
+                    false;
+
+                saveNovelButton.textContent =
+                    "Save Changes";
             }
-
-            showMessage(
-                "Novel updated successfully!",
-                "success"
-            );
-
-            alert(
-                "Novel updated successfully!"
-            );
-
-            // ------------------------------------------------
-            // RETURN TO SCRAPER PAGE
-            // ------------------------------------------------
-
-            window.location.href =
-                "scraper.html";
-
-        } catch (error) {
-
-            console.error(
-                "Edit Novel Error:",
-                error
-            );
-
-            showMessage(
-                error.message ||
-                "Could not update novel.",
-                "error"
-            );
-
-        } finally {
-
-            saveButton.disabled = false;
-
-            saveButton.textContent =
-                "Save Changes";
-
         }
-
-    }
-);
-
-// ============================================================
-// CANCEL
-// ============================================================
-
-cancelBtn.addEventListener(
-    "click",
-    function () {
-
-        window.location.href =
-            "scraper.html";
-
-    }
-);
+    );
+}
 
 // ============================================================
 // MESSAGE
@@ -653,14 +1435,41 @@ function showMessage(
     type
 ) {
 
+    if (!messageBox) {
+        return;
+    }
+
     messageBox.textContent =
-        message;
+        message || "";
 
-    messageBox.style.color =
-        type === "success"
-            ? "#86efac"
-            : "#fca5a5";
+    if (type === "success") {
 
+        messageBox.style.color =
+            "#86efac";
+
+    } else if (type === "error") {
+
+        messageBox.style.color =
+            "#fca5a5";
+
+    } else {
+
+        messageBox.style.color =
+            "";
+    }
+}
+
+// ============================================================
+// DISABLE SAVE
+// ============================================================
+
+function disableSave() {
+
+    if (saveNovelButton) {
+
+        saveNovelButton.disabled =
+            true;
+    }
 }
 
 // ============================================================
@@ -676,5 +1485,21 @@ function escapeHtml(value) {
         String(value ?? "");
 
     return div.innerHTML;
+}
 
+// ============================================================
+// ESCAPE ATTRIBUTE
+// ============================================================
+
+function escapeAttribute(value) {
+
+    return escapeHtml(value)
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }

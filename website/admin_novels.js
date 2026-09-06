@@ -1,319 +1,147 @@
 const API_URL = "http://127.0.0.1:5000";
 
-let allAdminNovels = [];
+// ============================================================
+// ADMIN AUTH
+// ============================================================
 
+const adminToken = sessionStorage.getItem("adminToken");
 
-async function loadAdminNovels() {
+if (!adminToken) {
+    window.location.href = "admin_login.html";
+}
 
-    const container =
-        document.getElementById(
-            "adminNovelsContainer"
-        );
+// ============================================================
+// ELEMENTS
+// ============================================================
 
-    if (!container) {
-        return;
+const searchInput =
+    document.getElementById("novelSearch");
+
+const statusFilter =
+    document.getElementById("statusFilter");
+
+const novelsContainer =
+    document.getElementById("adminNovelsContainer");
+
+// ============================================================
+// DATA
+// ============================================================
+
+let novels = [];
+
+// ============================================================
+// INITIAL LOAD
+// ============================================================
+
+loadNovels();
+
+// ============================================================
+// AUTH ERROR HANDLER
+// ============================================================
+
+function handleAuthError(response) {
+
+    if (
+        response.status === 401 ||
+        response.status === 403
+    ) {
+        sessionStorage.removeItem("adminToken");
+        sessionStorage.removeItem("adminUser");
+
+        window.location.href = "admin_login.html";
+
+        return true;
     }
+
+    return false;
+}
+
+// ============================================================
+// LOAD ALL NOVELS
+// ============================================================
+
+async function loadNovels() {
 
     try {
 
-        const response =
-            await fetch(
-                `${API_URL}/novels`
-            );
+        novelsContainer.innerHTML = `
+            <div class="empty-admin-novels">
+                <h3>Loading Novels...</h3>
+                <p>Please wait while the collection is loaded.</p>
+            </div>
+        `;
+
+        const response = await fetch(
+            `${API_URL}/admin/novels`,
+            {
+                method: "GET",
+                headers: {
+                    "Authorization":
+                        `Bearer ${adminToken}`
+                }
+            }
+        );
+
+        if (handleAuthError(response)) {
+            return;
+        }
+
+        const data =
+            await response.json();
 
         if (!response.ok) {
             throw new Error(
+                data.error ||
                 "Could not load novels."
             );
         }
 
-        allAdminNovels =
-            await response.json();
+        novels =
+            Array.isArray(data.novels)
+                ? data.novels
+                : [];
 
-        renderAdminNovels(
-            allAdminNovels
-        );
+        renderNovels();
 
     } catch (error) {
 
         console.error(
-            "Admin Novels Error:",
+            "Load Novels Error:",
             error
         );
 
-        container.innerHTML = `
+        novelsContainer.innerHTML = `
             <div class="empty-admin-novels">
-
-                <h3>
-                    Failed to load novels
-                </h3>
-
-                <p>
-                    Please make sure the backend server is running.
-                </p>
-
+                <h3>Could Not Load Novels</h3>
+                <p>${escapeHtml(
+                    error.message ||
+                    "An unexpected error occurred."
+                )}</p>
             </div>
         `;
-
     }
-
 }
 
-
-function renderAdminNovels(
-    novels
-) {
-
-    const container =
-        document.getElementById(
-            "adminNovelsContainer"
-        );
-
-    if (!container) {
-        return;
-    }
-
-
-    if (!novels.length) {
-
-        container.innerHTML = `
-            <div class="empty-admin-novels">
-
-                <h3>
-                    No novels found
-                </h3>
-
-                <p>
-                    Your collection does not contain any matching novels.
-                </p>
-
-            </div>
-        `;
-
-        return;
-    }
-
-
-    container.innerHTML =
-        novels
-            .map(
-                function (novel) {
-
-                    const cover =
-                        novel.cover_image ||
-                        "https://via.placeholder.com/90x120?text=No+Cover";
-
-
-                    return `
-                        <article
-                            class="admin-novel-card"
-                        >
-
-                            <img
-                                class="admin-novel-cover"
-                                src="${escapeHtml(cover)}"
-                                alt="${escapeHtml(
-                                    novel.title ||
-                                    "Novel Cover"
-                                )}"
-                                onerror="
-                                    this.onerror=null;
-                                    this.src='https://via.placeholder.com/90x120?text=No+Cover';
-                                "
-                            >
-
-
-                            <div class="admin-novel-info">
-
-                                <h3>
-                                    ${escapeHtml(
-                                        novel.title ||
-                                        "Untitled Novel"
-                                    )}
-                                </h3>
-
-                                <p>
-                                    <strong>Author:</strong>
-                                    ${escapeHtml(
-                                        novel.author ||
-                                        "Unknown"
-                                    )}
-                                </p>
-
-                                <p>
-                                    <strong>Genre:</strong>
-                                    ${escapeHtml(
-                                        novel.genre ||
-                                        "Unknown"
-                                    )}
-                                </p>
-
-                                <p>
-                                    <strong>Chapters:</strong>
-                                    ${Number(
-                                        novel.total_chapters ||
-                                        0
-                                    )}
-                                </p>
-
-                                <span
-                                    class="novel-status"
-                                >
-                                    ${escapeHtml(
-                                        novel.status ||
-                                        "Unknown"
-                                    )}
-                                </span>
-
-
-                                <div
-                                    class="admin-novel-actions"
-                                >
-
-                                    <button
-                                        type="button"
-                                        class="read-admin-btn"
-                                        onclick="readAdminNovel('${encodeURIComponent(
-                                            novel.filename
-                                        )}')"
-                                    >
-                                        📖 Read
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        class="edit-admin-btn"
-                                        onclick="editAdminNovel('${encodeURIComponent(
-                                            novel.filename
-                                        )}')"
-                                    >
-                                        ✏️ Edit
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        class="delete-admin-btn"
-                                        onclick="deleteAdminNovel('${encodeURIComponent(
-                                            novel.filename
-                                        )}')"
-                                    >
-                                        🗑️ Delete
-                                    </button>
-
-                                </div>
-
-                            </div>
-
-                        </article>
-                    `;
-
-                }
-            )
-            .join("");
-
-}
-
-
-function readAdminNovel(
-    encodedFilename
-) {
-
-    const filename =
-        decodeURIComponent(
-            encodedFilename
-        );
-
-    window.location.href =
-        `novel.html?file=${encodeURIComponent(
-            filename
-        )}`;
-
-}
-
-
-function editAdminNovel(
-    encodedFilename
-) {
-
-    const filename =
-        decodeURIComponent(
-            encodedFilename
-        );
-
-    window.location.href =
-        `edit_novel.html?file=${encodeURIComponent(
-            filename
-        )}`;
-
-}
-
-
-function deleteAdminNovel(
-    encodedFilename
-) {
-
-    const filename =
-        decodeURIComponent(
-            encodedFilename
-        );
-
-    const novel =
-        allAdminNovels.find(
-            item =>
-                item.filename === filename
-        );
-
-    if (!novel) {
-        return;
-    }
-
-
-    const confirmed =
-        confirm(
-            `Delete "${novel.title}"?\n\nThis action will permanently remove the novel.`
-        );
-
-    if (!confirmed) {
-        return;
-    }
-
-
-    alert(
-        "Delete functionality will be connected to the backend next."
-    );
-
-}
-
-
-function applyNovelFilters() {
-
-    const searchInput =
-        document.getElementById(
-            "novelSearch"
-        );
-
-    const statusFilter =
-        document.getElementById(
-            "statusFilter"
-        );
-
-
-    const search =
-        (
-            searchInput?.value ||
-            ""
-        )
-            .trim()
-            .toLowerCase();
-
-
-    const status =
-        statusFilter?.value ||
-        "all";
-
-
-    const filtered =
-        allAdminNovels.filter(
+// ============================================================
+// RENDER NOVELS
+// ============================================================
+
+function renderNovels() {
+
+    const searchTerm =
+        searchInput
+            ? searchInput.value
+                .trim()
+                .toLowerCase()
+            : "";
+
+    const selectedStatus =
+        statusFilter
+            ? statusFilter.value
+            : "all";
+
+    const filteredNovels =
+        novels.filter(
             function (novel) {
 
                 const title =
@@ -326,55 +154,457 @@ function applyNovelFilters() {
                         novel.author || ""
                     ).toLowerCase();
 
-                const novelStatus =
+                const status =
                     String(
                         novel.status || ""
                     );
 
-
                 const matchesSearch =
-                    title.includes(search) ||
-                    author.includes(search);
-
+                    !searchTerm ||
+                    title.includes(searchTerm) ||
+                    author.includes(searchTerm);
 
                 const matchesStatus =
-                    status === "all" ||
-                    novelStatus === status;
-
+                    selectedStatus === "all" ||
+                    status === selectedStatus;
 
                 return (
                     matchesSearch &&
                     matchesStatus
                 );
-
             }
         );
 
+    if (!filteredNovels.length) {
 
-    renderAdminNovels(
-        filtered
-    );
+        novelsContainer.innerHTML = `
+            <div class="empty-admin-novels">
+                <h3>No Novels Found</h3>
+                <p>
+                    No novels match your current search or filter.
+                </p>
+            </div>
+        `;
 
+        return;
+    }
+
+    novelsContainer.innerHTML =
+        filteredNovels
+            .map(
+                function (novel) {
+                    return createNovelCard(novel);
+                }
+            )
+            .join("");
 }
 
+// ============================================================
+// CREATE NOVEL CARD
+// ============================================================
 
-function escapeHtml(
-    value
+function createNovelCard(novel) {
+
+    const id =
+        novel.id;
+
+    const filename =
+        novel.filename || "";
+
+    const title =
+        novel.title ||
+        "Untitled Novel";
+
+    const author =
+        novel.author ||
+        "Unknown Author";
+
+    const genre =
+        novel.genre ||
+        "Unknown Genre";
+
+    const status =
+        novel.status ||
+        "Unknown";
+
+    const totalChapters =
+        Number(
+            novel.total_chapters || 0
+        );
+
+    const cover =
+        novel.cover_image || "";
+
+    // --------------------------------------------------------
+    // COVER
+    // --------------------------------------------------------
+
+    let coverHTML;
+
+    if (cover) {
+
+        coverHTML = `
+            <img
+                src="${escapeAttribute(cover)}"
+                alt="${escapeAttribute(title)}"
+                class="admin-novel-cover"
+                onerror="this.style.display='none';"
+            >
+        `;
+
+    } else {
+
+        coverHTML = `
+            <div
+                class="admin-novel-cover"
+                style="
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    font-family:Georgia,serif;
+                    font-size:22px;
+                    color:var(--burgundy);
+                "
+            >
+                NA
+            </div>
+        `;
+    }
+
+    return `
+        <article
+            class="admin-novel-card"
+            data-novel-id="${escapeAttribute(id)}"
+        >
+
+            ${coverHTML}
+
+            <div class="admin-novel-info">
+
+                <h3>
+                    ${escapeHtml(title)}
+                </h3>
+
+                <p>
+                    <strong>Author:</strong>
+                    ${escapeHtml(author)}
+                </p>
+
+                <p>
+                    <strong>Genre:</strong>
+                    ${escapeHtml(genre)}
+                </p>
+
+                <p>
+                    <strong>Chapters:</strong>
+                    ${totalChapters}
+                </p>
+
+                <span class="novel-status">
+                    ${escapeHtml(status)}
+                </span>
+
+                <div class="admin-novel-actions">
+
+                    <button
+                        type="button"
+                        class="read-admin-btn"
+                        data-filename="${escapeAttribute(filename)}"
+                    >
+                        Read
+                    </button>
+
+                    <button
+                        type="button"
+                        class="edit-admin-btn"
+                        data-id="${escapeAttribute(id)}"
+                        data-filename="${escapeAttribute(filename)}"
+                    >
+                        Edit
+                    </button>
+
+                    <button
+                        type="button"
+                        class="delete-admin-btn"
+                        data-id="${escapeAttribute(id)}"
+                        data-filename="${escapeAttribute(filename)}"
+                        data-title="${escapeAttribute(title)}"
+                    >
+                        Delete
+                    </button>
+
+                </div>
+
+            </div>
+
+        </article>
+    `;
+}
+
+// ============================================================
+// SEARCH
+// ============================================================
+
+if (searchInput) {
+
+    searchInput.addEventListener(
+        "input",
+        function () {
+            renderNovels();
+        }
+    );
+}
+
+// ============================================================
+// STATUS FILTER
+// ============================================================
+
+if (statusFilter) {
+
+    statusFilter.addEventListener(
+        "change",
+        function () {
+            renderNovels();
+        }
+    );
+}
+
+// ============================================================
+// BUTTON ACTIONS
+// ============================================================
+
+novelsContainer.addEventListener(
+    "click",
+    function (event) {
+
+        // ====================================================
+        // READ BUTTON
+        // ====================================================
+
+        const readButton =
+            event.target.closest(
+                ".read-admin-btn"
+            );
+
+        if (readButton) {
+
+            const filename =
+                readButton.dataset.filename;
+
+            if (!filename) {
+
+                alert(
+                    "Novel filename is missing."
+                );
+
+                return;
+            }
+
+            window.location.href =
+                `novel.html?file=${encodeURIComponent(filename)}`;
+
+            return;
+        }
+
+        // ====================================================
+        // EDIT BUTTON
+        // ====================================================
+
+        const editButton =
+            event.target.closest(
+                ".edit-admin-btn"
+            );
+
+        if (editButton) {
+
+            const novelId =
+                editButton.dataset.id;
+
+            const filename =
+                editButton.dataset.filename;
+
+            if (!novelId) {
+
+                alert(
+                    "Novel database ID is missing."
+                );
+
+                return;
+            }
+
+            /*
+             * IMPORTANT
+             *
+             * We pass the database ID directly.
+             *
+             * Example:
+             *
+             * edit_novel.html?id=18&file=novel.json
+             *
+             * edit_novel.js can now directly call:
+             *
+             * GET /admin/novels/18
+             *
+             * without first calling:
+             *
+             * GET /novel/novel.json
+             */
+
+            let editUrl =
+                `edit_novel.html?id=${encodeURIComponent(novelId)}`;
+
+            if (filename) {
+
+                editUrl +=
+                    `&file=${encodeURIComponent(filename)}`;
+            }
+
+            window.location.href =
+                editUrl;
+
+            return;
+        }
+
+        // ====================================================
+        // DELETE BUTTON
+        // ====================================================
+
+        const deleteButton =
+            event.target.closest(
+                ".delete-admin-btn"
+            );
+
+        if (deleteButton) {
+
+            const novelId =
+                deleteButton.dataset.id;
+
+            const filename =
+                deleteButton.dataset.filename;
+
+            const title =
+                deleteButton.dataset.title ||
+                "this novel";
+
+            deleteNovel(
+                novelId,
+                filename,
+                title
+            );
+        }
+    }
+);
+
+// ============================================================
+// DELETE NOVEL
+// ============================================================
+
+async function deleteNovel(
+    novelId,
+    filename,
+    title
 ) {
 
-    return String(value)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
+    const confirmed =
+        confirm(
+            `Are you sure you want to delete "${title}"?\n\nThis will permanently delete the novel and all of its chapters.`
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    if (!filename) {
+
+        alert(
+            "Novel filename is missing."
+        );
+
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/novel/${encodeURIComponent(filename)}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Authorization":
+                            `Bearer ${adminToken}`
+                    }
+                }
+            );
+
+        if (handleAuthError(response)) {
+            return;
+        }
+
+        const data =
+            await response.json();
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Could not delete novel."
+            );
+        }
+
+        alert(
+            data.message ||
+            "Novel deleted successfully."
+        );
+
+        // Remove from local list
+        novels =
+            novels.filter(
+                function (novel) {
+
+                    return String(novel.id) !==
+                        String(novelId);
+                }
+            );
+
+        renderNovels();
+
+    } catch (error) {
+
+        console.error(
+            "Delete Novel Error:",
+            error
+        );
+
+        alert(
+            error.message ||
+            "Could not delete novel."
+        );
+    }
+}
+
+// ============================================================
+// ESCAPE HTML
+// ============================================================
+
+function escapeHtml(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        String(value ?? "");
+
+    return div.innerHTML;
+}
+
+// ============================================================
+// ESCAPE ATTRIBUTE
+// ============================================================
+
+function escapeAttribute(value) {
+
+    return escapeHtml(value)
         .replace(
             /"/g,
             "&quot;"
@@ -383,46 +613,4 @@ function escapeHtml(
             /'/g,
             "&#039;"
         );
-
 }
-
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        loadAdminNovels();
-
-
-        const searchInput =
-            document.getElementById(
-                "novelSearch"
-            );
-
-        const statusFilter =
-            document.getElementById(
-                "statusFilter"
-            );
-
-
-        if (searchInput) {
-
-            searchInput.addEventListener(
-                "input",
-                applyNovelFilters
-            );
-
-        }
-
-
-        if (statusFilter) {
-
-            statusFilter.addEventListener(
-                "change",
-                applyNovelFilters
-            );
-
-        }
-
-    }
-);
