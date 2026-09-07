@@ -931,6 +931,7 @@ async function loadNovel(filename) {
 // ============================================================
 
 function displayChapters(chapters) {
+
     const container =
         document.getElementById(
             "chaptersList"
@@ -950,12 +951,14 @@ function displayChapters(chapters) {
     // --------------------------------------------------------
 
     if (count) {
+
         count.textContent =
             `${chapters.length} ${
                 chapters.length === 1
                     ? "Chapter"
                     : "Chapters"
             }`;
+
     }
 
     container.innerHTML = "";
@@ -965,6 +968,7 @@ function displayChapters(chapters) {
     // --------------------------------------------------------
 
     if (chapters.length === 0) {
+
         container.innerHTML = `
             <p class="empty-message">
                 No chapters available.
@@ -995,19 +999,39 @@ function displayChapters(chapters) {
             const chapterNumber =
                 chapter.chapter_number ?? "";
 
-            const chapterTitle =
-                `Chapter ${chapterNumber}`;
+            // ------------------------------------------------
+            // PROFESSIONAL CHAPTER BUTTON
+            // ------------------------------------------------
 
             button.innerHTML = `
-                <span>
+
+                <span class="chapter-number">
                     ${escapeHtml(
-                        chapterTitle
+                        String(chapterNumber)
                     )}
                 </span>
 
-                <span>
+                <span class="chapter-info">
+
+                    <span class="chapter-label">
+                        CHAPTER
+                    </span>
+
+                    <span class="chapter-title">
+                        ${escapeHtml(
+                            String(chapterNumber)
+                        )}
+                    </span>
+
+                </span>
+
+                <span
+                    class="chapter-arrow"
+                    aria-hidden="true"
+                >
                     →
                 </span>
+
             `;
 
             // ------------------------------------------------
@@ -1017,17 +1041,25 @@ function displayChapters(chapters) {
             button.addEventListener(
                 "click",
                 () => {
+
                     openChapter(
                         chapter
                     );
+
                 }
             );
+
+            // ------------------------------------------------
+            // ADD BUTTON TO CONTAINER
+            // ------------------------------------------------
 
             container.appendChild(
                 button
             );
+
         }
     );
+
 }
 
 // ============================================================

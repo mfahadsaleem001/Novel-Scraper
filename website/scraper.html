@@ -1,492 +1,456 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
+<meta charset="UTF-8">
 
-    <meta charset="UTF-8">
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<title>
+    Novel Scraper | Administration
+</title>
 
-    <title>
-        Novel Scraper | Administration
-    </title>
+<!-- Existing novel card styles -->
+<link
+    rel="stylesheet"
+    href="style.css"
+>
 
-    <!-- Existing novel card styles -->
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
-
-    <!-- Scraper/Admin page styles -->
-    <link
-        rel="stylesheet"
-        href="scraper.css"
-    >
-
+<!-- Scraper/Admin page styles -->
+<link
+    rel="stylesheet"
+    href="scraper.css"
+>
 </head>
-
 
 <body>
 
-
 <div class="admin-layout">
 
+<!-- =====================================================
+     SIDEBAR
+     ===================================================== -->
 
-    <!-- =====================================================
-         SIDEBAR
-         ===================================================== -->
+<aside class="admin-sidebar">
 
-    <aside class="admin-sidebar">
+    <!-- BRAND -->
+
+    <div class="sidebar-brand">
+
+        <div class="brand-mark">
+            NA
+        </div>
+
+        <div class="brand-text">
+
+            <strong>
+                Novel Archive
+            </strong>
+
+            <span>
+                Administration
+            </span>
+
+        </div>
+
+    </div>
 
 
-        <!-- BRAND -->
+    <!-- NAVIGATION -->
 
-        <div class="sidebar-brand">
+    <nav class="admin-navigation">
 
-            <div class="brand-mark">
-                NA
+        <div class="nav-section-title">
+            Management
+        </div>
+
+
+        <!-- Dashboard -->
+
+        <a
+            href="admin_dashboard.html"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                ▦
+            </span>
+
+            <span>
+                Dashboard
+            </span>
+
+        </a>
+
+
+        <!-- All Novels -->
+
+        <a
+            href="admin_novels.html"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                ◈
+            </span>
+
+            <span>
+                All Novels
+            </span>
+
+        </a>
+
+
+        <!-- Scrape Novel -->
+
+        <a
+            href="scraper.html"
+            class="nav-item active"
+        >
+
+            <span class="nav-icon">
+                ⌕
+            </span>
+
+            <span>
+                Scrape Novel
+            </span>
+
+        </a>
+
+
+        <!-- Add Novel -->
+
+        <a
+            href="manual_novel.html"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                ＋
+            </span>
+
+            <span>
+                Add Novel
+            </span>
+
+        </a>
+
+
+        <div
+            class="nav-section-title"
+            style="margin-top: 28px;"
+        >
+            System
+        </div>
+
+
+        <!-- Users -->
+
+        <a
+            href="admin_users.html"
+            class="nav-item"
+            id="usersNav"
+        >
+
+            <span class="nav-icon">
+                ◉
+            </span>
+
+            <span>
+                Users
+            </span>
+
+        </a>
+
+
+        <!-- Settings -->
+
+        <a
+            href="admin_settings.html"
+            class="nav-item"
+            id="settingsNav"
+        >
+
+            <span class="nav-icon">
+                ⚙
+            </span>
+
+            <span>
+                Settings
+            </span>
+
+        </a>
+
+    </nav>
+
+
+    <!-- SIDEBAR BOTTOM -->
+
+    <div class="sidebar-bottom">
+
+        <div class="admin-profile">
+
+            <div class="profile-avatar">
+                A
             </div>
 
-            <div class="brand-text">
+            <div class="profile-info">
 
                 <strong>
-                    Novel Archive
+                    Administrator
                 </strong>
 
                 <span>
-                    Administration
+                    Admin Account
                 </span>
 
             </div>
 
         </div>
 
+    </div>
 
-        <!-- NAVIGATION -->
-
-        <nav class="admin-navigation">
+</aside>
 
 
-            <div class="nav-section-title">
-                Management
+<!-- =====================================================
+     MAIN
+     ===================================================== -->
+
+<main class="admin-main">
+
+    <div class="admin-content">
+
+
+        <!-- =================================================
+             PAGE HEADER
+             ================================================= -->
+
+        <header class="page-header">
+
+            <div>
+
+                <div class="page-kicker">
+                    Novel Management
+                </div>
+
+                <h1>
+                    Scrape Novel
+                </h1>
+
+                <p class="page-description">
+                    Import a novel and its chapters
+                    directly from the source website.
+                </p>
+
             </div>
 
 
-            <!-- Dashboard -->
+            <div class="header-date">
 
-            <a
-                href="admin_dashboard.html"
-                class="nav-item"
-            >
+                <div>
+                    TODAY
+                </div>
 
-                <span class="nav-icon">
-                    ▦
-                </span>
+                <div>
+                    Novel Archive
+                </div>
 
-                <span>
-                    Dashboard
-                </span>
+            </div>
 
-            </a>
+        </header>
 
 
-            <!-- All Novels -->
+        <!-- =================================================
+             SCRAPE FORM
+             ================================================= -->
 
-            <a
-                href="admin_novels.html"
-                class="nav-item"
-            >
+        <section class="scraper-card">
 
-                <span class="nav-icon">
-                    ◈
-                </span>
+            <div class="scraper-card-header">
 
-                <span>
-                    All Novels
-                </span>
+                <h2>
+                    Import Novel
+                </h2>
 
-            </a>
+                <p>
+                    Paste the novel URL below to
+                    fetch its information and chapters.
+                </p>
 
-
-            <!-- Scrape Novel -->
-
-            <a
-                href="scraper.html"
-                class="nav-item active"
-            >
-
-                <span class="nav-icon">
-                    ⌕
-                </span>
-
-                <span>
-                    Scrape Novel
-                </span>
-
-            </a>
+            </div>
 
 
-            <!-- Add Novel -->
+            <form id="scrapeForm">
 
-            <a
-                href="manual_novel.html"
-                class="nav-item"
-            >
+                <div class="url-input-container">
 
-                <span class="nav-icon">
-                    ＋
-                </span>
+                    <input
+                        type="url"
+                        id="novelUrl"
+                        placeholder="Paste novel URL here..."
+                        autocomplete="off"
+                        required
+                    >
 
-                <span>
-                    Add Novel
-                </span>
 
-            </a>
+                    <button
+                        type="submit"
+                        id="scrapeButton"
+                    >
 
+                        <span id="buttonIcon">
+                            ⌕
+                        </span>
+
+                        <span id="buttonText">
+                            Add Novel
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </form>
+
+
+            <!-- MESSAGE -->
 
             <div
-                class="nav-section-title"
-                style="margin-top: 28px;"
+                id="message"
+                class="message"
+            ></div>
+
+
+            <!-- SCRAPING STATUS -->
+
+            <div
+                id="scrapingStatus"
+                class="scraping-status"
             >
-                System
+
+                <span id="statusText"></span>
+
             </div>
 
 
-            <!-- Users -->
+            <p class="example-url">
 
-            <a
-                href="#"
-                class="nav-item"
-                id="usersNav"
-            >
+                Example:
+                https://crushnovels.net/novel/novel-name
 
-                <span class="nav-icon">
-                    ◉
-                </span>
+            </p>
 
-                <span>
-                    Users
-                </span>
-
-            </a>
+        </section>
 
 
-            <!-- Settings -->
+        <!-- =================================================
+             SUCCESSFULLY SCRAPED NOVEL
+             ================================================= -->
 
-            <a
-                href="#"
-                class="nav-item"
-                id="settingsNav"
-            >
+        <section
+            id="scrapedNovelSection"
+            class="novels-section"
+            hidden
+        >
 
-                <span class="nav-icon">
-                    ⚙
-                </span>
-
-                <span>
-                    Settings
-                </span>
-
-            </a>
-
-
-        </nav>
-
-
-        <!-- SIDEBAR BOTTOM -->
-
-        <div class="sidebar-bottom">
-
-            <div class="admin-profile">
-
-                <div class="profile-avatar">
-                    A
-                </div>
-
-                <div class="profile-info">
-
-                    <strong>
-                        Administrator
-                    </strong>
-
-                    <span>
-                        Admin Account
-                    </span>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-    </aside>
-
-
-
-    <!-- =====================================================
-         MAIN
-         ===================================================== -->
-
-    <main class="admin-main">
-
-
-        <div class="admin-content">
-
-
-            <!-- =================================================
-                 PAGE HEADER
-                 ================================================= -->
-
-            <header class="page-header">
-
+            <div class="section-title">
 
                 <div>
 
-                    <div class="page-kicker">
-                        Novel Management
+                    <div class="section-icon">
+                        ✓
                     </div>
-
-                    <h1>
-                        Scrape Novel
-                    </h1>
-
-                    <p class="page-description">
-                        Import a novel and its chapters
-                        directly from the source website.
-                    </p>
-
-                </div>
-
-
-                <div class="header-date">
-
-                    <div>
-                        TODAY
-                    </div>
-
-                    <div>
-                        Novel Archive
-                    </div>
-
-                </div>
-
-
-            </header>
-
-
-
-            <!-- =================================================
-                 SCRAPE FORM
-                 ================================================= -->
-
-            <section class="scraper-card">
-
-
-                <div class="scraper-card-header">
 
                     <h2>
-                        Import Novel
+                        Novel Added Successfully
                     </h2>
 
-                    <p>
-                        Paste the novel URL below to
-                        fetch its information and chapters.
-                    </p>
-
                 </div>
-
-
-                <form id="scrapeForm">
-
-
-                    <div class="url-input-container">
-
-
-                        <input
-                            type="url"
-                            id="novelUrl"
-                            placeholder="Paste novel URL here..."
-                            autocomplete="off"
-                            required
-                        >
-
-
-                        <button
-                            type="submit"
-                            id="scrapeButton"
-                        >
-
-                            <span id="buttonIcon">
-                                ⌕
-                            </span>
-
-                            <span id="buttonText">
-                                Add Novel
-                            </span>
-
-                        </button>
-
-
-                    </div>
-
-
-                </form>
-
-
-                <!-- MESSAGE -->
-
-                <div
-                    id="message"
-                    class="message"
-                ></div>
-
-
-                <!-- SCRAPING STATUS -->
-
-                <div
-                    id="scrapingStatus"
-                    class="scraping-status"
-                >
-
-                    <span id="statusText"></span>
-
-                </div>
-
-
-                <p class="example-url">
-                    Example:
-                    https://crushnovels.net/novel/novel-name
-                </p>
-
-
-            </section>
-
-
-
-            <!-- =================================================
-                 SUCCESSFULLY SCRAPED NOVEL
-                 ================================================= -->
-
-            <section
-                id="scrapedNovelSection"
-                class="novels-section"
-                hidden
-            >
-
-
-                <div class="section-title">
-
-
-                    <div>
-
-                        <div class="section-icon">
-                            ✓
-                        </div>
-
-                        <h2>
-                            Novel Added Successfully
-                        </h2>
-
-                    </div>
-
-
-                </div>
-
-
-                <div
-                    id="scrapedNovelResult"
-                    class="novels-list"
-                ></div>
-
-
-            </section>
-
-
-
-            <!-- =================================================
-                 MANUAL NOVELS
-                 ================================================= -->
-
-            <section
-                id="manualNovelsSection"
-                class="novels-section"
-            >
-
-
-                <div class="section-title">
-
-
-                    <div>
-
-                        <div class="section-icon">
-                            ✎
-                        </div>
-
-                        <h2>
-                            My Manual Novels
-                        </h2>
-
-                    </div>
-
-
-                </div>
-
-
-                <div
-                    id="manualNovelsList"
-                    class="novels-list"
-                >
-
-                    <p class="loading">
-                        Loading manual novels...
-                    </p>
-
-                </div>
-
-
-            </section>
-
-
-
-            <!-- =================================================
-                 PAGE ACTIONS
-                 ================================================= -->
-
-            <div class="scraper-navigation">
-
-
-                <a
-                    href="manual_novel.html"
-                    class="add-button"
-                >
-                    ✎ Add Novel Manually
-                </a>
-
-
-                <a
-                    href="admin_novels.html"
-                    class="read-button"
-                >
-                    ◈ View All Novels
-                </a>
-
 
             </div>
 
 
+            <div
+                id="scrapedNovelResult"
+                class="novels-list"
+            ></div>
+
+        </section>
+
+
+        <!-- =================================================
+             MANUAL NOVELS
+             ================================================= -->
+
+        <section
+            id="manualNovelsSection"
+            class="novels-section"
+        >
+
+            <div class="section-title">
+
+                <div>
+
+                    <div class="section-icon">
+                        ✎
+                    </div>
+
+                    <h2>
+                        My Manual Novels
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="manualNovelsList"
+                class="novels-list"
+            >
+
+                <p class="loading">
+                    Loading manual novels...
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             PAGE ACTIONS
+             ================================================= -->
+
+        <div class="scraper-navigation">
+
+            <a
+                href="manual_novel.html"
+                class="add-button"
+            >
+                ✎ Add Novel Manually
+            </a>
+
+
+            <a
+                href="admin_novels.html"
+                class="read-button"
+            >
+                ◈ View All Novels
+            </a>
+
         </div>
 
+    </div>
 
-    </main>
-
-
+</main>
 </div>
-
-
 
 <!-- =========================================================
      EXISTING SCRIPT
@@ -494,68 +458,11 @@
 
 <script src="script.js"></script>
 
-
 <!-- =========================================================
-     ADMIN SCRAPER NAVIGATION
+     BACK BUTTON
      ========================================================= -->
 
-<script>
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-
-        const usersNav =
-            document.getElementById(
-                "usersNav"
-            );
-
-        if (usersNav) {
-
-            usersNav.addEventListener(
-                "click",
-                function (event) {
-
-                    event.preventDefault();
-
-                    alert(
-                        "User management will be added next."
-                    );
-
-                }
-            );
-
-        }
-
-
-        const settingsNav =
-            document.getElementById(
-                "settingsNav"
-            );
-
-        if (settingsNav) {
-
-            settingsNav.addEventListener(
-                "click",
-                function (event) {
-
-                    event.preventDefault();
-
-                    alert(
-                        "Settings will be added next."
-                    );
-
-                }
-            );
-
-        }
-
-    }
-);
-
-</script>
-
+<script src="back-button.js"></script>
 
 </body>
 

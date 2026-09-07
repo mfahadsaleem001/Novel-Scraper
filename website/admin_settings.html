@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Settings - Novel Archive</title>
+
+    <link rel="stylesheet" href="admin_settings.css">
+</head>
+
+<body>
+
+    <div class="admin-layout">
+
+        <!-- =========================================
+             SIDEBAR
+        ========================================== -->
+
+        <aside class="sidebar">
+
+            <div class="brand">
+
+                <div class="brand-logo">
+                    NA
+                </div>
+
+                <div>
+                    <h1>Novel Archive</h1>
+                    <span>Administration</span>
+                </div>
+
+            </div>
+
+
+            <nav class="sidebar-nav">
+
+                <a href="admin_dashboard.html">
+                    <span>⌂</span>
+                    Dashboard
+                </a>
+
+                <a href="admin_novels.html">
+                    <span>📚</span>
+                    All Novels
+                </a>
+
+                <a href="scraper.html">
+                    <span>↗</span>
+                    Scrape Novel
+                </a>
+
+                <a href="manual_novel.html">
+                    <span>＋</span>
+                    Add Novel
+                </a>
+
+                <a href="admin_users.html">
+                    <span>♙</span>
+                    Users
+                </a>
+
+                <a href="admin_settings.html" class="active">
+                    <span>⚙</span>
+                    Settings
+                </a>
+
+            </nav>
+
+
+            <button
+                type="button"
+                id="logoutButton"
+                class="logout-button"
+            >
+                <span>↪</span>
+                Logout
+            </button>
+
+        </aside>
+
+
+        <!-- =========================================
+             MAIN CONTENT
+        ========================================== -->
+
+        <main class="main-content">
+
+            <header class="topbar">
+
+                <div>
+
+                    <p class="eyebrow">
+                        ADMINISTRATION
+                    </p>
+
+                    <h2>
+                        Settings
+                    </h2>
+
+                    <p class="page-description">
+                        Manage Novel Archive system settings and synchronization.
+                    </p>
+
+                </div>
+
+
+                <div class="admin-badge">
+
+                    <span class="badge-dot"></span>
+
+                    Administrator
+
+                </div>
+
+            </header>
+
+
+            <!-- =====================================
+                 MESSAGE
+            ====================================== -->
+
+            <div
+                id="message"
+                class="message"
+                aria-live="polite"
+            ></div>
+
+
+            <!-- =====================================
+                 SYSTEM SETTINGS
+            ====================================== -->
+
+            <section class="settings-section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <p class="section-label">
+                            SYSTEM
+                        </p>
+
+                        <h3>
+                            System Settings
+                        </h3>
+
+                        <p>
+                            Configure basic Novel Archive behaviour.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="settings-card">
+
+                    <!-- Site Name -->
+
+                    <div class="setting-row">
+
+                        <div class="setting-info">
+
+                            <h4>
+                                Site Name
+                            </h4>
+
+                            <p>
+                                Name displayed throughout the archive.
+                            </p>
+
+                        </div>
+
+
+                        <div class="setting-control">
+
+                            <input
+                                type="text"
+                                id="siteName"
+                                value="Novel Archive"
+                                maxlength="100"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Site Description -->
+
+                    <div class="setting-row">
+
+                        <div class="setting-info">
+
+                            <h4>
+                                Site Description
+                            </h4>
+
+                            <p>
+                                Short description for the archive.
+                            </p>
+
+                        </div>
+
+
+                        <div class="setting-control">
+
+                            <textarea
+                                id="siteDescription"
+                                rows="3"
+                                maxlength="500"
+                            ></textarea>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =====================================
+                 AUTO SYNC SETTINGS
+            ====================================== -->
+
+            <section class="settings-section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <p class="section-label">
+                            AUTOMATION
+                        </p>
+
+                        <h3>
+                            Auto-Sync
+                        </h3>
+
+                        <p>
+                            Control automatic novel synchronization.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="settings-card">
+
+                    <!-- Auto Sync -->
+
+                    <div class="setting-row">
+
+                        <div class="setting-info">
+
+                            <h4>
+                                Automatic Synchronization
+                            </h4>
+
+                            <p>
+                                Automatically check source websites for novel updates.
+                            </p>
+
+                        </div>
+
+
+                        <div class="setting-control">
+
+                            <label class="switch">
+
+                                <input
+                                    type="checkbox"
+                                    id="autoSyncEnabled"
+                                    checked
+                                >
+
+                                <span class="slider"></span>
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Sync Interval -->
+
+                    <div class="setting-row">
+
+                        <div class="setting-info">
+
+                            <h4>
+                                Sync Interval
+                            </h4>
+
+                            <p>
+                                Time between automatic synchronization runs.
+                            </p>
+
+                        </div>
+
+
+                        <div class="setting-control">
+
+                            <select id="syncInterval">
+
+                                <option value="15">
+                                    Every 15 minutes
+                                </option>
+
+                                <option value="30" selected>
+                                    Every 30 minutes
+                                </option>
+
+                                <option value="60">
+                                    Every 1 hour
+                                </option>
+
+                                <option value="120">
+                                    Every 2 hours
+                                </option>
+
+                                <option value="360">
+                                    Every 6 hours
+                                </option>
+
+                                <option value="720">
+                                    Every 12 hours
+                                </option>
+
+                                <option value="1440">
+                                    Every 24 hours
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =====================================
+                 SECURITY
+            ====================================== -->
+
+            <section class="settings-section">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <p class="section-label">
+                            SECURITY
+                        </p>
+
+                        <h3>
+                            Administration Security
+                        </h3>
+
+                        <p>
+                            Information about the administrator session.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="settings-card">
+
+                    <div class="security-info">
+
+                        <div class="security-icon">
+                            ✓
+                        </div>
+
+                        <div>
+
+                            <h4>
+                                Administrator Access
+                            </h4>
+
+                            <p>
+                                Admin-only routes are protected using JWT authentication.
+                                Normal users cannot access administrative APIs.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =====================================
+                 SAVE
+            ====================================== -->
+
+            <div class="settings-actions">
+
+                <button
+                    type="button"
+                    id="saveSettingsButton"
+                    class="save-button"
+                >
+                    Save Settings
+                </button>
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <script src="admin_settings.js"></script>
+    <script src="back-button.js"></script>
+
+</body>
+</html>

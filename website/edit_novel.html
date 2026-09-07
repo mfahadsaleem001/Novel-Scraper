@@ -1,538 +1,571 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Novel | Novel Archive</title>
 
-    <title>Edit Novel | Novel Archive</title>
+<link rel="stylesheet" href="edit_novel.css">
 
-    <link rel="stylesheet" href="edit_novel.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+>
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
-        rel="stylesheet"
-    >
 </head>
 
 <body>
 
-    <div class="admin-layout">
+<div class="admin-layout">
 
-        <!-- SIDEBAR -->
-        <aside class="admin-sidebar">
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
 
-            <div class="sidebar-brand">
+        <div class="sidebar-brand">
 
-                <div class="brand-mark">
-                    NA
+            <div class="brand-mark">
+                NA
+            </div>
+
+            <div>
+                <h2>Novel Archive</h2>
+                <span>Administration</span>
+            </div>
+
+        </div>
+
+        <nav class="admin-navigation">
+
+            <p class="nav-label">
+                MANAGEMENT
+            </p>
+
+            <a
+                href="admin_dashboard.html"
+                class="nav-item"
+            >
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a
+                href="admin_novels.html"
+                class="nav-item active"
+            >
+                <span class="nav-icon">▤</span>
+                <span>All Novels</span>
+            </a>
+
+            <a
+                href="scraper.html"
+                class="nav-item"
+            >
+                <span class="nav-icon">⌕</span>
+                <span>Scrape Novel</span>
+            </a>
+
+            <a
+                href="manual_novel.html"
+                class="nav-item"
+            >
+                <span class="nav-icon">＋</span>
+                <span>Add Novel</span>
+            </a>
+
+            <p class="nav-label nav-label-spaced">
+                SYSTEM
+            </p>
+
+            <!-- USERS -->
+            <a
+                href="admin_users.html"
+                class="nav-item"
+            >
+                <span class="nav-icon">♙</span>
+                <span>Users</span>
+            </a>
+
+            <!-- SETTINGS -->
+            <a
+                href="admin_settings.html"
+                class="nav-item"
+            >
+                <span class="nav-icon">⚙</span>
+                <span>Settings</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="admin-profile">
+
+                <div class="profile-avatar">
+                    A
                 </div>
 
-                <div>
-                    <h2>Novel Archive</h2>
-                    <span>Administration</span>
+                <div class="profile-info">
+                    <strong>Administrator</strong>
+                    <span>Admin Account</span>
                 </div>
 
             </div>
 
-            <nav class="admin-navigation">
+            <button
+                class="logout-button"
+                type="button"
+                onclick="window.location.href='admin_login.html'"
+            >
+                Logout
+            </button>
 
-                <p class="nav-label">
-                    MANAGEMENT
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-main">
+
+        <!-- HEADER -->
+        <header class="dashboard-header">
+
+            <div>
+
+                <p class="page-eyebrow">
+                    NOVEL MANAGEMENT
                 </p>
 
-                <a href="admin_dashboard.html" class="nav-item">
-                    <span class="nav-icon">⌂</span>
-                    <span>Dashboard</span>
-                </a>
+                <h1>
+                    Edit Novel
+                </h1>
 
-                <a href="admin_novels.html" class="nav-item active">
-                    <span class="nav-icon">▤</span>
-                    <span>All Novels</span>
-                </a>
-
-                <a href="scraper.html" class="nav-item">
-                    <span class="nav-icon">⌕</span>
-                    <span>Scrape Novel</span>
-                </a>
-
-                <a href="manual_novel.html" class="nav-item">
-                    <span class="nav-icon">＋</span>
-                    <span>Add Novel</span>
-                </a>
-
-                <p class="nav-label nav-label-spaced">
-                    SYSTEM
+                <p class="page-description">
+                    Update the details and information
+                    of your selected novel.
                 </p>
-
-                <a href="#" class="nav-item">
-                    <span class="nav-icon">♙</span>
-                    <span>Users</span>
-                </a>
-
-                <a href="#" class="nav-item">
-                    <span class="nav-icon">⚙</span>
-                    <span>Settings</span>
-                </a>
-
-            </nav>
-
-            <div class="sidebar-bottom">
-
-                <div class="admin-profile">
-
-                    <div class="profile-avatar">
-                        A
-                    </div>
-
-                    <div class="profile-info">
-                        <strong>Administrator</strong>
-                        <span>Admin Account</span>
-                    </div>
-
-                </div>
-
-                <button
-                    class="logout-button"
-                    type="button"
-                    onclick="window.location.href='admin_login.html'"
-                >
-                    Logout
-                </button>
 
             </div>
 
-        </aside>
+            <div class="header-date">
+
+                <span>Administration</span>
+
+                <strong>
+                    Novel Archive
+                </strong>
+
+            </div>
+
+        </header>
 
 
-        <!-- MAIN CONTENT -->
-        <main class="admin-main">
+        <!-- BACK BUTTON -->
+        <div class="top-navigation">
 
-            <!-- HEADER -->
-            <header class="dashboard-header">
+            <button
+                type="button"
+                class="back-button"
+                onclick="window.location.href='admin_novels.html'"
+            >
+                ←
+                <span>Back to All Novels</span>
+            </button>
+
+        </div>
+
+
+        <!-- EDIT FORM -->
+        <section class="edit-section">
+
+            <div class="section-heading">
 
                 <div>
 
-                    <p class="page-eyebrow">
-                        NOVEL MANAGEMENT
+                    <p class="section-eyebrow">
+                        NOVEL INFORMATION
                     </p>
 
-                    <h1>
-                        Edit Novel
-                    </h1>
-
-                    <p class="page-description">
-                        Update the details and information
-                        of your selected novel.
-                    </p>
+                    <h2>
+                        Update Details
+                    </h2>
 
                 </div>
-
-                <div class="header-date">
-
-                    <span>Administration</span>
-
-                    <strong>
-                        Novel Archive
-                    </strong>
-
-                </div>
-
-            </header>
-
-
-            <!-- BACK BUTTON -->
-            <div class="top-navigation">
-
-                <button
-                    type="button"
-                    class="back-button"
-                    onclick="window.location.href='admin_novels.html'"
-                >
-                    ←
-                    <span>Back to All Novels</span>
-                </button>
 
             </div>
 
 
-            <!-- EDIT FORM -->
-            <section class="edit-section">
+            <form
+                id="editNovelForm"
+                class="edit-form"
+            >
 
-                <div class="section-heading">
-
-                    <div>
-
-                        <p class="section-eyebrow">
-                            NOVEL INFORMATION
-                        </p>
-
-                        <h2>
-                            Update Details
-                        </h2>
-
-                    </div>
-
-                </div>
+                <!-- NOVEL ID -->
+                <input
+                    type="hidden"
+                    id="novelId"
+                    name="novelId"
+                >
 
 
-                <form id="editNovelForm" class="edit-form">
+                <!-- BASIC INFORMATION -->
+                <div class="form-card">
 
-                    <!-- NOVEL ID -->
-                    <input
-                        type="hidden"
-                        id="novelId"
-                        name="novelId"
-                    >
+                    <div class="form-card-header">
 
+                        <div>
 
-                    <!-- BASIC INFORMATION -->
-                    <div class="form-card">
+                            <p class="form-eyebrow">
+                                BASIC DETAILS
+                            </p>
 
-                        <div class="form-card-header">
-
-                            <div>
-                                <p class="form-eyebrow">
-                                    BASIC DETAILS
-                                </p>
-
-                                <h3>
-                                    Novel Information
-                                </h3>
-                            </div>
-
-                        </div>
-
-
-                        <div class="form-grid">
-
-                            <div class="form-group">
-
-                                <label for="title">
-                                    Novel Title
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="title"
-                                    name="title"
-                                    placeholder="Enter novel title"
-                                    required
-                                >
-
-                            </div>
-
-
-                            <div class="form-group">
-
-                                <label for="author">
-                                    Author
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="author"
-                                    name="author"
-                                    placeholder="Enter author name"
-                                >
-
-                            </div>
-
-
-                            <div class="form-group">
-
-                                <label for="genre">
-                                    Genre
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="genre"
-                                    name="genre"
-                                    placeholder="e.g. Romance, Fantasy"
-                                >
-
-                            </div>
-
-
-                            <div class="form-group">
-
-                                <label for="status">
-                                    Status
-                                </label>
-
-                                <select
-                                    id="status"
-                                    name="status"
-                                >
-                                    <option value="">
-                                        Select Status
-                                    </option>
-
-                                    <option value="Ongoing">
-                                        Ongoing
-                                    </option>
-
-                                    <option value="Completed">
-                                        Completed
-                                    </option>
-
-                                    <option value="Dropped">
-                                        Dropped
-                                    </option>
-                                </select>
-
-                            </div>
-
-
-                            <div class="form-group full-width">
-
-                                <label for="synopsis">
-                                    Synopsis
-                                </label>
-
-                                <textarea
-                                    id="synopsis"
-                                    name="synopsis"
-                                    rows="7"
-                                    placeholder="Enter novel synopsis..."
-                                ></textarea>
-
-                            </div>
+                            <h3>
+                                Novel Information
+                            </h3>
 
                         </div>
 
                     </div>
 
 
-                    <!-- COVER -->
-                    <div class="form-card">
+                    <div class="form-grid">
 
-                        <div class="form-card-header">
+                        <div class="form-group">
 
-                            <div>
+                            <label for="title">
+                                Novel Title
+                            </label>
 
-                                <p class="form-eyebrow">
-                                    COVER
-                                </p>
-
-                                <h3>
-                                    Novel Cover
-                                </h3>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="cover-editor">
-
-                            <div class="cover-preview">
-
-                                <img
-                                    id="coverPreview"
-                                    src=""
-                                    alt="Novel Cover Preview"
-                                >
-
-                                <div
-                                    id="coverPlaceholder"
-                                    class="cover-placeholder"
-                                >
-                                    <span>NA</span>
-                                    <small>
-                                        No Cover
-                                    </small>
-                                </div>
-
-                            </div>
-
-
-                            <div class="cover-controls">
-
-                                <label for="coverImage">
-                                    Change Cover
-                                </label>
-
-                                <input
-                                    type="file"
-                                    id="coverImage"
-                                    name="coverImage"
-                                    accept="image/png,image/jpeg,image/jpg,image/webp,image/gif"
-                                >
-
-                                <p>
-                                    JPG, JPEG, PNG, WEBP or GIF.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- SOURCE INFORMATION -->
-                    <div class="form-card">
-
-                        <div class="form-card-header">
-
-                            <div>
-
-                                <p class="form-eyebrow">
-                                    SOURCE
-                                </p>
-
-                                <h3>
-                                    Source Information
-                                </h3>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="form-grid">
-
-                            <div class="form-group">
-
-                                <label for="sourceWebsite">
-                                    Source Website
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="sourceWebsite"
-                                    name="sourceWebsite"
-                                    placeholder="Website name"
-                                >
-
-                            </div>
-
-
-                            <div class="form-group">
-
-                                <label for="sourceUrl">
-                                    Source URL
-                                </label>
-
-                                <input
-                                    type="url"
-                                    id="sourceUrl"
-                                    name="sourceUrl"
-                                    placeholder="https://..."
-                                >
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- CHAPTER MANAGEMENT -->
-                    <div class="form-card">
-
-                        <div class="form-card-header">
-
-                            <div>
-
-                                <p class="form-eyebrow">
-                                    CHAPTERS
-                                </p>
-
-                                <h3>
-                                    Manage Chapters
-                                </h3>
-
-                                <p class="form-description">
-                                    Add, edit or remove chapters
-                                    from this novel.
-                                </p>
-
-                            </div>
-
-                            <button
-                                type="button"
-                                id="addChapterButton"
-                                class="secondary-button"
+                            <input
+                                type="text"
+                                id="title"
+                                name="title"
+                                placeholder="Enter novel title"
+                                required
                             >
-                                ＋ Add Chapter
-                            </button>
 
                         </div>
 
 
-                        <div
-                            id="chaptersContainer"
-                            class="chapters-container"
-                        >
+                        <div class="form-group">
 
-                            <div class="empty-chapters">
+                            <label for="author">
+                                Author
+                            </label>
 
-                                <div class="empty-chapters-icon">
-                                    ≡
-                                </div>
+                            <input
+                                type="text"
+                                id="author"
+                                name="author"
+                                placeholder="Enter author name"
+                            >
 
-                                <h4>
-                                    Chapters will appear here
-                                </h4>
+                        </div>
 
-                                <p>
-                                    Existing chapters can be
-                                    managed after the novel loads.
-                                </p>
 
-                            </div>
+                        <div class="form-group">
+
+                            <label for="genre">
+                                Genre
+                            </label>
+
+                            <input
+                                type="text"
+                                id="genre"
+                                name="genre"
+                                placeholder="e.g. Romance, Fantasy"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="status">
+                                Status
+                            </label>
+
+                            <select
+                                id="status"
+                                name="status"
+                            >
+
+                                <option value="">
+                                    Select Status
+                                </option>
+
+                                <option value="Ongoing">
+                                    Ongoing
+                                </option>
+
+                                <option value="Completed">
+                                    Completed
+                                </option>
+
+                                <option value="Dropped">
+                                    Dropped
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group full-width">
+
+                            <label for="synopsis">
+                                Synopsis
+                            </label>
+
+                            <textarea
+                                id="synopsis"
+                                name="synopsis"
+                                rows="7"
+                                placeholder="Enter novel synopsis..."
+                            ></textarea>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- COVER -->
+                <div class="form-card">
+
+                    <div class="form-card-header">
+
+                        <div>
+
+                            <p class="form-eyebrow">
+                                COVER
+                            </p>
+
+                            <h3>
+                                Novel Cover
+                            </h3>
 
                         </div>
 
                     </div>
 
 
-                    <!-- MESSAGE -->
-                    <div
-                        id="message"
-                        class="form-message"
-                        aria-live="polite"
-                    ></div>
+                    <div class="cover-editor">
+
+                        <div class="cover-preview">
+
+                            <img
+                                id="coverPreview"
+                                src=""
+                                alt="Novel Cover Preview"
+                            >
+
+                            <div
+                                id="coverPlaceholder"
+                                class="cover-placeholder"
+                            >
+
+                                <span>
+                                    NA
+                                </span>
+
+                                <small>
+                                    No Cover
+                                </small>
+
+                            </div>
+
+                        </div>
 
 
-                    <!-- ACTIONS -->
-                    <div class="form-actions">
+                        <div class="cover-controls">
+
+                            <label for="coverImage">
+                                Change Cover
+                            </label>
+
+                            <input
+                                type="file"
+                                id="coverImage"
+                                name="coverImage"
+                                accept="image/png,image/jpeg,image/jpg,image/webp,image/gif"
+                            >
+
+                            <p>
+                                JPG, JPEG, PNG, WEBP or GIF.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SOURCE INFORMATION -->
+                <div class="form-card">
+
+                    <div class="form-card-header">
+
+                        <div>
+
+                            <p class="form-eyebrow">
+                                SOURCE
+                            </p>
+
+                            <h3>
+                                Source Information
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="sourceWebsite">
+                                Source Website
+                            </label>
+
+                            <input
+                                type="text"
+                                id="sourceWebsite"
+                                name="sourceWebsite"
+                                placeholder="Website name"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="sourceUrl">
+                                Source URL
+                            </label>
+
+                            <input
+                                type="url"
+                                id="sourceUrl"
+                                name="sourceUrl"
+                                placeholder="https://..."
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- CHAPTER MANAGEMENT -->
+                <div class="form-card">
+
+                    <div class="form-card-header">
+
+                        <div>
+
+                            <p class="form-eyebrow">
+                                CHAPTERS
+                            </p>
+
+                            <h3>
+                                Manage Chapters
+                            </h3>
+
+                            <p class="form-description">
+                                Add, edit or remove chapters
+                                from this novel.
+                            </p>
+
+                        </div>
 
                         <button
                             type="button"
-                            class="cancel-button"
-                            onclick="window.location.href='admin_novels.html'"
+                            id="addChapterButton"
+                            class="secondary-button"
                         >
-                            Cancel
-                        </button>
-
-                        <button
-                            type="submit"
-                            id="saveNovelButton"
-                            class="save-button"
-                        >
-                            Save Changes
+                            ＋ Add Chapter
                         </button>
 
                     </div>
 
-                </form>
 
-            </section>
+                    <div
+                        id="chaptersContainer"
+                        class="chapters-container"
+                    >
 
-        </main>
+                        <div class="empty-chapters">
 
-    </div>
+                            <div class="empty-chapters-icon">
+                                ≡
+                            </div>
+
+                            <h4>
+                                Chapters will appear here
+                            </h4>
+
+                            <p>
+                                Existing chapters can be
+                                managed after the novel loads.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
 
-    <script src="edit_novel.js"></script>
+                <!-- MESSAGE -->
+                <div
+                    id="message"
+                    class="form-message"
+                    aria-live="polite"
+                ></div>
 
+
+                <!-- ACTIONS -->
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        class="cancel-button"
+                        onclick="window.location.href='admin_novels.html'"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        id="saveNovelButton"
+                        class="save-button"
+                    >
+                        Save Changes
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script src="edit_novel.js"></script>
+<script src="back-button.js"></script>
 </body>
 
 </html>

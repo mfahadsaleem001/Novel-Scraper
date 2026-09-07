@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Users - Novel Archive</title>
+
+    <link rel="stylesheet" href="admin_users.css">
+</head>
+
+
+<body>
+
+    <div class="admin-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <div class="brand">
+                <div class="brand-logo">NA</div>
+
+                <div>
+                    <h1>Novel Archive</h1>
+                    <span>Administration</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <a href="admin_dashboard.html">
+                    <span>⌂</span>
+                    Dashboard
+                </a>
+
+                <a href="admin_novels.html">
+                    <span>📚</span>
+                    All Novels
+                </a>
+
+                <a href="scraper.html">
+                    <span>↗</span>
+                    Scrape Novel
+                </a>
+
+                <a href="manual_novel.html">
+                    <span>＋</span>
+                    Add Novel
+                </a>
+
+                <a href="admin_users.html" class="active">
+                    <span>♙</span>
+                    Users
+                </a>
+
+                <a href="admin_settings.html" id="settingsLink">
+                    <span>⚙</span>
+                    Settings
+                </a>
+
+            </nav>
+
+            <button
+                type="button"
+                id="logoutButton"
+                class="logout-button"
+            >
+                <span>↪</span>
+                Logout
+            </button>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <header class="topbar">
+
+                <div>
+                    <p class="eyebrow">ADMINISTRATION</p>
+                    <h2>User Management</h2>
+                    <p class="page-description">
+                        View registered users and their account roles.
+                    </p>
+                </div>
+
+                <div class="admin-badge">
+                    <span class="badge-dot"></span>
+                    Administrator
+                </div>
+
+            </header>
+
+
+            <!-- STATS -->
+            <section class="stats-grid">
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        ♙
+                    </div>
+
+                    <div>
+                        <span>Total Users</span>
+                        <strong id="totalUsers">0</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        ★
+                    </div>
+
+                    <div>
+                        <span>Administrators</span>
+                        <strong id="totalAdmins">0</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        ◉
+                    </div>
+
+                    <div>
+                        <span>Normal Users</span>
+                        <strong id="normalUsers">0</strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- USERS SECTION -->
+            <section class="users-section">
+
+                <div class="section-header">
+
+                    <div>
+                        <h3>Registered Users</h3>
+
+                        <p>
+                            Accounts currently stored in PostgreSQL.
+                        </p>
+                    </div>
+
+                    <div class="search-box">
+
+                        <span>⌕</span>
+
+                        <input
+                            type="text"
+                            id="userSearch"
+                            placeholder="Search users..."
+                            autocomplete="off"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="message"
+                    class="message"
+                    aria-live="polite"
+                ></div>
+
+
+                <div class="table-wrapper">
+
+                    <table class="users-table">
+
+                        <thead>
+
+                            <tr>
+                                <th>ID</th>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Created</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="usersTableBody">
+
+                            <tr>
+                                <td
+                                    colspan="5"
+                                    class="loading"
+                                >
+                                    Loading users...
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script src="admin_users.js"></script>
+    <script src="back-button.js"></script>
+
+</body>
+</html>

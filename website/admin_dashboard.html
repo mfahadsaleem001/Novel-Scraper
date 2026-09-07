@@ -1,399 +1,414 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>Admin Dashboard | Novel Archive</title>
+<title>Admin Dashboard | Novel Archive</title>
 
-    <link
-        rel="stylesheet"
-        href="admin_dashboard.css"
-    >
+<link
+    rel="stylesheet"
+    href="admin_dashboard.css"
+>
 
 </head>
 
 <body>
 
-    <div class="admin-layout">
+<div class="admin-layout">
 
-        <!-- SIDEBAR -->
+    <!-- SIDEBAR -->
 
-        <aside class="admin-sidebar">
+    <aside class="admin-sidebar">
 
-            <div class="sidebar-brand">
+        <div class="sidebar-brand">
 
-                <div class="brand-mark">
-                    NA
+            <div class="brand-mark">
+                NA
+            </div>
+
+            <div>
+                <h2>Novel Archive</h2>
+                <span>Administration</span>
+            </div>
+
+        </div>
+
+
+        <nav class="admin-navigation">
+
+            <p class="nav-label">
+                MANAGEMENT
+            </p>
+
+            <a
+                href="admin_dashboard.html"
+                class="nav-item active"
+            >
+                <span class="nav-icon">⌂</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a
+                href="admin_novels.html"
+                class="nav-item"
+            >
+                <span class="nav-icon">▤</span>
+                <span>All Novels</span>
+            </a>
+
+            <a
+                href="scraper.html"
+                class="nav-item"
+            >
+                <span class="nav-icon">⌕</span>
+                <span>Scrape Novel</span>
+            </a>
+
+            <a
+                href="manual_novel.html"
+                class="nav-item"
+            >
+                <span class="nav-icon">＋</span>
+                <span>Add Novel</span>
+            </a>
+
+            <p class="nav-label nav-label-spaced">
+                SYSTEM
+            </p>
+
+            <a
+                href="admin_users.html"
+                class="nav-item"
+            >
+                <span class="nav-icon">♙</span>
+                <span>Users</span>
+            </a>
+
+            <a
+                href="admin_settings.html"
+                class="nav-item"
+            >
+                <span class="nav-icon">⚙</span>
+                <span>Settings</span>
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="admin-profile">
+
+                <div class="profile-avatar">
+                    A
                 </div>
 
+                <div class="profile-info">
+
+                    <strong>Administrator</strong>
+
+                    <span>Admin Account</span>
+
+                </div>
+
+            </div>
+
+            <button
+                class="logout-button"
+                type="button"
+                onclick="window.location.href='admin_login.html'"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="admin-main">
+
+        <header class="dashboard-header">
+
+            <div>
+
+                <p class="page-eyebrow">
+                    ADMINISTRATION
+                </p>
+
+                <h1>
+                    Dashboard
+                </h1>
+
+                <p class="page-description">
+                    Manage your novel collection
+                    from one place.
+                </p>
+
+            </div>
+
+            <div class="header-date">
+                <span>Today</span>
+                <strong>Novel Archive</strong>
+            </div>
+
+        </header>
+
+
+        <!-- STATISTICS -->
+
+        <section class="statistics-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+                    <span>Total Novels</span>
+                    <span class="stat-icon">▤</span>
+                </div>
+
+                <strong class="stat-number">
+                    0
+                </strong>
+
+                <span class="stat-note">
+                    In your collection
+                </span>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+                    <span>Total Chapters</span>
+                    <span class="stat-icon">≡</span>
+                </div>
+
+                <strong class="stat-number">
+                    0
+                </strong>
+
+                <span class="stat-note">
+                    Across all novels
+                </span>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+                    <span>Ongoing</span>
+                    <span class="stat-icon">◷</span>
+                </div>
+
+                <strong class="stat-number">
+                    0
+                </strong>
+
+                <span class="stat-note">
+                    Currently updating
+                </span>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-top">
+                    <span>Completed</span>
+                    <span class="stat-icon">✓</span>
+                </div>
+
+                <strong class="stat-number">
+                    0
+                </strong>
+
+                <span class="stat-note">
+                    Finished novels
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- QUICK ACTIONS -->
+
+        <section class="dashboard-section">
+
+            <div class="section-heading">
+
                 <div>
-                    <h2>Novel Archive</h2>
-                    <span>Administration</span>
+
+                    <p class="section-eyebrow">
+                        QUICK ACTIONS
+                    </p>
+
+                    <h2>
+                        Manage Collection
+                    </h2>
+
                 </div>
 
             </div>
 
 
-            <nav class="admin-navigation">
-
-                <p class="nav-label">
-                    MANAGEMENT
-                </p>
-
-                <a
-                    href="#"
-                    class="nav-item active"
-                >
-                    <span class="nav-icon">⌂</span>
-                    <span>Dashboard</span>
-                </a>
-
-                <a
-                    href="#"
-                    class="nav-item"
-                >
-                    <span class="nav-icon">▤</span>
-                    <span>All Novels</span>
-                </a>
-
-                <a
-                    href="#"
-                    class="nav-item"
-                >
-                    <span class="nav-icon">⌕</span>
-                    <span>Scrape Novel</span>
-                </a>
-
-                <a
-                    href="#"
-                    class="nav-item"
-                >
-                    <span class="nav-icon">＋</span>
-                    <span>Add Novel</span>
-                </a>
-
-                <p class="nav-label nav-label-spaced">
-                    SYSTEM
-                </p>
-
-                <a
-                    href="#"
-                    class="nav-item"
-                >
-                    <span class="nav-icon">♙</span>
-                    <span>Users</span>
-                </a>
-
-                <a
-                    href="#"
-                    class="nav-item"
-                >
-                    <span class="nav-icon">⚙</span>
-                    <span>Settings</span>
-                </a>
-
-            </nav>
-
-
-            <div class="sidebar-bottom">
-
-                <div class="admin-profile">
-
-                    <div class="profile-avatar">
-                        A
-                    </div>
-
-                    <div class="profile-info">
-
-                        <strong>Administrator</strong>
-
-                        <span>Admin Account</span>
-
-                    </div>
-
-                </div>
+            <div class="quick-actions">
 
                 <button
-                    class="logout-button"
                     type="button"
+                    class="action-card"
+                    onclick="window.location.href='scraper.html'"
                 >
-                    Logout
+
+                    <span class="action-symbol">
+                        ⌕
+                    </span>
+
+                    <span>
+
+                        <strong>
+                            Scrape Novel
+                        </strong>
+
+                        <small>
+                            Import a novel from
+                            its website
+                        </small>
+
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="action-card"
+                    onclick="window.location.href='manual_novel.html'"
+                >
+
+                    <span class="action-symbol">
+                        ＋
+                    </span>
+
+                    <span>
+
+                        <strong>
+                            Add Novel
+                        </strong>
+
+                        <small>
+                            Create a novel
+                            manually
+                        </small>
+
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="action-card"
+                    onclick="window.location.href='admin_novels.html'"
+                >
+
+                    <span class="action-symbol">
+                        ▤
+                    </span>
+
+                    <span>
+
+                        <strong>
+                            View Novels
+                        </strong>
+
+                        <small>
+                            Browse your complete
+                            collection
+                        </small>
+
+                    </span>
+
                 </button>
 
             </div>
 
-        </aside>
+        </section>
 
 
-        <!-- MAIN CONTENT -->
+        <!-- RECENT NOVELS -->
 
-        <main class="admin-main">
+        <section class="dashboard-section">
 
-            <header class="dashboard-header">
+            <div class="section-heading">
 
                 <div>
 
-                    <p class="page-eyebrow">
-                        ADMINISTRATION
+                    <p class="section-eyebrow">
+                        COLLECTION
                     </p>
 
-                    <h1>
-                        Dashboard
-                    </h1>
+                    <h2>
+                        Recent Novels
+                    </h2>
 
-                    <p class="page-description">
-                        Manage your novel collection
-                        from one place.
+                </div>
+
+                <button
+                    type="button"
+                    class="view-all-button"
+                    onclick="window.location.href='admin_novels.html'"
+                >
+                    View All
+                </button>
+
+            </div>
+
+
+            <div class="recent-novels">
+
+                <div class="empty-collection">
+
+                    <div class="empty-icon">
+                        ◇
+                    </div>
+
+                    <h3>
+                        Your collection is empty
+                    </h3>
+
+                    <p>
+                        Scrape or add your first
+                        novel to begin building
+                        your collection.
                     </p>
 
                 </div>
 
-                <div class="header-date">
-                    <span>Today</span>
-                    <strong>Novel Archive</strong>
-                </div>
+            </div>
 
-            </header>
+        </section>
 
+    </main>
 
-            <!-- STATISTICS -->
+</div>
 
-            <section class="statistics-grid">
-
-                <div class="stat-card">
-
-                    <div class="stat-top">
-                        <span>Total Novels</span>
-                        <span class="stat-icon">▤</span>
-                    </div>
-
-                    <strong class="stat-number">
-                        0
-                    </strong>
-
-                    <span class="stat-note">
-                        In your collection
-                    </span>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <div class="stat-top">
-                        <span>Total Chapters</span>
-                        <span class="stat-icon">≡</span>
-                    </div>
-
-                    <strong class="stat-number">
-                        0
-                    </strong>
-
-                    <span class="stat-note">
-                        Across all novels
-                    </span>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <div class="stat-top">
-                        <span>Ongoing</span>
-                        <span class="stat-icon">◷</span>
-                    </div>
-
-                    <strong class="stat-number">
-                        0
-                    </strong>
-
-                    <span class="stat-note">
-                        Currently updating
-                    </span>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <div class="stat-top">
-                        <span>Completed</span>
-                        <span class="stat-icon">✓</span>
-                    </div>
-
-                    <strong class="stat-number">
-                        0
-                    </strong>
-
-                    <span class="stat-note">
-                        Finished novels
-                    </span>
-
-                </div>
-
-            </section>
-
-
-            <!-- QUICK ACTIONS -->
-
-            <section class="dashboard-section">
-
-                <div class="section-heading">
-
-                    <div>
-
-                        <p class="section-eyebrow">
-                            QUICK ACTIONS
-                        </p>
-
-                        <h2>
-                            Manage Collection
-                        </h2>
-
-                    </div>
-
-                </div>
-
-
-                <div class="quick-actions">
-
-                    <button
-                        type="button"
-                        class="action-card"
-                    >
-
-                        <span class="action-symbol">
-                            ⌕
-                        </span>
-
-                        <span>
-                            <strong>
-                                Scrape Novel
-                            </strong>
-
-                            <small>
-                                Import a novel from
-                                its website
-                            </small>
-                        </span>
-
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="action-card"
-                    >
-
-                        <span class="action-symbol">
-                            ＋
-                        </span>
-
-                        <span>
-                            <strong>
-                                Add Novel
-                            </strong>
-
-                            <small>
-                                Create a novel
-                                manually
-                            </small>
-                        </span>
-
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="action-card"
-                    >
-
-                        <span class="action-symbol">
-                            ▤
-                        </span>
-
-                        <span>
-                            <strong>
-                                View Novels
-                            </strong>
-
-                            <small>
-                                Browse your complete
-                                collection
-                            </small>
-                        </span>
-
-                    </button>
-
-                </div>
-
-            </section>
-
-
-            <!-- RECENT NOVELS -->
-
-            <section class="dashboard-section">
-
-                <div class="section-heading">
-
-                    <div>
-
-                        <p class="section-eyebrow">
-                            COLLECTION
-                        </p>
-
-                        <h2>
-                            Recent Novels
-                        </h2>
-
-                    </div>
-
-                    <button
-                        type="button"
-                        class="view-all-button"
-                    >
-                        View All
-                    </button>
-
-                </div>
-
-
-                <div class="recent-novels">
-
-                    <div class="empty-collection">
-
-                        <div class="empty-icon">
-                            ◇
-                        </div>
-
-                        <h3>
-                            Your collection is empty
-                        </h3>
-
-                        <p>
-                            Scrape or add your first
-                            novel to begin building
-                            your collection.
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-        </main>
-
-    </div>
 
 <script src="admin_dashboard.js"></script>
+
+<script src="back-button.js"></script>
 </body>
 
 </html>

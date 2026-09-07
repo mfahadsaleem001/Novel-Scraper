@@ -16,12 +16,23 @@ from sqlalchemy.orm import relationship
 from backend.database import Base
 
 
+# ============================================================
+# USER MODEL
+# ============================================================
+
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
 
-    name = Column(String(100), nullable=False)
+    name = Column(
+        String(100),
+        nullable=False,
+    )
 
     email = Column(
         String(255),
@@ -54,10 +65,18 @@ class User(Base):
     )
 
 
+# ============================================================
+# NOVEL MODEL
+# ============================================================
+
 class Novel(Base):
     __tablename__ = "novels"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
 
     filename = Column(
         String(255),
@@ -125,6 +144,30 @@ class Novel(Base):
         nullable=False,
     )
 
+    # ========================================================
+    # AUTO SYNC
+    # ========================================================
+
+    last_synced_at = Column(
+        DateTime,
+        nullable=True,
+    )
+
+    sync_status = Column(
+        String(30),
+        nullable=False,
+        default="pending",
+    )
+
+    last_sync_error = Column(
+        Text,
+        nullable=True,
+    )
+
+    # ========================================================
+    # OWNER
+    # ========================================================
+
     owner_id = Column(
         Integer,
         ForeignKey("users.id"),
@@ -136,6 +179,10 @@ class Novel(Base):
         back_populates="novels",
     )
 
+    # ========================================================
+    # CHAPTERS
+    # ========================================================
+
     chapters = relationship(
         "Chapter",
         back_populates="novel",
@@ -143,6 +190,10 @@ class Novel(Base):
         order_by="Chapter.chapter_number",
     )
 
+
+# ============================================================
+# CHAPTER MODEL
+# ============================================================
 
 class Chapter(Base):
     __tablename__ = "chapters"
@@ -187,6 +238,16 @@ class Chapter(Base):
         nullable=False,
     )
 
+    # ========================================================
+    # MANUAL / SOURCE CHAPTER
+    # ========================================================
+
+    is_manual = Column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )
+
     url = Column(
         String(1000),
         nullable=True,
@@ -219,4 +280,31 @@ class Chapter(Base):
             "chapter_number",
             name="uq_novel_chapter_number",
         ),
+    )
+    
+class Setting(Base):
+    __tablename__ = "settings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    site_name = Column(String(100), nullable=False, default="Novel Archive")
+    site_description = Column(
+        String(500),
+        nullable=False,
+        default="A modern novel archive."
+    )
+    auto_sync_enabled = Column(
+        Boolean,
+        nullable=False,
+        default=True
+    )
+    sync_interval = Column(
+        Integer,
+        nullable=False,
+        default=30
+    )
+    updated_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow,
+        nullable=False
     )

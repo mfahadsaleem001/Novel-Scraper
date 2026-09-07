@@ -1080,3 +1080,87 @@ footer > span {
 #readerContent strong {
     color: var(--novel-charcoal);
 }
+
+/* ============================================================
+   GLOBAL WEBSITE BACK BUTTON
+   ============================================================ */
+
+.global-back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    min-height: 42px;
+
+    margin-bottom: 20px;
+    padding: 9px 15px;
+
+    background: var(--novel-paper, #fffdf8);
+
+    border: 1px solid var(--novel-border, #ded4c8);
+    border-radius: 10px;
+
+    color: var(--novel-charcoal, #292525);
+
+    font-family: "Manrope", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.global-back-button:hover {
+    background: var(--novel-ivory, #f7f1e7);
+    border-color: var(--novel-gold, #b18a52);
+
+    transform: translateX(-2px);
+
+    box-shadow:
+        0 4px 12px
+        rgba(41, 37, 37, 0.06);
+}
+
+.global-back-button:active {
+    transform: translateX(0);
+}
+
+.global-back-button:focus-visible {
+    outline:
+        2px solid
+        var(--novel-gold, #b18a52);
+
+    outline-offset: 2px;
+}
+
+.global-back-button span:first-child {
+    font-size: 18px;
+    line-height: 1;
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 650px) {
+
+    .global-back-button {
+        min-height: 40px;
+
+        margin-bottom: 16px;
+        padding: 8px 13px;
+
+        font-size: 12px;
+    }
+
+    .global-back-button span:first-child {
+        font-size: 17px;
+    }
+
+}
