@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -20,10 +19,13 @@
             --novel-burgundy: #6f1d3a;
             --novel-burgundy-dark: #4a1026;
             --novel-burgundy-soft: #f1e4e8;
+
             --novel-ivory: #f7f1e7;
             --novel-paper: #fffdf8;
+
             --novel-charcoal: #292525;
             --novel-muted: #756c67;
+
             --novel-gold: #b18a52;
             --novel-border: #ded4c8;
         }
@@ -49,47 +51,62 @@
             align-items: center;
             justify-content: space-between;
             gap: 24px;
+
             padding: 14px 5%;
+
             background: var(--novel-charcoal);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+            border-bottom:
+                1px solid rgba(255, 255, 255, 0.08);
         }
 
         .logo {
             display: flex;
             align-items: center;
             gap: 12px;
+
             min-width: 0;
         }
 
         .logo-mark {
             width: 42px;
             height: 42px;
+
             flex-shrink: 0;
+
             display: inline-flex;
             align-items: center;
             justify-content: center;
+
             background: var(--novel-burgundy);
             color: var(--novel-ivory);
+
             font-family: "Manrope", sans-serif;
             font-size: 15px;
             font-weight: 700;
+
             letter-spacing: 1px;
         }
 
         .logo-text {
             color: var(--novel-ivory);
+
             font-family: "Cormorant Garamond", serif;
             font-size: 28px;
             font-weight: 700;
+
             line-height: 1;
         }
 
         .header-text {
             color: rgba(247, 241, 231, 0.72);
+
             font-family: "Manrope", sans-serif;
             font-size: 13px;
             font-weight: 600;
+
             letter-spacing: 0.3px;
+
             text-align: right;
         }
 
@@ -100,7 +117,9 @@
 
         .main-container {
             width: min(1180px, calc(100% - 48px));
+
             margin: 0 auto;
+
             padding: 42px 0 70px;
         }
 
@@ -112,12 +131,17 @@
         #loading,
         #error {
             width: 100%;
+
             padding: 28px;
             margin: 20px 0;
+
             border: 1px solid var(--novel-border);
             border-radius: 14px;
+
             background: var(--novel-paper);
+
             text-align: center;
+
             font-family: "Manrope", sans-serif;
         }
 
@@ -127,8 +151,11 @@
 
         #error {
             color: var(--novel-burgundy);
+
             background: var(--novel-burgundy-soft);
-            border-color: rgba(111, 29, 58, 0.2);
+
+            border-color:
+                rgba(111, 29, 58, 0.2);
         }
 
 
@@ -147,14 +174,24 @@
 
         .novel-detail-header {
             display: grid;
-            grid-template-columns: 270px minmax(0, 1fr);
+
+            grid-template-columns:
+                270px minmax(0, 1fr);
+
             gap: 44px;
+
             padding: 38px;
+
             background: var(--novel-paper);
-            border: 1px solid var(--novel-border);
+
+            border:
+                1px solid var(--novel-border);
+
             border-radius: 18px;
+
             box-shadow:
-                0 10px 35px rgba(41, 37, 37, 0.05);
+                0 10px 35px
+                rgba(41, 37, 37, 0.05);
         }
 
 
@@ -164,17 +201,25 @@
 
         .novel-cover-wrapper {
             width: 100%;
+
             aspect-ratio: 2 / 3;
+
             overflow: hidden;
+
             background: var(--novel-ivory);
-            border: 1px solid var(--novel-border);
+
+            border:
+                1px solid var(--novel-border);
+
             border-radius: 10px;
         }
 
         #coverImage {
             width: 100%;
             height: 100%;
+
             display: block;
+
             object-fit: contain;
         }
 
@@ -185,67 +230,218 @@
 
         .novel-information {
             min-width: 0;
+
             display: flex;
             flex-direction: column;
+
             justify-content: center;
         }
 
         .novel-label {
             display: inline-block;
+
             margin-bottom: 10px;
+
             color: var(--novel-gold);
+
             font-family: "Manrope", sans-serif;
+
             font-size: 11px;
             font-weight: 700;
+
             letter-spacing: 1.8px;
+
             text-transform: uppercase;
         }
 
         #novelTitle {
             margin: 0;
+
             color: var(--novel-charcoal);
-            font-family: "Cormorant Garamond", serif;
-            font-size: clamp(40px, 5vw, 62px);
+
+            font-family:
+                "Cormorant Garamond",
+                serif;
+
+            font-size:
+                clamp(40px, 5vw, 62px);
+
             font-weight: 700;
+
             line-height: 0.98;
         }
 
         .novel-meta {
             display: flex;
+
             flex-wrap: wrap;
+
             gap: 9px;
+
             margin-top: 20px;
         }
 
         .novel-meta span {
             display: inline-flex;
+
             align-items: center;
+
             min-height: 32px;
-            padding: 6px 12px;
+
+            padding:
+                6px 12px;
+
             background: var(--novel-ivory);
-            border: 1px solid var(--novel-border);
+
+            border:
+                1px solid var(--novel-border);
+
             border-radius: 20px;
+
             color: var(--novel-muted);
-            font-family: "Manrope", sans-serif;
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
             font-size: 12px;
             font-weight: 600;
         }
 
         #novelStatus {
-            background: var(--novel-burgundy-soft);
-            border-color: rgba(111, 29, 58, 0.16);
-            color: var(--novel-burgundy);
+            background:
+                var(--novel-burgundy-soft);
+
+            border-color:
+                rgba(111, 29, 58, 0.16);
+
+            color:
+                var(--novel-burgundy);
         }
 
         .novel-author-line {
-            margin: 16px 0 0;
-            color: var(--novel-muted);
-            font-family: "Manrope", sans-serif;
+            margin:
+                16px 0 0;
+
+            color:
+                var(--novel-muted);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
             font-size: 14px;
         }
 
         .novel-author-line strong {
-            color: var(--novel-charcoal);
+            color:
+                var(--novel-charcoal);
+        }
+
+
+        /* ============================================================
+           SAVE NOVEL ACTION
+           ============================================================ */
+
+        .novel-actions {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-top: 22px;
+        }
+
+        .save-novel-button {
+            min-height: 44px;
+
+            padding:
+                10px 18px;
+
+            border:
+                1px solid var(--novel-burgundy);
+
+            border-radius: 9px;
+
+            background:
+                var(--novel-burgundy);
+
+            color:
+                var(--novel-ivory);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            font-size: 12px;
+            font-weight: 700;
+
+            letter-spacing: 0.2px;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                border-color 0.2s ease,
+                color 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .save-novel-button:hover {
+            background:
+                var(--novel-burgundy-dark);
+
+            border-color:
+                var(--novel-burgundy-dark);
+
+            transform:
+                translateY(-1px);
+        }
+
+        .save-novel-button:active {
+            transform:
+                translateY(0);
+        }
+
+        .save-novel-button:focus-visible {
+            outline:
+                2px solid var(--novel-gold);
+
+            outline-offset:
+                2px;
+        }
+
+        .save-novel-button.saved {
+            background:
+                transparent;
+
+            border-color:
+                var(--novel-gold);
+
+            color:
+                var(--novel-burgundy);
+        }
+
+        .save-novel-button.saved:hover {
+            background:
+                var(--novel-ivory);
+
+            border-color:
+                var(--novel-gold);
+
+            color:
+                var(--novel-burgundy);
+        }
+
+        .save-novel-button:disabled {
+            opacity: 0.65;
+
+            cursor:
+                not-allowed;
+
+            transform:
+                none;
         }
 
 
@@ -255,24 +451,42 @@
 
         .synopsis-section {
             margin-top: 26px;
+
             padding-top: 24px;
-            border-top: 1px solid var(--novel-border);
+
+            border-top:
+                1px solid var(--novel-border);
         }
 
         .synopsis-section h2,
         .chapters-section h2 {
-            margin: 0 0 12px;
-            color: var(--novel-charcoal);
-            font-family: "Cormorant Garamond", serif;
+            margin:
+                0 0 12px;
+
+            color:
+                var(--novel-charcoal);
+
+            font-family:
+                "Cormorant Garamond",
+                serif;
+
             font-size: 28px;
+
             font-weight: 700;
         }
 
         #novelSynopsis {
             margin: 0;
-            color: var(--novel-muted);
-            font-family: "Manrope", sans-serif;
+
+            color:
+                var(--novel-muted);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
             font-size: 14px;
+
             line-height: 1.85;
         }
 
@@ -283,19 +497,31 @@
 
         .chapters-section {
             width: 100%;
+
             margin-top: 30px;
+
             padding: 34px;
-            background: var(--novel-paper);
-            border: 1px solid var(--novel-border);
+
+            background:
+                var(--novel-paper);
+
+            border:
+                1px solid var(--novel-border);
+
             border-radius: 18px;
+
             box-sizing: border-box;
         }
 
         .chapters-heading {
             display: flex;
+
             align-items: flex-end;
+
             justify-content: space-between;
+
             gap: 20px;
+
             margin-bottom: 22px;
         }
 
@@ -304,23 +530,34 @@
         }
 
         #chapterCount {
-            color: var(--novel-muted);
-            font-family: "Manrope", sans-serif;
+            color:
+                var(--novel-muted);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
             font-size: 12px;
+
             font-weight: 600;
         }
 
 
         /* ============================================================
            CHAPTER LIST
-           Full available width — same visual width as synopsis area
+           Full available width
            ============================================================ */
 
         #chaptersList {
             width: 100%;
+
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
             gap: 12px;
+
             margin: 0;
         }
 
@@ -331,22 +568,43 @@
 
         .chapter-button {
             width: 100%;
+
             min-height: 68px;
+
             display: flex;
+
             align-items: center;
+
             gap: 14px;
-            padding: 10px 13px;
+
+            padding:
+                10px 13px;
+
             box-sizing: border-box;
-            background: var(--novel-paper);
-            border: 1px solid var(--novel-border);
+
+            background:
+                var(--novel-paper);
+
+            border:
+                1px solid var(--novel-border);
+
             border-radius: 12px;
-            color: var(--novel-charcoal);
-            font-family: "Manrope", sans-serif;
+
+            color:
+                var(--novel-charcoal);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
             text-align: left;
+
             cursor: pointer;
+
             box-shadow:
                 0 2px 7px
                 rgba(41, 37, 37, 0.025);
+
             transition:
                 background 0.2s ease,
                 border-color 0.2s ease,
@@ -355,87 +613,146 @@
         }
 
         .chapter-button:hover {
-            background: var(--novel-ivory);
-            border-color: var(--novel-gold);
-            transform: translateY(-2px);
+            background:
+                var(--novel-ivory);
+
+            border-color:
+                var(--novel-gold);
+
+            transform:
+                translateY(-2px);
+
             box-shadow:
                 0 8px 20px
                 rgba(41, 37, 37, 0.08);
         }
 
         .chapter-button:active {
-            transform: translateY(0);
+            transform:
+                translateY(0);
         }
 
         .chapter-button:focus-visible {
             outline:
-                2px solid
-                var(--novel-gold);
-            outline-offset: 2px;
+                2px solid var(--novel-gold);
+
+            outline-offset:
+                2px;
         }
 
         .chapter-number {
             width: 42px;
             height: 42px;
+
             flex-shrink: 0;
+
             display: flex;
+
             align-items: center;
             justify-content: center;
-            background: var(--novel-burgundy-soft);
-            border: 1px solid rgba(111, 29, 58, 0.15);
-            border-radius: 10px;
-            color: var(--novel-burgundy);
-            font-family: "Manrope", sans-serif;
-            font-size: 12px;
-            font-weight: 800;
-            letter-spacing: 0.2px;
+
+            background:
+                var(--novel-burgundy-soft);
+
+            border:
+                1px solid rgba(111, 29, 58, 0.15);
+
+            border-radius: 8px;
+
+            color:
+                var(--novel-burgundy);
+
+            font-family:
+                "Cormorant Garamond",
+                Georgia,
+                serif;
+
+            font-size: 17px;
+
+            font-weight: 700;
+
+            line-height: 1;
+
+            letter-spacing: 0;
         }
 
         .chapter-info {
             min-width: 0;
+
             flex: 1;
+
             display: flex;
+
             flex-direction: column;
+
             gap: 2px;
         }
 
         .chapter-label {
-            color: var(--novel-muted);
-            font-family: "Manrope", sans-serif;
+            color:
+                var(--novel-muted);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
             font-size: 9px;
+
             font-weight: 800;
+
             letter-spacing: 1.1px;
+
             text-transform: uppercase;
         }
 
         .chapter-title {
             overflow: hidden;
-            color: var(--novel-charcoal);
-            font-family: "Manrope", sans-serif;
+
+            color:
+                var(--novel-charcoal);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
             font-size: 14px;
+
             font-weight: 700;
+
             white-space: nowrap;
+
             text-overflow: ellipsis;
         }
 
         .chapter-arrow {
             width: 34px;
             height: 34px;
+
             flex-shrink: 0;
+
             display: flex;
+
             align-items: center;
             justify-content: center;
+
             border-radius: 50%;
-            color: var(--novel-burgundy);
+
+            color:
+                var(--novel-burgundy);
+
             font-size: 18px;
+
             transition:
                 background 0.2s ease,
                 transform 0.2s ease;
         }
 
         .chapter-button:hover .chapter-arrow {
-            background: var(--novel-burgundy-soft);
-            transform: translateX(3px);
+            background:
+                var(--novel-burgundy-soft);
+
+            transform:
+                translateX(3px);
         }
 
 
@@ -445,10 +762,15 @@
 
         #chapterPagination {
             display: none;
+
             align-items: center;
+
             justify-content: center;
+
             flex-wrap: wrap;
+
             gap: 8px;
+
             margin-top: 26px;
         }
 
@@ -459,18 +781,36 @@
         .chapter-page-button {
             min-width: 42px;
             height: 42px;
-            padding: 0 12px;
+
+            padding:
+                0 12px;
+
             display: inline-flex;
+
             align-items: center;
             justify-content: center;
-            border: 1px solid var(--novel-border);
+
+            border:
+                1px solid var(--novel-border);
+
             border-radius: 8px;
-            background: var(--novel-paper);
-            color: var(--novel-charcoal);
-            font-family: "Manrope", sans-serif;
+
+            background:
+                var(--novel-paper);
+
+            color:
+                var(--novel-charcoal);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
             font-size: 12px;
+
             font-weight: 700;
+
             cursor: pointer;
+
             transition:
                 background 0.2s ease,
                 border-color 0.2s ease,
@@ -479,33 +819,55 @@
         }
 
         .chapter-page-button:hover:not(:disabled) {
-            background: var(--novel-ivory);
-            border-color: var(--novel-gold);
-            color: var(--novel-burgundy);
-            transform: translateY(-1px);
+            background:
+                var(--novel-ivory);
+
+            border-color:
+                var(--novel-gold);
+
+            color:
+                var(--novel-burgundy);
+
+            transform:
+                translateY(-1px);
         }
 
         .chapter-page-button.active {
-            background: var(--novel-burgundy);
-            border-color: var(--novel-burgundy);
-            color: var(--novel-ivory);
+            background:
+                var(--novel-burgundy);
+
+            border-color:
+                var(--novel-burgundy);
+
+            color:
+                var(--novel-ivory);
         }
 
         .chapter-page-button:disabled {
             opacity: 0.45;
-            cursor: not-allowed;
+
+            cursor:
+                not-allowed;
         }
 
         .chapter-page-button.previous,
         .chapter-page-button.next {
-            padding: 0 16px;
+            padding:
+                0 16px;
         }
 
         .chapter-page-ellipsis {
             min-width: 24px;
-            color: var(--novel-muted);
-            font-family: "Manrope", sans-serif;
+
+            color:
+                var(--novel-muted);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
             font-weight: 700;
+
             text-align: center;
         }
 
@@ -516,15 +878,24 @@
 
         #readerModal {
             position: fixed;
+
             inset: 0;
+
             z-index: 9999;
+
             display: none;
+
             align-items: center;
             justify-content: center;
+
             padding: 24px;
+
             background:
                 rgba(41, 37, 37, 0.86);
-            backdrop-filter: blur(7px);
+
+            backdrop-filter:
+                blur(7px);
+
             overflow-y: auto;
         }
 
@@ -538,17 +909,29 @@
            ============================================================ */
 
         .reader-container {
-            width: min(1120px, 100%);
-            height: min(900px, calc(100vh - 48px));
+            width:
+                min(1120px, 100%);
+
+            height:
+                min(900px, calc(100vh - 48px));
+
             display: flex;
+
             flex-direction: column;
+
             overflow: hidden;
-            background: var(--novel-paper);
+
+            background:
+                var(--novel-paper);
+
             border:
                 1px solid rgba(255, 255, 255, 0.12);
+
             border-radius: 16px;
+
             box-shadow:
-                0 30px 90px rgba(0, 0, 0, 0.35);
+                0 30px 90px
+                rgba(0, 0, 0, 0.35);
         }
 
 
@@ -558,47 +941,78 @@
 
         .reader-header {
             flex-shrink: 0;
+
             display: flex;
+
             align-items: center;
+
             justify-content: space-between;
+
             gap: 20px;
-            padding: 20px 28px;
-            background: var(--novel-charcoal);
+
+            padding:
+                20px 28px;
+
+            background:
+                var(--novel-charcoal);
+
             border-bottom:
                 1px solid rgba(255, 255, 255, 0.08);
         }
 
         #readerTitle {
             margin: 0;
-            color: var(--novel-ivory);
-            font-family: "Cormorant Garamond", serif;
+
+            color:
+                var(--novel-ivory);
+
+            font-family:
+                "Cormorant Garamond",
+                serif;
+
             font-size: 30px;
+
             font-weight: 700;
+
             line-height: 1.2;
         }
 
         #closeReader {
             width: 42px;
             height: 42px;
+
             flex-shrink: 0;
+
             display: inline-flex;
+
             align-items: center;
             justify-content: center;
+
             border:
                 1px solid rgba(247, 241, 231, 0.22);
+
             border-radius: 50%;
+
             background: transparent;
-            color: var(--novel-ivory);
+
+            color:
+                var(--novel-ivory);
+
             font-size: 24px;
+
             cursor: pointer;
+
             transition:
                 background 0.2s ease,
                 border-color 0.2s ease;
         }
 
         #closeReader:hover {
-            background: var(--novel-burgundy);
-            border-color: var(--novel-burgundy);
+            background:
+                var(--novel-burgundy);
+
+            border-color:
+                var(--novel-burgundy);
         }
 
 
@@ -608,11 +1022,19 @@
 
         #readerChapterList {
             display: none;
+
             flex-shrink: 0;
+
             max-height: 180px;
+
             overflow-y: auto;
-            padding: 16px 24px;
-            background: var(--novel-paper);
+
+            padding:
+                16px 24px;
+
+            background:
+                var(--novel-paper);
+
             border-bottom:
                 1px solid var(--novel-border);
         }
@@ -623,25 +1045,45 @@
 
         #readerChapters {
             max-width: 950px;
+
             margin: 0 auto;
+
             display: flex;
+
             flex-wrap: wrap;
+
             justify-content: center;
+
             gap: 8px;
         }
 
         #readerChapters button {
             min-height: 38px;
-            padding: 8px 14px;
+
+            padding:
+                8px 14px;
+
             border:
                 1px solid var(--novel-border);
+
             border-radius: 7px;
-            background: var(--novel-ivory);
-            color: var(--novel-charcoal);
-            font-family: "Manrope", sans-serif;
+
+            background:
+                var(--novel-ivory);
+
+            color:
+                var(--novel-charcoal);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
             font-size: 12px;
+
             font-weight: 600;
+
             cursor: pointer;
+
             transition:
                 background 0.2s ease,
                 border-color 0.2s ease,
@@ -649,9 +1091,14 @@
         }
 
         #readerChapters button:hover {
-            background: var(--novel-burgundy);
-            border-color: var(--novel-burgundy);
-            color: var(--novel-ivory);
+            background:
+                var(--novel-burgundy);
+
+            border-color:
+                var(--novel-burgundy);
+
+            color:
+                var(--novel-ivory);
         }
 
 
@@ -661,9 +1108,13 @@
 
         .reader-body {
             flex: 1;
+
             min-height: 0;
+
             overflow-y: auto;
-            background: var(--novel-ivory);
+
+            background:
+                var(--novel-ivory);
         }
 
 
@@ -672,38 +1123,56 @@
            ============================================================ */
 
         #readerContent {
-            width: min(760px, 100%);
+            width:
+                min(760px, 100%);
+
             margin: 0 auto;
-            padding: 58px 36px 75px;
-            color: #3b3531;
+
+            padding:
+                58px 36px 75px;
+
+            color:
+                #3b3531;
+
             font-family:
                 "Cormorant Garamond",
                 Georgia,
                 "Times New Roman",
                 serif;
+
             font-size: 20px;
+
             line-height: 1.95;
+
             letter-spacing: 0.1px;
         }
 
         #readerContent p {
-            margin: 0 0 24px;
+            margin:
+                0 0 24px;
         }
 
         #readerContent h1,
         #readerContent h2,
         #readerContent h3 {
-            margin: 0 0 28px;
-            color: var(--novel-burgundy);
+            margin:
+                0 0 28px;
+
+            color:
+                var(--novel-burgundy);
+
             font-family:
                 "Cormorant Garamond",
                 serif;
+
             font-weight: 700;
+
             line-height: 1.3;
         }
 
         #readerContent strong {
-            color: var(--novel-charcoal);
+            color:
+                var(--novel-charcoal);
         }
 
 
@@ -713,28 +1182,53 @@
 
         .reader-navigation {
             flex-shrink: 0;
+
             display: grid;
-            grid-template-columns: 1fr auto 1fr;
+
+            grid-template-columns:
+                1fr auto 1fr;
+
             align-items: center;
+
             gap: 14px;
-            padding: 15px 24px;
-            background: var(--novel-paper);
+
+            padding:
+                15px 24px;
+
+            background:
+                var(--novel-paper);
+
             border-top:
                 1px solid var(--novel-border);
         }
 
         .reader-navigation button {
             min-height: 42px;
-            padding: 9px 18px;
+
+            padding:
+                9px 18px;
+
             border:
                 1px solid var(--novel-border);
+
             border-radius: 8px;
-            background: var(--novel-paper);
-            color: var(--novel-charcoal);
-            font-family: "Manrope", sans-serif;
+
+            background:
+                var(--novel-paper);
+
+            color:
+                var(--novel-charcoal);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
             font-size: 12px;
+
             font-weight: 700;
+
             cursor: pointer;
+
             transition:
                 background 0.2s ease,
                 border-color 0.2s ease,
@@ -743,22 +1237,39 @@
         }
 
         .reader-navigation button:hover {
-            background: var(--novel-ivory);
-            border-color: var(--novel-gold);
-            color: var(--novel-burgundy);
-            transform: translateY(-1px);
+            background:
+                var(--novel-ivory);
+
+            border-color:
+                var(--novel-gold);
+
+            color:
+                var(--novel-burgundy);
+
+            transform:
+                translateY(-1px);
         }
 
         #chapterListButton {
-            background: var(--novel-burgundy);
-            border-color: var(--novel-burgundy);
-            color: var(--novel-ivory);
+            background:
+                var(--novel-burgundy);
+
+            border-color:
+                var(--novel-burgundy);
+
+            color:
+                var(--novel-ivory);
         }
 
         #chapterListButton:hover {
-            background: var(--novel-burgundy-dark);
-            border-color: var(--novel-burgundy-dark);
-            color: var(--novel-ivory);
+            background:
+                var(--novel-burgundy-dark);
+
+            border-color:
+                var(--novel-burgundy-dark);
+
+            color:
+                var(--novel-ivory);
         }
 
         #previousChapter {
@@ -781,30 +1292,46 @@
         @media (max-width: 850px) {
 
             .main-container {
-                width: min(calc(100% - 32px), 700px);
-                padding-top: 28px;
+                width:
+                    min(
+                        calc(100% - 32px),
+                        700px
+                    );
+
+                padding-top:
+                    28px;
             }
 
             .novel-detail-header {
                 grid-template-columns:
                     210px minmax(0, 1fr);
-                gap: 28px;
-                padding: 26px;
+
+                gap:
+                    28px;
+
+                padding:
+                    26px;
             }
 
             .chapters-section {
-                padding: 26px;
+                padding:
+                    26px;
             }
 
             #readerContent {
-                font-size: 18px;
-                line-height: 1.85;
+                font-size:
+                    18px;
+
+                line-height:
+                    1.85;
+
                 padding:
                     46px 30px 60px;
             }
 
             .reader-container {
-                width: min(100%, 950px);
+                width:
+                    min(100%, 950px);
             }
         }
 
@@ -812,134 +1339,217 @@
         @media (max-width: 650px) {
 
             .header {
-                padding: 12px 18px;
+                padding:
+                    12px 18px;
             }
 
             .logo-text {
-                font-size: 24px;
+                font-size:
+                    24px;
             }
 
             .header-text {
-                display: none;
+                display:
+                    none;
             }
 
             .main-container {
-                width: calc(100% - 24px);
+                width:
+                    calc(100% - 24px);
+
                 padding:
                     20px 0 45px;
             }
 
             .novel-detail-header {
-                grid-template-columns: 1fr;
-                gap: 25px;
-                padding: 20px;
+                grid-template-columns:
+                    1fr;
+
+                gap:
+                    25px;
+
+                padding:
+                    20px;
             }
 
             .novel-cover-wrapper {
-                width: min(230px, 100%);
-                margin: 0 auto;
+                width:
+                    min(230px, 100%);
+
+                margin:
+                    0 auto;
             }
 
             #novelTitle {
-                font-size: 43px;
+                font-size:
+                    43px;
+            }
+
+            .novel-actions {
+                width:
+                    100%;
+            }
+
+            .save-novel-button {
+                width:
+                    100%;
             }
 
             .chapters-section {
-                padding: 20px;
+                padding:
+                    20px;
             }
 
             .chapters-heading {
-                align-items: flex-start;
-                flex-direction: column;
-                gap: 5px;
+                align-items:
+                    flex-start;
+
+                flex-direction:
+                    column;
+
+                gap:
+                    5px;
             }
 
             #chaptersList {
-                grid-template-columns: 1fr;
+                grid-template-columns:
+                    1fr;
             }
 
             #chapterPagination {
-                gap: 6px;
+                gap:
+                    6px;
             }
 
             .chapter-page-button {
-                min-width: 38px;
-                height: 38px;
-                padding: 0 9px;
-                font-size: 11px;
+                min-width:
+                    38px;
+
+                height:
+                    38px;
+
+                padding:
+                    0 9px;
+
+                font-size:
+                    11px;
             }
 
             .chapter-page-button.previous,
             .chapter-page-button.next {
-                padding: 0 11px;
+                padding:
+                    0 11px;
             }
 
 
-            /* Reader */
+            /* ========================================================
+               READER
+               ======================================================== */
 
             #readerModal {
-                padding: 10px;
+                padding:
+                    10px;
             }
 
             .reader-container {
-                width: 100%;
+                width:
+                    100%;
+
                 height:
                     calc(100vh - 20px);
+
                 max-height:
                     calc(100vh - 20px);
-                border-radius: 12px;
+
+                border-radius:
+                    12px;
             }
 
             .reader-header {
-                padding: 15px 17px;
+                padding:
+                    15px 17px;
             }
 
             #readerTitle {
-                font-size: 24px;
+                font-size:
+                    24px;
             }
 
             #closeReader {
-                width: 38px;
-                height: 38px;
-                font-size: 22px;
+                width:
+                    38px;
+
+                height:
+                    38px;
+
+                font-size:
+                    22px;
             }
 
             #readerChapterList {
-                max-height: 145px;
+                max-height:
+                    145px;
+
                 padding:
                     12px 14px;
             }
 
             #readerContent {
-                width: 100%;
+                width:
+                    100%;
+
                 padding:
                     38px 22px 55px;
-                font-size: 18px;
-                line-height: 1.85;
+
+                font-size:
+                    18px;
+
+                line-height:
+                    1.85;
             }
 
             .reader-navigation {
-                grid-template-columns: 1fr 1fr;
-                gap: 8px;
-                padding: 11px 12px;
+                grid-template-columns:
+                    1fr 1fr;
+
+                gap:
+                    8px;
+
+                padding:
+                    11px 12px;
             }
 
             #chapterListButton {
-                grid-column: 1 / -1;
-                grid-row: 1;
-                width: 100%;
+                grid-column:
+                    1 / -1;
+
+                grid-row:
+                    1;
+
+                width:
+                    100%;
             }
 
             #previousChapter {
-                grid-column: 1;
-                grid-row: 2;
-                width: 100%;
+                grid-column:
+                    1;
+
+                grid-row:
+                    2;
+
+                width:
+                    100%;
             }
 
             #nextChapter {
-                grid-column: 2;
-                grid-row: 2;
-                width: 100%;
+                grid-column:
+                    2;
+
+                grid-row:
+                    2;
+
+                width:
+                    100%;
             }
         }
 
@@ -947,35 +1557,48 @@
         @media (max-width: 420px) {
 
             .logo-mark {
-                width: 38px;
-                height: 38px;
+                width:
+                    38px;
+
+                height:
+                    38px;
             }
 
             .logo-text {
-                font-size: 22px;
+                font-size:
+                    22px;
             }
 
             #novelTitle {
-                font-size: 38px;
+                font-size:
+                    38px;
             }
 
             .novel-detail-header {
-                padding: 16px;
+                padding:
+                    16px;
             }
 
             .chapters-section {
-                padding: 16px;
+                padding:
+                    16px;
             }
 
             #readerContent {
                 padding:
                     32px 18px 45px;
-                font-size: 17px;
-                line-height: 1.8;
+
+                font-size:
+                    17px;
+
+                line-height:
+                    1.8;
             }
 
             .reader-navigation button {
-                font-size: 11px;
+                font-size:
+                    11px;
+
                 padding:
                     9px 10px;
             }
@@ -985,10 +1608,13 @@
 
 </head>
 
+
 <body>
 
 
-    <!-- HEADER -->
+    <!-- ============================================================
+         HEADER
+         ============================================================ -->
 
     <header class="header">
 
@@ -1004,6 +1630,7 @@
 
         </div>
 
+
         <div class="header-text">
             Your Personal Reading Space
         </div>
@@ -1011,7 +1638,10 @@
     </header>
 
 
-    <!-- MAIN -->
+
+    <!-- ============================================================
+         MAIN
+         ============================================================ -->
 
     <main class="main-container">
 
@@ -1025,17 +1655,24 @@
 
         <!-- ERROR -->
 
-        <div id="error" style="display: none;">
+        <div
+            id="error"
+            style="display: none;"
+        >
             ❌ Unable to load novel.
         </div>
 
 
-        <!-- NOVEL CONTENT -->
+        <!-- ========================================================
+             NOVEL CONTENT
+             ======================================================== -->
 
         <section id="novelContent">
 
 
-            <!-- NOVEL INFORMATION -->
+            <!-- ====================================================
+                 NOVEL INFORMATION
+                 ==================================================== -->
 
             <section class="novel-detail-header">
 
@@ -1053,17 +1690,21 @@
                 </div>
 
 
+
                 <!-- INFORMATION -->
 
                 <div class="novel-information">
+
 
                     <span class="novel-label">
                         NOVEL DETAILS
                     </span>
 
+
                     <h1 id="novelTitle">
                         Novel Title
                     </h1>
+
 
                     <p class="novel-author-line">
 
@@ -1074,6 +1715,7 @@
                         </strong>
 
                     </p>
+
 
 
                     <div class="novel-meta">
@@ -1089,7 +1731,29 @@
                     </div>
 
 
-                    <!-- SYNOPSIS -->
+
+                    <!-- =================================================
+                         SAVE NOVEL
+                         ================================================= -->
+
+                    <div class="novel-actions">
+
+                        <button
+                            type="button"
+                            id="saveNovelButton"
+                            class="save-novel-button"
+                            aria-pressed="false"
+                        >
+                            ♡ Save to Library
+                        </button>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         SYNOPSIS
+                         ================================================= -->
 
                     <div class="synopsis-section">
 
@@ -1108,9 +1772,13 @@
             </section>
 
 
-            <!-- CHAPTERS -->
+
+            <!-- ====================================================
+                 CHAPTERS
+                 ==================================================== -->
 
             <section class="chapters-section">
+
 
                 <div class="chapters-heading">
 
@@ -1126,6 +1794,7 @@
 
                     </div>
 
+
                     <span id="chapterCount">
                         0 Chapters
                     </span>
@@ -1133,11 +1802,13 @@
                 </div>
 
 
+
                 <!-- EXISTING CHAPTER LIST -->
 
                 <div id="chaptersList">
                     <!-- Chapters inserted by script.js -->
                 </div>
+
 
 
                 <!-- CHAPTER PAGINATION -->
@@ -1154,6 +1825,7 @@
         </section>
 
     </main>
+
 
 
     <!-- ============================================================
@@ -1173,6 +1845,7 @@
                     Chapter
                 </h2>
 
+
                 <button
                     type="button"
                     id="closeReader"
@@ -1184,7 +1857,10 @@
             </header>
 
 
-            <!-- CHAPTER LIST -->
+
+            <!-- ====================================================
+                 CHAPTER LIST
+                 ==================================================== -->
 
             <section
                 id="readerChapterList"
@@ -1198,7 +1874,10 @@
             </section>
 
 
-            <!-- READER BODY -->
+
+            <!-- ====================================================
+                 READER BODY
+                 ==================================================== -->
 
             <div class="reader-body">
 
@@ -1209,9 +1888,13 @@
             </div>
 
 
-            <!-- READER NAVIGATION -->
+
+            <!-- ====================================================
+                 READER NAVIGATION
+                 ==================================================== -->
 
             <nav class="reader-navigation">
+
 
                 <button
                     type="button"
@@ -1220,12 +1903,14 @@
                     ← Previous
                 </button>
 
+
                 <button
                     type="button"
                     id="chapterListButton"
                 >
                     ☰ Chapters
                 </button>
+
 
                 <button
                     type="button"
@@ -1234,11 +1919,13 @@
                     Next →
                 </button>
 
+
             </nav>
 
         </div>
 
     </div>
+
 
 
     <!-- ============================================================
@@ -1252,6 +1939,7 @@
                 window.location.search
             ).get("file");
 
+
         if (!novelParameter) {
 
             window.location.href =
@@ -1262,9 +1950,13 @@
     </script>
 
 
-    <!-- EXISTING SCRIPT -->
+
+    <!-- ============================================================
+         EXISTING SCRIPT
+         ============================================================ -->
 
     <script src="script.js"></script>
+
 
 
     <!-- ============================================================
@@ -1280,36 +1972,47 @@
                     "chaptersList"
                 );
 
+
             const pagination =
                 document.getElementById(
                     "chapterPagination"
                 );
 
-            if (!chaptersList || !pagination) {
+
+            if (
+                !chaptersList ||
+                !pagination
+            ) {
                 return;
             }
 
 
             const CHAPTERS_PER_PAGE = 50;
 
+
             let currentPage = 1;
 
+
             let chapters = [];
+
 
 
             function getChapterElements() {
 
                 return Array.from(
                     chaptersList.children
-                ).filter(element => {
+                ).filter(
+                    element => {
 
-                    return (
-                        element.nodeType === 1
-                    );
+                        return (
+                            element.nodeType === 1
+                        );
 
-                });
+                    }
+                );
 
             }
+
 
 
             function createPageButton(
@@ -1323,19 +2026,31 @@
                         "button"
                     );
 
-                button.type = "button";
+
+                button.type =
+                    "button";
+
 
                 button.className =
-                    `chapter-page-button ${className}`.trim();
+                    (
+                        "chapter-page-button " +
+                        className
+                    ).trim();
 
-                button.textContent = label;
+
+                button.textContent =
+                    label;
 
 
-                if (page === currentPage) {
+
+                if (
+                    page === currentPage
+                ) {
 
                     button.classList.add(
                         "active"
                     );
+
 
                     button.setAttribute(
                         "aria-current",
@@ -1343,6 +2058,7 @@
                     );
 
                 }
+
 
 
                 button.addEventListener(
@@ -1354,15 +2070,22 @@
                             page <= getTotalPages()
                         ) {
 
-                            currentPage = page;
+                            currentPage =
+                                page;
+
 
                             renderPagination();
 
+
                             renderChapterPage();
 
+
                             chaptersList.scrollIntoView({
-                                behavior: "smooth",
-                                block: "start"
+                                behavior:
+                                    "smooth",
+
+                                block:
+                                    "start"
                             });
 
                         }
@@ -1376,11 +2099,17 @@
             }
 
 
+
             function getTotalPages() {
 
-                if (chapters.length === 0) {
+                if (
+                    chapters.length === 0
+                ) {
+
                     return 0;
+
                 }
+
 
                 return Math.ceil(
                     chapters.length /
@@ -1388,6 +2117,7 @@
                 );
 
             }
+
 
 
             function addPageNumber(page) {
@@ -1402,6 +2132,7 @@
             }
 
 
+
             function addEllipsis() {
 
                 const span =
@@ -1409,19 +2140,27 @@
                         "span"
                     );
 
+
                 span.className =
                     "chapter-page-ellipsis";
 
-                span.textContent = "…";
+
+                span.textContent =
+                    "…";
+
 
                 span.setAttribute(
                     "aria-hidden",
                     "true"
                 );
 
-                pagination.appendChild(span);
+
+                pagination.appendChild(
+                    span
+                );
 
             }
+
 
 
             function renderPagination() {
@@ -1429,10 +2168,14 @@
                 const totalPages =
                     getTotalPages();
 
-                pagination.innerHTML = "";
+
+                pagination.innerHTML =
+                    "";
 
 
-                if (totalPages <= 1) {
+                if (
+                    totalPages <= 1
+                ) {
 
                     pagination.classList.remove(
                         "visible"
@@ -1448,6 +2191,7 @@
                 );
 
 
+
                 /* Previous */
 
                 const previous =
@@ -1457,12 +2201,15 @@
                         "previous"
                     );
 
+
                 previous.disabled =
                     currentPage === 1;
+
 
                 pagination.appendChild(
                     previous
                 );
+
 
 
                 /*
@@ -1476,7 +2223,10 @@
                  */
 
 
-                if (totalPages <= 7) {
+
+                if (
+                    totalPages <= 7
+                ) {
 
                     for (
                         let page = 1;
@@ -1484,16 +2234,22 @@
                         page++
                     ) {
 
-                        addPageNumber(page);
+                        addPageNumber(
+                            page
+                        );
 
                     }
 
                 } else {
 
-                    addPageNumber(1);
+                    addPageNumber(
+                        1
+                    );
 
 
-                    if (currentPage > 4) {
+                    if (
+                        currentPage > 4
+                    ) {
 
                         addEllipsis();
 
@@ -1505,6 +2261,7 @@
                             2,
                             currentPage - 1
                         );
+
 
                     const endPage =
                         Math.min(
@@ -1519,7 +2276,9 @@
                         page++
                     ) {
 
-                        addPageNumber(page);
+                        addPageNumber(
+                            page
+                        );
 
                     }
 
@@ -1541,6 +2300,7 @@
                 }
 
 
+
                 /* Next */
 
                 const next =
@@ -1550,8 +2310,10 @@
                         "next"
                     );
 
+
                 next.disabled =
                     currentPage === totalPages;
+
 
                 pagination.appendChild(
                     next
@@ -1560,13 +2322,16 @@
             }
 
 
+
             function renderChapterPage() {
 
                 const totalPages =
                     getTotalPages();
 
 
-                if (totalPages === 0) {
+                if (
+                    totalPages === 0
+                ) {
 
                     pagination.classList.remove(
                         "visible"
@@ -1577,12 +2342,19 @@
                 }
 
 
-                if (currentPage < 1) {
-                    currentPage = 1;
+                if (
+                    currentPage < 1
+                ) {
+
+                    currentPage =
+                        1;
+
                 }
 
 
-                if (currentPage > totalPages) {
+                if (
+                    currentPage > totalPages
+                ) {
 
                     currentPage =
                         totalPages;
@@ -1591,26 +2363,36 @@
 
 
                 const start =
-                    (currentPage - 1) *
+                    (
+                        currentPage - 1
+                    ) *
                     CHAPTERS_PER_PAGE;
+
 
                 const end =
                     start +
                     CHAPTERS_PER_PAGE;
 
 
+
                 chapters.forEach(
-                    (chapter, index) => {
+                    (
+                        chapter,
+                        index
+                    ) => {
 
                         const pageStart =
                             start;
 
+
                         const pageEnd =
                             end;
+
 
                         const shouldShow =
                             index >= pageStart &&
                             index < pageEnd;
+
 
                         chapter.style.display =
                             shouldShow
@@ -1624,6 +2406,7 @@
                 renderPagination();
 
             }
+
 
 
             function initializePagination() {
@@ -1646,7 +2429,10 @@
                         chapters.length ||
 
                     newChapters.some(
-                        (chapter, index) =>
+                        (
+                            chapter,
+                            index
+                        ) =>
                             chapter !==
                             chapters[index]
                     )
@@ -1655,7 +2441,10 @@
                     chapters =
                         newChapters;
 
-                    currentPage = 1;
+
+                    currentPage =
+                        1;
+
 
                     renderChapterPage();
 
@@ -1665,6 +2454,7 @@
                 return true;
 
             }
+
 
 
             /*
@@ -1693,6 +2483,7 @@
             );
 
 
+
             /*
              * Initial check
              */
@@ -1702,7 +2493,15 @@
         })();
 
     </script>
+
+
+
+    <!-- ============================================================
+         BACK BUTTON
+         ============================================================ -->
+
     <script src="back-button.js"></script>
+
 
 </body>
 

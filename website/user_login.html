@@ -9,7 +9,8 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-<title>Novel Archive | Create Account</title>
+```
+<title>Novel Archive | Sign In</title>
 
 <link
     rel="preconnect"
@@ -18,7 +19,7 @@
 
 <link
     rel="preconnect"
-    href="https://fonts.googleapis.com"
+    href="https://fonts.gstatic.com"
     crossorigin
 >
 
@@ -34,7 +35,7 @@
 
 <link
     rel="stylesheet"
-    href="user_signup.css"
+    href="user_login.css"
 >
 
 </head>
@@ -66,69 +67,51 @@
 <div class="header-text">
     Discover · Read · Enjoy
 </div>
-
 </header>
 
-<main class="main-container signup-container">
+<main class="main-container login-container">
 
-<section class="hero signup-hero">
+<section class="hero login-hero">
 
     <p class="hero-eyebrow">
         NOVEL ARCHIVE
     </p>
 
     <h1>
-        Create Your <span>Account.</span>
+        Welcome <span>Back.</span>
     </h1>
 
     <p>
-        Join Novel Archive to save your favorite stories,
-        track your reading progress, and continue reading anytime.
+        Sign in to continue reading,
+        save your favorite novels,
+        and keep track of your reading journey.
     </p>
 
 </section>
 
 
-<section class="signup-section">
+<section class="login-section">
 
-    <div class="signup-card">
+    <div class="login-card">
 
-        <div class="signup-card-header">
+        <div class="login-card-header">
 
             <p class="section-eyebrow">
                 ACCOUNT
             </p>
 
             <h2>
-                Sign Up
+                Sign In
             </h2>
 
             <p>
-                Create your personal reading account.
+                Access your Novel Archive account.
             </p>
 
         </div>
 
 
-        <form id="userSignupForm">
-
-            <div class="form-group">
-
-                <label for="name">
-                    Full Name
-                </label>
-
-                <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    placeholder="Enter your name"
-                    autocomplete="name"
-                    required
-                >
-
-            </div>
-
+        <form id="userLoginForm">
 
             <div class="form-group">
 
@@ -158,26 +141,8 @@
                     type="password"
                     id="password"
                     name="password"
-                    placeholder="Create a password"
-                    autocomplete="new-password"
-                    required
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="confirmPassword">
-                    Confirm Password
-                </label>
-
-                <input
-                    type="password"
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    placeholder="Confirm your password"
-                    autocomplete="new-password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
                     required
                 >
 
@@ -186,35 +151,35 @@
 
             <button
                 type="submit"
-                class="signup-button"
-                id="signupButton"
+                class="login-button"
+                id="loginButton"
             >
-                Create Account
+                Sign In
             </button>
 
         </form>
 
 
         <p
-            id="signupMessage"
-            class="signup-message"
+            id="loginMessage"
+            class="login-message"
             aria-live="polite"
         ></p>
 
 
-        <div class="signup-divider">
+        <div class="login-divider">
             <span>OR</span>
         </div>
 
 
-        <div class="login-prompt">
+        <div class="signup-prompt">
 
             <span>
-                Already have an account?
+                Don't have an account?
             </span>
 
-            <a href="user_login.html">
-                Sign In
+            <a href="user_signup.html">
+                Create Account
             </a>
 
         </div>
@@ -222,11 +187,13 @@
     </div>
 
 </section>
+```
 
 </main>
 
 <footer>
 
+```
 <div class="footer-brand">
 
     <div class="brand-mark">
@@ -253,7 +220,7 @@
 
 </footer>
 
-<script src="user_signup.js"></script>
+<script src="user_login.js"></script>
 
 </body>
 

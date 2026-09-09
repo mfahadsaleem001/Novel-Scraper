@@ -1164,3 +1164,21 @@ footer > span {
     }
 
 }
+
+.novel-cover {
+    width: 100%;
+    height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eee8dc;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.novel-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}

@@ -1,14 +1,27 @@
+/* ============================================================
+   NOVEL ARCHIVE — USER DASHBOARD
+   ============================================================ */
+
 const API_URL = "http://127.0.0.1:5000";
 
 let allDashboardNovels = [];
 
+const userToken =
+    localStorage.getItem("user_token");
+
 
 /* ============================================================
-   ELEMENTS
+   DOM ELEMENTS
    ============================================================ */
 
 const welcomeMessage =
     document.getElementById("welcomeMessage");
+
+const sidebarUserName =
+    document.getElementById("sidebarUserName");
+
+const sidebarAvatar =
+    document.getElementById("sidebarAvatar");
 
 const recentNovels =
     document.getElementById("recentNovels");
@@ -25,19 +38,235 @@ const searchResults =
 const logoutButton =
     document.getElementById("logoutButton");
 
+const totalNovels =
+    document.getElementById("totalNovels");
+
+const totalChapters =
+    document.getElementById("totalChapters");
+
+const ongoingNovels =
+    document.getElementById("ongoingNovels");
+
+const completedNovels =
+    document.getElementById("completedNovels");
+
 
 /* ============================================================
-   LOAD USER NAME
+   AUTH CHECK
    ============================================================ */
 
-function loadUserName() {
+if (!userToken) {
 
-    const userName =
-        localStorage.getItem("novelArchiveUserName");
+    window.location.href =
+        "user_login.html";
+}
 
-    if (welcomeMessage && userName) {
-        welcomeMessage.textContent =
-            `Welcome Back, ${userName}`;
+
+/* ============================================================
+   LOGOUT
+   ============================================================ */
+
+function logoutUser() {
+
+    localStorage.removeItem("user_token");
+
+    localStorage.removeItem("user_data");
+
+    localStorage.removeItem("novelArchiveUserName");
+
+    localStorage.removeItem("novelArchiveUserEmail");
+
+    window.location.href =
+        "user_login.html";
+}
+
+
+if (logoutButton) {
+
+    logoutButton.addEventListener(
+        "click",
+        logoutUser
+    );
+}
+
+
+/* ============================================================
+   LOAD USER PROFILE
+   ============================================================ */
+
+async function loadUserProfile() {
+
+    if (!userToken) {
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_URL}/user/profile`,
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization":
+                            `Bearer ${userToken}`
+                    }
+                }
+            );
+
+
+        if (
+            response.status === 401 ||
+            response.status === 403
+        ) {
+
+            logoutUser();
+
+            return;
+        }
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load profile."
+            );
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const user =
+            data.user || data;
+
+
+        const userName =
+            user.name || "Reader";
+
+
+        const userEmail =
+            user.email || "";
+
+
+        /* ================================================
+           HERO
+           ================================================ */
+
+        if (welcomeMessage) {
+
+            welcomeMessage.textContent =
+                `Welcome Back, ${userName}`;
+        }
+
+
+        /* ================================================
+           SIDEBAR
+           ================================================ */
+
+        if (sidebarUserName) {
+
+            sidebarUserName.textContent =
+                userName;
+        }
+
+
+        if (sidebarAvatar) {
+
+            sidebarAvatar.textContent =
+                userName
+                    .trim()
+                    .charAt(0)
+                    .toUpperCase() || "R";
+        }
+
+
+        /* ================================================
+           SAVE USER DATA
+           ================================================ */
+
+        localStorage.setItem(
+            "user_data",
+            JSON.stringify(user)
+        );
+
+        localStorage.setItem(
+            "novelArchiveUserName",
+            userName
+        );
+
+        localStorage.setItem(
+            "novelArchiveUserEmail",
+            userEmail
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Profile Error:",
+            error
+        );
+
+        /*
+         * Do not immediately logout here.
+         * The token may still be valid while the
+         * profile endpoint temporarily fails.
+         */
+
+        const savedUser =
+            localStorage.getItem(
+                "user_data"
+            );
+
+
+        if (savedUser) {
+
+            try {
+
+                const user =
+                    JSON.parse(savedUser);
+
+
+                const userName =
+                    user.name || "Reader";
+
+
+                if (welcomeMessage) {
+
+                    welcomeMessage.textContent =
+                        `Welcome Back, ${userName}`;
+                }
+
+
+                if (sidebarUserName) {
+
+                    sidebarUserName.textContent =
+                        userName;
+                }
+
+
+                if (sidebarAvatar) {
+
+                    sidebarAvatar.textContent =
+                        userName
+                            .trim()
+                            .charAt(0)
+                            .toUpperCase() || "R";
+                }
+
+            }
+            catch (parseError) {
+
+                console.error(
+                    "Saved User Data Error:",
+                    parseError
+                );
+            }
+        }
     }
 }
 
@@ -51,37 +280,85 @@ async function loadDashboardNovels() {
     try {
 
         const response =
-            await fetch(`${API_URL}/novels`);
+            await fetch(
+                `${API_URL}/novels`
+            );
+
 
         if (!response.ok) {
-            throw new Error("Could not load novels.");
+
+            throw new Error(
+                "Unable to load novels."
+            );
         }
 
-        const novels =
+
+        const data =
             await response.json();
 
+
+        /*
+         * Support both:
+         *
+         * [ ...novels ]
+         *
+         * and
+         *
+         * { novels: [ ...novels ] }
+         */
+
+        let novels = [];
+
+
+        if (Array.isArray(data)) {
+
+            novels = data;
+
+        }
+        else if (
+            data &&
+            Array.isArray(data.novels)
+        ) {
+
+            novels = data.novels;
+
+        }
+        else if (
+            data &&
+            Array.isArray(data.data)
+        ) {
+
+            novels = data.data;
+        }
+
+
         allDashboardNovels =
-            Array.isArray(novels) ? novels : [];
+            novels;
+
 
         updateDashboardStats(
             allDashboardNovels
         );
 
+
         displayRecentNovels(
             allDashboardNovels
         );
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         console.error(
-            "Dashboard Error:",
+            "Novel Loading Error:",
             error
         );
+
 
         if (recentNovels) {
 
             recentNovels.innerHTML = `
-                <div class="dashboard-loading">
+                <div class="loading-state">
                     Unable to load novels right now.
                 </div>
             `;
@@ -94,70 +371,119 @@ async function loadDashboardNovels() {
    DASHBOARD STATS
    ============================================================ */
 
-function updateDashboardStats(novels) {
+function updateDashboardStats(
+    novels
+) {
 
-    const totalNovelElement =
-        document.getElementById("totalNovels");
-
-    const totalChapterElement =
-        document.getElementById("totalChapters");
-
-    const ongoingElement =
-        document.getElementById("ongoingNovels");
-
-    const completedElement =
-        document.getElementById("completedNovels");
+    const safeNovels =
+        Array.isArray(novels)
+            ? novels
+            : [];
 
 
-    const totalNovels =
-        novels.length;
+    /* TOTAL NOVELS */
+
+    if (totalNovels) {
+
+        totalNovels.textContent =
+            safeNovels.length;
+    }
 
 
-    const totalChapters =
-        novels.reduce(
-            (total, novel) =>
-                total +
-                Number(novel.total_chapters || 0),
-            0
-        );
+    /* TOTAL CHAPTERS */
+
+    let chapterCount = 0;
 
 
-    const ongoingNovels =
-        novels.filter(
-            novel =>
+    safeNovels.forEach(
+        novel => {
+
+            const chapters =
+                novel.chapters;
+
+
+            if (Array.isArray(chapters)) {
+
+                chapterCount +=
+                    chapters.length;
+            }
+
+            else if (
+                typeof novel.chapter_count ===
+                "number"
+            ) {
+
+                chapterCount +=
+                    novel.chapter_count;
+            }
+
+            else if (
+                typeof novel.total_chapters ===
+                "number"
+            ) {
+
+                chapterCount +=
+                    novel.total_chapters;
+            }
+
+        }
+    );
+
+
+    if (totalChapters) {
+
+        totalChapters.textContent =
+            chapterCount;
+    }
+
+
+    /* ONGOING / COMPLETED */
+
+    let ongoing = 0;
+
+    let completed = 0;
+
+
+    safeNovels.forEach(
+        novel => {
+
+            const status =
                 String(
                     novel.status || ""
-                ).toLowerCase() === "ongoing"
-        ).length;
+                )
+                    .trim()
+                    .toLowerCase();
 
 
-    const completedNovels =
-        novels.filter(
-            novel =>
-                String(
-                    novel.status || ""
-                ).toLowerCase() === "completed"
-        ).length;
+            if (
+                status.includes("complete") ||
+                status.includes("completed") ||
+                status.includes("finished")
+            ) {
+
+                completed++;
+
+            }
+            else {
+
+                ongoing++;
+            }
+
+        }
+    );
 
 
-    if (totalNovelElement) {
-        totalNovelElement.textContent =
-            totalNovels;
+    if (ongoingNovels) {
+
+        ongoingNovels.textContent =
+            ongoing;
     }
 
-    if (totalChapterElement) {
-        totalChapterElement.textContent =
-            totalChapters;
-    }
 
-    if (ongoingElement) {
-        ongoingElement.textContent =
-            ongoingNovels;
-    }
+    if (completedNovels) {
 
-    if (completedElement) {
-        completedElement.textContent =
-            completedNovels;
+        completedNovels.textContent =
+            completed;
     }
 }
 
@@ -166,18 +492,23 @@ function updateDashboardStats(novels) {
    RECENT NOVELS
    ============================================================ */
 
-function displayRecentNovels(novels) {
+function displayRecentNovels(
+    novels
+) {
 
     if (!recentNovels) {
         return;
     }
 
 
-    if (!novels.length) {
+    if (
+        !Array.isArray(novels) ||
+        novels.length === 0
+    ) {
 
         recentNovels.innerHTML = `
-            <div class="dashboard-loading">
-                No novels are available yet.
+            <div class="loading-state">
+                No novels available yet.
             </div>
         `;
 
@@ -185,19 +516,34 @@ function displayRecentNovels(novels) {
     }
 
 
+    /*
+     * Existing API order is preserved.
+     * Last five are treated as recently added.
+     */
+
     const recent =
         novels
             .slice(-5)
             .reverse();
 
 
-    recentNovels.innerHTML =
-        recent
-            .map(
-                novel =>
-                    createDashboardNovelCard(novel)
-            )
-            .join("");
+    recentNovels.innerHTML = "";
+
+
+    recent.forEach(
+        novel => {
+
+            const card =
+                createDashboardNovelCard(
+                    novel
+                );
+
+
+            recentNovels.appendChild(
+                card
+            );
+        }
+    );
 
 
     attachNovelButtons(
@@ -207,87 +553,143 @@ function displayRecentNovels(novels) {
 
 
 /* ============================================================
-   NOVEL CARD
+   CREATE NOVEL CARD
    ============================================================ */
 
-function createDashboardNovelCard(novel) {
+function createDashboardNovelCard(
+    novel
+) {
 
-    const cover =
-        novel.cover_image ||
-        "https://via.placeholder.com/220x330?text=No+Cover";
+    const card =
+        document.createElement("article");
 
+
+    card.className =
+        "dashboard-novel-card";
+
+
+    /* ========================================================
+       DATA
+       ======================================================== */
 
     const title =
         novel.title ||
+        novel.name ||
         "Untitled Novel";
 
 
     const author =
         novel.author ||
-        "Unknown Author";
+        "Unknown";
 
 
     const status =
         novel.status ||
-        "Unknown";
+        "Ongoing";
+
+
+    const genre =
+        novel.genre ||
+        "";
+
+
+    const cover =
+        novel.cover_image ||
+        novel.cover ||
+        "https://via.placeholder.com/400x600?text=No+Cover";
 
 
     const chapters =
-        Number(
-            novel.total_chapters || 0
-        );
+        Array.isArray(novel.chapters)
+            ? novel.chapters.length
+            : (
+                Number(
+                    novel.chapter_count ||
+                    novel.total_chapters ||
+                    0
+                ) || 0
+            );
 
+
+    /*
+     * Try different possible filename/id fields.
+     */
 
     const filename =
-        novel.filename || "";
+        novel.filename ||
+        novel.file_name ||
+        novel.json_file ||
+        novel.id ||
+        novel.slug ||
+        "";
 
 
-    return `
-        <article
-            class="novel-card"
-            data-filename="${escapeHtml(filename)}"
+    /* ========================================================
+       CARD HTML
+       ======================================================== */
+
+    card.innerHTML = `
+
+        <img
+            src="${escapeHtml(cover)}"
+            alt="${escapeHtml(title)} cover"
+            class="dashboard-novel-cover"
+            loading="lazy"
+            onerror="
+                this.onerror=null;
+                this.src='https://via.placeholder.com/400x600?text=No+Cover';
+            "
         >
 
-            <img
-                src="${escapeHtml(cover)}"
-                alt="${escapeHtml(title)}"
-                class="novel-cover"
-            >
 
-            <div class="novel-card-content">
+        <div class="dashboard-novel-info">
 
-                <h3>
-                    ${escapeHtml(title)}
-                </h3>
+            <h3 class="dashboard-novel-title">
+                ${escapeHtml(title)}
+            </h3>
 
-                <p class="novel-author">
-                    ${escapeHtml(author)}
-                </p>
 
-                <div class="novel-meta">
+            <p class="dashboard-novel-author">
+                ${escapeHtml(author)}
+            </p>
 
-                    <span class="novel-status">
-                        ${escapeHtml(status)}
-                    </span>
 
-                    <span class="novel-chapters">
-                        ${chapters} Chapters
-                    </span>
+            <div class="dashboard-novel-meta">
 
-                </div>
+                <span>
+                    ${escapeHtml(status)}
+                </span>
 
-                <button
-                    type="button"
-                    class="novel-read-button"
-                    data-filename="${escapeHtml(filename)}"
-                >
-                    Read Novel
-                </button>
+                <span>
+                    ${chapters} Chapters
+                </span>
+
+                ${
+                    genre
+                        ? `
+                            <span>
+                                ${escapeHtml(genre)}
+                            </span>
+                          `
+                        : ""
+                }
 
             </div>
 
-        </article>
+
+            <button
+                type="button"
+                class="dashboard-read-button"
+                data-novel="${escapeHtml(filename)}"
+            >
+                Read Novel
+            </button>
+
+        </div>
     `;
+
+
+    return card;
 }
 
 
@@ -295,55 +697,45 @@ function createDashboardNovelCard(novel) {
    NOVEL BUTTONS
    ============================================================ */
 
-function attachNovelButtons(container) {
+function attachNovelButtons(
+    container
+) {
 
     const buttons =
         container.querySelectorAll(
-            ".novel-read-button"
+            ".dashboard-read-button"
         );
 
 
-    buttons.forEach(button => {
+    buttons.forEach(
+        button => {
 
-        button.addEventListener(
-            "click",
-            function () {
+            button.addEventListener(
+                "click",
+                () => {
 
-                const filename =
-                    button.dataset.filename;
+                    const novel =
+                        button.dataset.novel;
 
 
-                if (!filename) {
-                    return;
+                    if (!novel) {
+
+                        console.warn(
+                            "Novel identifier missing."
+                        );
+
+                        return;
+                    }
+
+
+                    window.location.href =
+                        `novel.html?novel=${encodeURIComponent(
+                            novel
+                        )}`;
                 }
-
-
-                window.location.href =
-                    `novel.html?novel=${encodeURIComponent(filename)}`;
-            }
-        );
-    });
-
-
-    const images =
-        container.querySelectorAll(
-            ".novel-cover"
-        );
-
-
-    images.forEach(image => {
-
-        image.addEventListener(
-            "error",
-            function () {
-
-                this.onerror = null;
-
-                this.src =
-                    "https://via.placeholder.com/220x330?text=No+Cover";
-            }
-        );
-    });
+            );
+        }
+    );
 }
 
 
@@ -351,89 +743,124 @@ function attachNovelButtons(container) {
    SEARCH
    ============================================================ */
 
-if (dashboardSearch) {
+function performDashboardSearch() {
 
-    dashboardSearch.addEventListener(
-        "input",
-        function () {
-
-            const searchTerm =
-                dashboardSearch.value
-                    .trim()
-                    .toLowerCase();
+    if (!dashboardSearch) {
+        return;
+    }
 
 
-            if (!searchTerm) {
-
-                hideSearchResults();
-
-                return;
-            }
+    const query =
+        dashboardSearch.value
+            .trim()
+            .toLowerCase();
 
 
-            const filteredNovels =
-                allDashboardNovels.filter(
-                    novel => {
+    /*
+     * Empty search:
+     * hide search results and show recent novels.
+     */
 
-                        const title =
-                            String(
-                                novel.title || ""
-                            ).toLowerCase();
+    if (!query) {
 
+        if (searchResultsSection) {
 
-                        const author =
-                            String(
-                                novel.author || ""
-                            ).toLowerCase();
-
-
-                        const genre =
-                            String(
-                                novel.genre || ""
-                            ).toLowerCase();
-
-
-                        return (
-                            title.includes(searchTerm) ||
-                            author.includes(searchTerm) ||
-                            genre.includes(searchTerm)
-                        );
-                    }
-                );
-
-
-            displaySearchResults(
-                filteredNovels
-            );
+            searchResultsSection.style.display =
+                "none";
         }
+
+
+        if (recentNovels) {
+
+            recentNovels.parentElement
+                .style.display = "";
+        }
+
+
+        return;
+    }
+
+
+    const filtered =
+        allDashboardNovels.filter(
+            novel => {
+
+                const title =
+                    String(
+                        novel.title ||
+                        novel.name ||
+                        ""
+                    ).toLowerCase();
+
+
+                const author =
+                    String(
+                        novel.author ||
+                        ""
+                    ).toLowerCase();
+
+
+                const genre =
+                    String(
+                        novel.genre ||
+                        ""
+                    ).toLowerCase();
+
+
+                const status =
+                    String(
+                        novel.status ||
+                        ""
+                    ).toLowerCase();
+
+
+                return (
+                    title.includes(query) ||
+                    author.includes(query) ||
+                    genre.includes(query) ||
+                    status.includes(query)
+                );
+            }
+        );
+
+
+    displaySearchResults(
+        filtered
     );
 }
 
 
 /* ============================================================
-   SEARCH RESULTS
+   DISPLAY SEARCH RESULTS
    ============================================================ */
 
-function displaySearchResults(novels) {
+function displaySearchResults(
+    novels
+) {
 
-    if (
-        !searchResultsSection ||
-        !searchResults
-    ) {
+    if (!searchResultsSection ||
+        !searchResults) {
+
         return;
     }
 
 
-    searchResultsSection.classList.add(
-        "visible"
-    );
+    searchResultsSection.style.display =
+        "block";
 
 
-    if (!novels.length) {
+    searchResults.innerHTML =
+        "";
+
+
+    if (
+        !Array.isArray(novels) ||
+        novels.length === 0
+    ) {
 
         searchResults.innerHTML = `
-            <div class="dashboard-loading">
-                No novels found for your search.
+            <div class="loading-state">
+                No novels found matching your search.
             </div>
         `;
 
@@ -441,59 +868,41 @@ function displaySearchResults(novels) {
     }
 
 
-    searchResults.innerHTML =
-        novels
-            .map(
-                novel =>
-                    createDashboardNovelCard(novel)
-            )
-            .join("");
+    novels.forEach(
+        novel => {
+
+            searchResults.appendChild(
+                createDashboardNovelCard(
+                    novel
+                )
+            );
+        }
+    );
 
 
     attachNovelButtons(
         searchResults
     );
-}
 
 
-/* ============================================================
-   HIDE SEARCH RESULTS
-   ============================================================ */
-
-function hideSearchResults() {
-
-    if (!searchResultsSection) {
-        return;
-    }
-
-
-    searchResultsSection.classList.remove(
-        "visible"
+    searchResultsSection.scrollIntoView(
+        {
+            behavior: "smooth",
+            block: "start"
+        }
     );
 }
 
 
 /* ============================================================
-   LOGOUT
+   SEARCH EVENTS
    ============================================================ */
 
-if (logoutButton) {
+if (dashboardSearch) {
 
-    logoutButton.addEventListener(
-        "click",
-        function () {
-
-            localStorage.removeItem(
-                "novelArchiveUserName"
-            );
-
-            localStorage.removeItem(
-                "novelArchiveUserEmail"
-            );
-
-            window.location.href =
-                "user_signin.html";
-        }
+    dashboardSearch.addEventListener(
+        "input",
+        performDashboardSearch
     );
 }
 
@@ -502,7 +911,9 @@ if (logoutButton) {
    ESCAPE HTML
    ============================================================ */
 
-function escapeHtml(value) {
+function escapeHtml(
+    value
+) {
 
     return String(value)
         .replace(
@@ -532,12 +943,19 @@ function escapeHtml(value) {
    INITIALIZE DASHBOARD
    ============================================================ */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+async function initializeDashboard() {
 
-        loadUserName();
+    /*
+     * Profile and novels can load independently.
+     */
 
-        loadDashboardNovels();
-    }
-);
+    await Promise.allSettled(
+        [
+            loadUserProfile(),
+            loadDashboardNovels()
+        ]
+    );
+}
+
+
+initializeDashboard();

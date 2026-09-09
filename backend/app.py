@@ -13,7 +13,7 @@ import os
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from backend.auto_sync import sync_all_novels
-from backend.models import User, Novel, Chapter, Setting
+from backend.models import User, Novel, Chapter, Setting, ReadingHistory, SavedNovel
 from backend.database import SessionLocal
 
 
@@ -98,9 +98,7 @@ if SCRAPER_PATH.exists():
 # ============================================================
 
 app = Flask(__name__)
-
 CORS(app)
-
 
 # ============================================================
 # AUTO-SYNC SCHEDULER
@@ -439,15 +437,14 @@ def get_novels():
         for novel in novels:
 
             result.append({
+            
+                "id": novel.id,
+                
+                "filename": novel.filename,
 
-                "filename":
-                    novel.filename,
+                "title": novel.title or "Untitled Novel",
 
-                "title":
-                    novel.title or "Untitled Novel",
-
-                "author":
-                    novel.author or "Unknown",
+                "author": novel.author or "Unknown",
 
                 "genre":
                     novel.genre or "Unknown",
@@ -542,7 +539,8 @@ def get_novel(filename):
         for chapter in novel.chapters:
 
             chapters.append({
-
+                "id": chapter.id,
+                
                 "chapter_number":
                     chapter.chapter_number,
 
@@ -2356,7 +2354,1485 @@ def admin_login():
 
         db.close()
 
+# ============================================================
+# USER SIGNUP
+# ============================================================
 
+@app.route(
+    "/user/signup",
+    methods=["POST"]
+)
+def user_signup():
+
+    data = request.get_json(
+        silent=True
+    )
+
+    if not isinstance(
+        data,
+        dict
+    ):
+        return jsonify({
+            "error":
+                "Invalid request data"
+        }), 400
+
+    name = str(
+        data.get(
+            "name",
+            ""
+        )
+    ).strip()
+
+    email = str(
+        data.get(
+            "email",
+            ""
+        )
+    ).strip().lower()
+
+    password = str(
+        data.get(
+            "password",
+            ""
+        )
+    )
+
+    if not name:
+        return jsonify({
+            "error":
+                "Name is required"
+        }), 400
+
+    if not email:
+        return jsonify({
+            "error":
+                "Email is required"
+        }), 400
+
+    if not password:
+        return jsonify({
+            "error":
+                "Password is required"
+        }), 400
+
+    if len(password) < 6:
+        return jsonify({
+            "error":
+                "Password must contain at least 6 characters"
+        }), 400
+
+    db = SessionLocal()
+
+    try:
+
+        existing_user = (
+            db.query(User)
+            .filter(
+                User.email == email
+            )
+            .first()
+        )
+
+        if existing_user:
+            return jsonify({
+                "error":
+                    "Email is already registered"
+            }), 409
+
+        user = User(
+            name=name,
+            email=email,
+            password_hash=generate_password_hash(
+                password
+            ),
+            role="user"
+        )
+
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+        return jsonify({
+            "status":
+                "success",
+            "message":
+                "Account created successfully",
+            "user": {
+                "id":
+                    user.id,
+                "name":
+                    user.name,
+                "email":
+                    user.email,
+                "role":
+                    user.role
+            }
+        }), 201
+
+    except Exception as error:
+
+        db.rollback()
+
+        print(
+            "User Signup Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error":
+                "Could not create account"
+        }), 500
+
+    finally:
+
+        db.close()
+
+# ============================================================
+# USER LOGIN
+# ============================================================
+
+@app.route(
+    "/user/login",
+    methods=["POST"]
+)
+def user_login():
+
+    data = request.get_json(
+        silent=True
+    )
+
+    if not isinstance(
+        data,
+        dict
+    ):
+        return jsonify({
+            "error":
+                "Invalid request data"
+        }), 400
+
+    email = str(
+        data.get(
+            "email",
+            ""
+        )
+    ).strip().lower()
+
+    password = str(
+        data.get(
+            "password",
+            ""
+        )
+    )
+
+    if not email or not password:
+        return jsonify({
+            "error":
+                "Email and password are required"
+        }), 400
+
+    db = SessionLocal()
+
+    try:
+
+        user = (
+            db.query(User)
+            .filter(
+                User.email == email
+            )
+            .first()
+        )
+
+        if not user:
+            return jsonify({
+                "error":
+                    "Invalid email or password"
+            }), 401
+
+        if user.role != "user":
+            return jsonify({
+                "error":
+                    "This account does not have user access"
+            }), 403
+
+        if not check_password_hash(
+            user.password_hash,
+            password
+        ):
+            return jsonify({
+                "error":
+                    "Invalid email or password"
+            }), 401
+
+        token = jwt.encode(
+            {
+                "user_id":
+                    user.id,
+                "role":
+                    user.role,
+                "exp":
+                    datetime.now(
+                        timezone.utc
+                    ) + timedelta(
+                        hours=24
+                    )
+            },
+            JWT_SECRET_KEY,
+            algorithm="HS256"
+        )
+
+        return jsonify({
+            "status":
+                "success",
+            "message":
+                "Login successful",
+            "token":
+                token,
+            "user": {
+                "id":
+                    user.id,
+                "name":
+                    user.name,
+                "email":
+                    user.email,
+                "role":
+                    user.role
+            }
+        }), 200
+
+    except Exception as error:
+
+        print(
+            "User Login Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error":
+                "Could not process login"
+        }), 500
+
+    finally:
+
+        db.close()
+
+# ============================================================
+# USER REQUIRED DECORATOR
+# ============================================================
+
+def user_required(function):
+
+    @wraps(function)
+    def wrapper(*args, **kwargs):
+
+        authorization = request.headers.get(
+            "Authorization",
+            ""
+        )
+
+        if not authorization:
+            return jsonify({
+                "error":
+                    "Authentication required"
+            }), 401
+
+        parts = authorization.split(
+            " ",
+            1
+        )
+
+        if len(parts) != 2 or parts[0].lower() != "bearer":
+            return jsonify({
+                "error":
+                    "Invalid authentication header"
+            }), 401
+
+        token = parts[1]
+
+        try:
+
+            payload = jwt.decode(
+                token,
+                JWT_SECRET_KEY,
+                algorithms=["HS256"]
+            )
+
+            user_id = payload.get(
+                "user_id"
+            )
+
+            role = payload.get(
+                "role"
+            )
+
+            if not user_id:
+                return jsonify({
+                    "error":
+                        "Invalid authentication token"
+                }), 401
+
+            if role != "user":
+                return jsonify({
+                    "error":
+                        "User access required"
+                }), 403
+
+        except jwt.ExpiredSignatureError:
+
+            return jsonify({
+                "error":
+                    "Authentication token has expired"
+            }), 401
+
+        except jwt.InvalidTokenError:
+
+            return jsonify({
+                "error":
+                    "Invalid authentication token"
+            }), 401
+
+        return function(
+            *args,
+            **kwargs
+        )
+
+    return wrapper
+
+# ============================================================
+# USER PROFILE
+# ============================================================
+
+@app.route(
+    "/user/profile",
+    methods=["GET"]
+)
+@user_required
+def user_profile():
+
+    authorization = request.headers.get(
+        "Authorization",
+        ""
+    )
+
+    parts = authorization.split(
+        " ",
+        1
+    )
+
+    if len(parts) != 2:
+        return jsonify({
+            "error":
+                "Invalid authentication header"
+        }), 401
+
+    token = parts[1]
+
+    try:
+
+        payload = jwt.decode(
+            token,
+            JWT_SECRET_KEY,
+            algorithms=["HS256"]
+        )
+
+        user_id = payload.get(
+            "user_id"
+        )
+
+    except jwt.ExpiredSignatureError:
+
+        return jsonify({
+            "error":
+                "Authentication token has expired"
+        }), 401
+
+    except jwt.InvalidTokenError:
+
+        return jsonify({
+            "error":
+                "Invalid authentication token"
+        }), 401
+
+    db = SessionLocal()
+
+    try:
+
+        user = (
+            db.query(User)
+            .filter(
+                User.id == user_id,
+                User.role == "user"
+            )
+            .first()
+        )
+
+        if not user:
+            return jsonify({
+                "error":
+                    "User not found"
+            }), 404
+
+        return jsonify({
+            "status":
+                "success",
+            "user": {
+                "id":
+                    user.id,
+                "name":
+                    user.name,
+                "email":
+                    user.email,
+                "role":
+                    user.role,
+                "created_at":
+                    user.created_at.isoformat()
+                    if user.created_at
+                    else None
+            }
+        }), 200
+
+    except Exception as error:
+
+        print(
+            "User Profile Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error":
+                "Could not load profile"
+        }), 500
+
+    finally:
+
+        db.close()
+        
+# ============================================================
+# USER READING HISTORY
+# ============================================================
+
+@app.route("/user/reading-history",methods=["GET"])
+@user_required
+def get_reading_history():
+
+    authorization = request.headers.get(
+        "Authorization",
+        ""
+    )
+
+    parts = authorization.split(" ", 1)
+
+    if len(parts) != 2:
+        return jsonify({
+            "error": "Invalid authentication header"
+        }), 401
+
+    token = parts[1]
+
+    try:
+        payload = jwt.decode(
+            token,
+            JWT_SECRET_KEY,
+            algorithms=["HS256"]
+        )
+
+        user_id = payload.get("user_id")
+
+    except jwt.ExpiredSignatureError:
+        return jsonify({
+            "error": "Authentication token has expired"
+        }), 401
+
+    except jwt.InvalidTokenError:
+        return jsonify({
+            "error": "Invalid authentication token"
+        }), 401
+
+    db = SessionLocal()
+
+    try:
+
+        history = (
+            db.query(ReadingHistory)
+            .filter(
+                ReadingHistory.user_id == user_id
+            )
+            .order_by(
+                ReadingHistory.last_read_at.desc()
+            )
+            .all()
+        )
+
+        result = []
+
+        for item in history:
+
+            result.append({
+                "id": item.id,
+                "novel_id": item.novel_id,
+                "novel_title": (
+                    item.novel.title
+                    if item.novel
+                    else None
+                ),
+                "novel_author": (
+                    item.novel.author
+                    if item.novel
+                    else None
+                ),
+                "novel_cover": (
+                    item.novel.cover_image
+                    if item.novel
+                    else None
+                ),
+                "last_chapter_id": item.last_chapter_id,
+                "last_chapter_number": item.last_chapter_number,
+                "last_read_at": (
+                    item.last_read_at.isoformat()
+                    if item.last_read_at
+                    else None
+                )
+            })
+
+        return jsonify({
+            "status": "success",
+            "reading_history": result
+        }), 200
+
+    except Exception as error:
+
+        print(
+            "Reading History Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error": "Could not load reading history"
+        }), 500
+
+    finally:
+        db.close()
+
+
+# ============================================================
+# SAVE / UPDATE READING PROGRESS
+# ============================================================
+
+@app.route(
+    "/user/reading-history",
+    methods=["POST"]
+)
+@user_required
+def save_reading_progress():
+
+    data = request.get_json(
+        silent=True
+    )
+
+    if not isinstance(data, dict):
+        return jsonify({
+            "error": "Invalid request data"
+        }), 400
+
+    novel_id = data.get("novel_id")
+    chapter_id = data.get("chapter_id")
+    chapter_number = data.get("chapter_number")
+
+    if not novel_id:
+        return jsonify({
+            "error": "Novel ID is required"
+        }), 400
+
+    authorization = request.headers.get(
+        "Authorization",
+        ""
+    )
+
+    parts = authorization.split(" ", 1)
+
+    if len(parts) != 2:
+        return jsonify({
+            "error": "Invalid authentication header"
+        }), 401
+
+    token = parts[1]
+
+    try:
+
+        payload = jwt.decode(
+            token,
+            JWT_SECRET_KEY,
+            algorithms=["HS256"]
+        )
+
+        user_id = payload.get("user_id")
+
+    except jwt.ExpiredSignatureError:
+
+        return jsonify({
+            "error": "Authentication token has expired"
+        }), 401
+
+    except jwt.InvalidTokenError:
+
+        return jsonify({
+            "error": "Invalid authentication token"
+        }), 401
+
+    db = SessionLocal()
+
+    try:
+
+        novel = (
+            db.query(Novel)
+            .filter(
+                Novel.id == novel_id
+            )
+            .first()
+        )
+
+        if not novel:
+            return jsonify({
+                "error": "Novel not found"
+            }), 404
+
+        history = (
+            db.query(ReadingHistory)
+            .filter(
+                ReadingHistory.user_id == user_id,
+                ReadingHistory.novel_id == novel_id
+            )
+            .first()
+        )
+
+        if not history:
+
+            history = ReadingHistory(
+                user_id=user_id,
+                novel_id=novel_id,
+                last_chapter_id=chapter_id,
+                last_chapter_number=chapter_number,
+                last_read_at=datetime.utcnow()
+            )
+
+            db.add(history)
+
+        else:
+
+            history.last_chapter_id = chapter_id
+            history.last_chapter_number = chapter_number
+            history.last_read_at = datetime.utcnow()
+
+        db.commit()
+        db.refresh(history)
+
+        return jsonify({
+            "status": "success",
+            "message": "Reading progress saved",
+            "reading": {
+                "id": history.id,
+                "novel_id": history.novel_id,
+                "last_chapter_id": history.last_chapter_id,
+                "last_chapter_number": history.last_chapter_number,
+                "last_read_at": (
+                    history.last_read_at.isoformat()
+                    if history.last_read_at
+                    else None
+                )
+            }
+        }), 200
+
+    except Exception as error:
+
+        db.rollback()
+
+        print(
+            "Save Reading Progress Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error": "Could not save reading progress"
+        }), 500
+
+    finally:
+        db.close()
+
+
+# ============================================================
+# CLEAR READING HISTORY
+# ============================================================
+
+@app.route(
+    "/user/reading-history",
+    methods=["DELETE"]
+)
+@user_required
+def clear_reading_history():
+
+    authorization = request.headers.get(
+        "Authorization",
+        ""
+    )
+
+    parts = authorization.split(" ", 1)
+
+    if len(parts) != 2:
+        return jsonify({
+            "error": "Invalid authentication header"
+        }), 401
+
+    token = parts[1]
+
+    try:
+
+        payload = jwt.decode(
+            token,
+            JWT_SECRET_KEY,
+            algorithms=["HS256"]
+        )
+
+        user_id = payload.get("user_id")
+
+    except jwt.ExpiredSignatureError:
+
+        return jsonify({
+            "error": "Authentication token has expired"
+        }), 401
+
+    except jwt.InvalidTokenError:
+
+        return jsonify({
+            "error": "Invalid authentication token"
+        }), 401
+
+    db = SessionLocal()
+
+    try:
+
+        db.query(ReadingHistory).filter(
+            ReadingHistory.user_id == user_id
+        ).delete(
+            synchronize_session=False
+        )
+
+        db.commit()
+
+        return jsonify({
+            "status": "success",
+            "message": "Reading history cleared"
+        }), 200
+
+    except Exception as error:
+
+        db.rollback()
+
+        print(
+            "Clear Reading History Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error": "Could not clear reading history"
+        }), 500
+
+    finally:
+        db.close()
+
+
+# ============================================================
+# SAVED NOVELS
+# ============================================================
+
+@app.route(
+    "/user/saved",
+    methods=["GET"]
+)
+@user_required
+def get_saved_novels():
+
+    authorization = request.headers.get(
+        "Authorization",
+        ""
+    )
+
+    parts = authorization.split(" ", 1)
+
+    if len(parts) != 2:
+        return jsonify({
+            "error": "Invalid authentication header"
+        }), 401
+
+    token = parts[1]
+
+    try:
+
+        payload = jwt.decode(
+            token,
+            JWT_SECRET_KEY,
+            algorithms=["HS256"]
+        )
+
+        user_id = payload.get("user_id")
+
+    except jwt.ExpiredSignatureError:
+
+        return jsonify({
+            "error": "Authentication token has expired"
+        }), 401
+
+    except jwt.InvalidTokenError:
+
+        return jsonify({
+            "error": "Invalid authentication token"
+        }), 401
+
+    db = SessionLocal()
+
+    try:
+
+        saved = (
+            db.query(SavedNovel)
+            .filter(
+                SavedNovel.user_id == user_id
+            )
+            .order_by(
+                SavedNovel.saved_at.desc()
+            )
+            .all()
+        )
+
+        result = []
+
+        for item in saved:
+
+            if not item.novel:
+                continue
+
+            result.append({
+                "id": item.id,
+                "novel_id": item.novel_id,
+                "title": item.novel.title,
+                "author": item.novel.author,
+                "cover_image": item.novel.cover_image,
+                "genre": item.novel.genre,
+                "status": item.novel.status,
+                "total_chapters": item.novel.total_chapters,
+                "saved_at": (
+                    item.saved_at.isoformat()
+                    if item.saved_at
+                    else None
+                )
+            })
+
+        return jsonify({
+            "status": "success",
+            "saved_novels": result
+        }), 200
+
+    except Exception as error:
+
+        print(
+            "Saved Novels Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error": "Could not load saved novels"
+        }), 500
+
+    finally:
+        db.close()
+
+
+# ============================================================
+# SAVE NOVEL
+# ============================================================
+
+@app.route(
+    "/user/saved",
+    methods=["POST"]
+)
+@user_required
+def save_novel():
+
+    data = request.get_json(
+        silent=True
+    )
+
+    if not isinstance(data, dict):
+        return jsonify({
+            "error": "Invalid request data"
+        }), 400
+
+    novel_id = data.get("novel_id")
+
+    if not novel_id:
+        return jsonify({
+            "error": "Novel ID is required"
+        }), 400
+
+    authorization = request.headers.get(
+        "Authorization",
+        ""
+    )
+
+    parts = authorization.split(" ", 1)
+
+    if len(parts) != 2:
+        return jsonify({
+            "error": "Invalid authentication header"
+        }), 401
+
+    token = parts[1]
+
+    try:
+
+        payload = jwt.decode(
+            token,
+            JWT_SECRET_KEY,
+            algorithms=["HS256"]
+        )
+
+        user_id = payload.get("user_id")
+
+    except jwt.ExpiredSignatureError:
+
+        return jsonify({
+            "error": "Authentication token has expired"
+        }), 401
+
+    except jwt.InvalidTokenError:
+
+        return jsonify({
+            "error": "Invalid authentication token"
+        }), 401
+
+    db = SessionLocal()
+
+    try:
+
+        novel = (
+            db.query(Novel)
+            .filter(
+                Novel.id == novel_id
+            )
+            .first()
+        )
+
+        if not novel:
+            return jsonify({
+                "error": "Novel not found"
+            }), 404
+
+        existing = (
+            db.query(SavedNovel)
+            .filter(
+                SavedNovel.user_id == user_id,
+                SavedNovel.novel_id == novel_id
+            )
+            .first()
+        )
+
+        if existing:
+
+            return jsonify({
+                "status": "success",
+                "message": "Novel is already saved"
+            }), 200
+
+        saved = SavedNovel(
+            user_id=user_id,
+            novel_id=novel_id,
+            saved_at=datetime.utcnow()
+        )
+
+        db.add(saved)
+        db.commit()
+        db.refresh(saved)
+
+        return jsonify({
+            "status": "success",
+            "message": "Novel saved successfully",
+            "saved": {
+                "id": saved.id,
+                "novel_id": saved.novel_id,
+                "saved_at": saved.saved_at.isoformat()
+            }
+        }), 201
+
+    except Exception as error:
+
+        db.rollback()
+
+        print(
+            "Save Novel Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error": "Could not save novel"
+        }), 500
+
+    finally:
+        db.close()
+
+
+# ============================================================
+# UNSAVE NOVEL
+# ============================================================
+
+@app.route(
+    "/user/saved/<int:novel_id>",
+    methods=["DELETE"]
+)
+@user_required
+def unsave_novel(novel_id):
+
+    authorization = request.headers.get(
+        "Authorization",
+        ""
+    )
+
+    parts = authorization.split(" ", 1)
+
+    if len(parts) != 2:
+        return jsonify({
+            "error": "Invalid authentication header"
+        }), 401
+
+    token = parts[1]
+
+    try:
+
+        payload = jwt.decode(
+            token,
+            JWT_SECRET_KEY,
+            algorithms=["HS256"]
+        )
+
+        user_id = payload.get("user_id")
+
+    except jwt.ExpiredSignatureError:
+
+        return jsonify({
+            "error": "Authentication token has expired"
+        }), 401
+
+    except jwt.InvalidTokenError:
+
+        return jsonify({
+            "error": "Invalid authentication token"
+        }), 401
+
+    db = SessionLocal()
+
+    try:
+
+        saved = (
+            db.query(SavedNovel)
+            .filter(
+                SavedNovel.user_id == user_id,
+                SavedNovel.novel_id == novel_id
+            )
+            .first()
+        )
+
+        if not saved:
+            return jsonify({
+                "error": "Novel is not saved"
+            }), 404
+
+        db.delete(saved)
+        db.commit()
+
+        return jsonify({
+            "status": "success",
+            "message": "Novel removed from saved stories"
+        }), 200
+
+    except Exception as error:
+
+        db.rollback()
+
+        print(
+            "Unsave Novel Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error": "Could not remove saved novel"
+        }), 500
+
+    finally:
+        db.close()
+        
+# ============================================================
+# UPDATE USER PROFILE
+# ============================================================
+
+@app.route(
+    "/user/profile",
+    methods=["PUT"]
+)
+@user_required
+def update_user_profile():
+
+    data = request.get_json(
+        silent=True
+    )
+
+    if not isinstance(
+        data,
+        dict
+    ):
+        return jsonify({
+            "error":
+                "Invalid request data"
+        }), 400
+
+    authorization = request.headers.get(
+        "Authorization",
+        ""
+    )
+
+    parts = authorization.split(
+        " ",
+        1
+    )
+
+    if len(parts) != 2:
+        return jsonify({
+            "error":
+                "Invalid authentication header"
+        }), 401
+
+    token = parts[1]
+
+    try:
+
+        payload = jwt.decode(
+            token,
+            JWT_SECRET_KEY,
+            algorithms=["HS256"]
+        )
+
+        user_id = payload.get(
+            "user_id"
+        )
+
+    except jwt.ExpiredSignatureError:
+
+        return jsonify({
+            "error":
+                "Authentication token has expired"
+        }), 401
+
+    except jwt.InvalidTokenError:
+
+        return jsonify({
+            "error":
+                "Invalid authentication token"
+        }), 401
+
+    db = SessionLocal()
+
+    try:
+
+        user = (
+            db.query(User)
+            .filter(
+                User.id == user_id,
+                User.role == "user"
+            )
+            .first()
+        )
+
+        if not user:
+            return jsonify({
+                "error":
+                    "User not found"
+            }), 404
+
+        if "name" in data:
+
+            name = str(
+                data.get(
+                    "name",
+                    ""
+                )
+            ).strip()
+
+            if not name:
+                return jsonify({
+                    "error":
+                        "Name cannot be empty"
+                }), 400
+
+            user.name = name
+
+        if "email" in data:
+
+            email = str(
+                data.get(
+                    "email",
+                    ""
+                )
+            ).strip().lower()
+
+            if not email:
+                return jsonify({
+                    "error":
+                        "Email cannot be empty"
+                }), 400
+
+            existing_user = (
+                db.query(User)
+                .filter(
+                    User.email == email,
+                    User.id != user.id
+                )
+                .first()
+            )
+
+            if existing_user:
+                return jsonify({
+                    "error":
+                        "Email is already in use"
+                }), 409
+
+            user.email = email
+
+        db.commit()
+        db.refresh(user)
+
+        return jsonify({
+            "status":
+                "success",
+            "message":
+                "Profile updated successfully",
+            "user": {
+                "id":
+                    user.id,
+                "name":
+                    user.name,
+                "email":
+                    user.email,
+                "role":
+                    user.role
+            }
+        }), 200
+
+    except Exception as error:
+
+        db.rollback()
+
+        print(
+            "User Profile Update Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error":
+                "Could not update profile"
+        }), 500
+
+    finally:
+
+        db.close()
+
+# ============================================================
+# USER CHANGE PASSWORD
+# ============================================================
+
+@app.route(
+    "/user/change-password",
+    methods=["POST"]
+)
+@user_required
+def user_change_password():
+
+    data = request.get_json(
+        silent=True
+    )
+
+    if not isinstance(
+        data,
+        dict
+    ):
+        return jsonify({
+            "error":
+                "Invalid request data"
+        }), 400
+
+    current_password = str(
+        data.get(
+            "current_password",
+            ""
+        )
+    )
+
+    new_password = str(
+        data.get(
+            "new_password",
+            ""
+        )
+    )
+
+    confirm_password = str(
+        data.get(
+            "confirm_password",
+            ""
+        )
+    )
+
+    if not current_password:
+        return jsonify({
+            "error":
+                "Current password is required"
+        }), 400
+
+    if not new_password:
+        return jsonify({
+            "error":
+                "New password is required"
+        }), 400
+
+    if not confirm_password:
+        return jsonify({
+            "error":
+                "Password confirmation is required"
+        }), 400
+
+    if len(new_password) < 6:
+        return jsonify({
+            "error":
+                "New password must contain at least 6 characters"
+        }), 400
+
+    if new_password != confirm_password:
+        return jsonify({
+            "error":
+                "New passwords do not match"
+        }), 400
+
+    if current_password == new_password:
+        return jsonify({
+            "error":
+                "New password must be different from current password"
+        }), 400
+
+    authorization = request.headers.get(
+        "Authorization",
+        ""
+    )
+
+    parts = authorization.split(
+        " ",
+        1
+    )
+
+    if len(parts) != 2:
+        return jsonify({
+            "error":
+                "Invalid authentication header"
+        }), 401
+
+    token = parts[1]
+
+    try:
+
+        payload = jwt.decode(
+            token,
+            JWT_SECRET_KEY,
+            algorithms=["HS256"]
+        )
+
+        user_id = payload.get(
+            "user_id"
+        )
+
+        if not user_id:
+            return jsonify({
+                "error":
+                    "Invalid authentication token"
+            }), 401
+
+    except jwt.ExpiredSignatureError:
+
+        return jsonify({
+            "error":
+                "Authentication token has expired"
+        }), 401
+
+    except jwt.InvalidTokenError:
+
+        return jsonify({
+            "error":
+                "Invalid authentication token"
+        }), 401
+
+    db = SessionLocal()
+
+    try:
+
+        user = (
+            db.query(User)
+            .filter(
+                User.id == user_id,
+                User.role == "user"
+            )
+            .first()
+        )
+
+        if not user:
+            return jsonify({
+                "error":
+                    "User account not found"
+            }), 404
+
+        if not check_password_hash(
+            user.password_hash,
+            current_password
+        ):
+            return jsonify({
+                "error":
+                    "Current password is incorrect"
+            }), 401
+
+        user.password_hash = (
+            generate_password_hash(
+                new_password
+            )
+        )
+
+        db.commit()
+
+        return jsonify({
+            "status":
+                "success",
+            "message":
+                "Password changed successfully"
+        }), 200
+
+    except Exception as error:
+
+        db.rollback()
+
+        print(
+            "User Password Error:",
+            repr(error)
+        )
+
+        return jsonify({
+            "error":
+                "Could not change password"
+        }), 500
+
+    finally:
+
+        db.close()
+        
 # ============================================================
 # ADMIN DASHBOARD
 # ============================================================
@@ -2464,7 +3940,6 @@ def admin_dashboard():
         for novel in recent_novels:
 
             recent_novels_data.append({
-                "id": novel.id,
                 "title": novel.title,
                 "author": novel.author,
                 "cover_image": novel.cover_image,
@@ -3704,7 +5179,6 @@ def admin_profile():
 
         db.close()
 
-
 # ============================================================
 # ADMIN RESET PASSWORD
 # ============================================================
@@ -3724,10 +5198,8 @@ def admin_reset_password():
         data,
         dict
     ):
-
         return jsonify({
-            "error":
-                "Invalid request data"
+            "error": "Invalid request data"
         }), 400
 
     current_password = str(
@@ -3745,27 +5217,46 @@ def admin_reset_password():
     )
 
     if not current_password:
-
         return jsonify({
             "error":
                 "Current password is required"
         }), 400
 
-    if len(new_password) < 6:
+    if not new_password:
+        return jsonify({
+            "error":
+                "New password is required"
+        }), 400
 
+    if len(new_password) < 6:
         return jsonify({
             "error":
                 "New password must contain at least 6 characters"
         }), 400
 
+    if current_password == new_password:
+        return jsonify({
+            "error":
+                "New password must be different from current password"
+        }), 400
+
     authorization = request.headers.get(
-        "Authorization"
+        "Authorization",
+        ""
     )
 
-    token = authorization.split(
+    parts = authorization.split(
         " ",
         1
-    )[1]
+    )
+
+    if len(parts) != 2:
+        return jsonify({
+            "error":
+                "Invalid authentication header"
+        }), 401
+
+    token = parts[1]
 
     try:
 
@@ -3778,6 +5269,19 @@ def admin_reset_password():
         user_id = payload.get(
             "user_id"
         )
+
+        if not user_id:
+            return jsonify({
+                "error":
+                    "Invalid authentication token"
+            }), 401
+
+    except jwt.ExpiredSignatureError:
+
+        return jsonify({
+            "error":
+                "Authentication token has expired"
+        }), 401
 
     except jwt.InvalidTokenError:
 
@@ -3800,22 +5304,22 @@ def admin_reset_password():
         )
 
         if not admin:
-
             return jsonify({
                 "error":
-                    "Admin not found"
+                    "Admin account not found"
             }), 404
 
+        # Verify current password
         if not check_password_hash(
             admin.password_hash,
             current_password
         ):
-
             return jsonify({
                 "error":
                     "Current password is incorrect"
             }), 401
 
+        # Generate a completely new password hash
         admin.password_hash = (
             generate_password_hash(
                 new_password
@@ -3825,14 +5329,11 @@ def admin_reset_password():
         db.commit()
 
         return jsonify({
-
-            "message":
-                "Password updated successfully",
-
             "status":
-                "success"
-
-        })
+                "success",
+            "message":
+                "Password updated successfully"
+        }), 200
 
     except Exception as error:
 
@@ -3851,7 +5352,6 @@ def admin_reset_password():
     finally:
 
         db.close()
-
 
 # ============================================================
 # ADMIN SETTINGS - GET
@@ -4188,6 +5688,11 @@ def update_admin_settings():
     finally:
 
         db.close()
+
+print("========== FINAL ROUTES ==========")
+for rule in app.url_map.iter_rules():
+    print(rule)
+print("=================================")
 
 
 # ============================================================

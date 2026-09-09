@@ -1,459 +1,606 @@
-// ============================================================
-// USER PROFILE
-// NOVEL ARCHIVE
-// ============================================================
+const API_URL = "http://127.0.0.1:5000";
 
+const userToken = localStorage.getItem("user_token");
 
-// ============================================================
-// ELEMENTS
-// ============================================================
+if (!userToken) {
+window.location.href = "user_login.html";
+}
 
-const profileName =
-    document.getElementById(
-        "profileName"
+/* ============================================================
+HELPERS
+============================================================ */
+
+function getStoredUser() {
+
+try {
+    return JSON.parse(
+        localStorage.getItem("user_data") || "{}"
     );
+} catch (error) {
+    return {};
+}
 
+}
 
-const profileEmail =
-    document.getElementById(
-        "profileEmail"
-    );
+function getInitials(name) {
 
+if (!name) {
+    return "U";
+}
 
-const profileAvatar =
-    document.getElementById(
-        "profileAvatar"
-    );
+const words = String(name)
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
 
+if (words.length === 1) {
+    return words[0]
+        .charAt(0)
+        .toUpperCase();
+}
 
-const sidebarAvatar =
+return (
+    words[0].charAt(0) +
+    words[words.length - 1].charAt(0)
+).toUpperCase();
+
+}
+
+function showMessage(
+element,
+message,
+type
+) {
+
+if (!element) {
+    return;
+}
+
+element.textContent = message;
+
+element.className =
+    "form-message";
+
+if (type) {
+    element.classList.add(type);
+}
+
+}
+
+/* ============================================================
+USER DISPLAY
+============================================================ */
+
+function updateUserDisplay(user) {
+const name =
+    user.name ||
+    user.username ||
+    "Reader";
+
+const avatar =
     document.getElementById(
         "sidebarAvatar"
     );
 
-
-const sidebarUserName =
+const sidebarName =
     document.getElementById(
         "sidebarUserName"
     );
 
+if (avatar) {
+    avatar.textContent =
+        getInitials(name);
+}
 
-const profileNameInput =
-    document.getElementById(
-        "profileNameInput"
+if (sidebarName) {
+    sidebarName.textContent =
+        name;
+}
+
+}
+
+/* ============================================================
+LOAD PROFILE
+============================================================ */
+
+async function loadUserProfile() {
+const storedUser =
+    getStoredUser();
+
+updateUserDisplay(
+    storedUser
+);
+
+try {
+
+    const response =
+        await fetch(
+            `${API_URL}/user/profile`,
+            {
+                method: "GET",
+
+                headers: {
+                    Authorization:
+                        `Bearer ${userToken}`
+                }
+            }
+        );
+
+    if (response.status === 401 ||
+        response.status === 403) {
+
+        localStorage.removeItem(
+            "user_token"
+        );
+
+        localStorage.removeItem(
+            "user_data"
+        );
+
+        window.location.href =
+            "user_login.html";
+
+        return;
+    }
+
+    if (!response.ok) {
+        return;
+    }
+
+    const data =
+        await response.json();
+
+    const user =
+        data.user || data;
+
+    updateUserDisplay(user);
+
+    const nameInput =
+        document.getElementById(
+            "profileName"
+        );
+
+    const emailInput =
+        document.getElementById(
+            "profileEmail"
+        );
+
+    if (nameInput) {
+        nameInput.value =
+            user.name || "";
+    }
+
+    if (emailInput) {
+        emailInput.value =
+            user.email || "";
+    }
+
+    localStorage.setItem(
+        "user_data",
+        JSON.stringify(user)
     );
 
+} catch (error) {
 
-const profileEmailInput =
+    const nameInput =
+        document.getElementById(
+            "profileName"
+        );
+
+    const emailInput =
+        document.getElementById(
+            "profileEmail"
+        );
+
+    if (nameInput) {
+        nameInput.value =
+            storedUser.name || "";
+    }
+
+    if (emailInput) {
+        emailInput.value =
+            storedUser.email || "";
+    }
+}
+
+}
+
+/* ============================================================
+UPDATE PROFILE
+============================================================ */
+
+async function updateProfile(event) {
+
+event.preventDefault();
+
+const nameInput =
     document.getElementById(
-        "profileEmailInput"
+        "profileName"
     );
 
-
-const saveProfileButton =
+const emailInput =
     document.getElementById(
-        "saveProfileButton"
+        "profileEmail"
     );
 
-
-const profileMessage =
+const message =
     document.getElementById(
         "profileMessage"
     );
 
+const button =
+    document.getElementById(
+        "saveProfileButton"
+    );
+
+const name =
+    nameInput.value.trim();
+
+const email =
+    emailInput.value.trim();
+
+if (!name || !email) {
+
+    showMessage(
+        message,
+        "Name and email are required.",
+        "error"
+    );
+
+    return;
+}
+
+button.disabled = true;
+
+button.textContent =
+    "Saving...";
+
+showMessage(
+    message,
+    "",
+    ""
+);
+
+try {
+
+    const response =
+        await fetch(
+            `${API_URL}/user/profile`,
+            {
+                method: "PUT",
+
+                headers: {
+                    "Content-Type":
+                        "application/json",
+
+                    Authorization:
+                        `Bearer ${userToken}`
+                },
+
+                body: JSON.stringify({
+                    name,
+                    email
+                })
+            }
+        );
+
+    const data =
+        await response.json();
+
+    if (response.status === 401 ||
+        response.status === 403) {
+
+        localStorage.removeItem(
+            "user_token"
+        );
+
+        localStorage.removeItem(
+            "user_data"
+        );
+
+        window.location.href =
+            "user_login.html";
+
+        return;
+    }
+
+    if (!response.ok) {
+
+        showMessage(
+            message,
+            data.message ||
+            data.error ||
+            "Unable to update profile.",
+            "error"
+        );
+
+        return;
+    }
+
+    const updatedUser =
+        data.user || {
+            ...getStoredUser(),
+            name,
+            email
+        };
+
+    localStorage.setItem(
+        "user_data",
+        JSON.stringify(updatedUser)
+    );
+
+    updateUserDisplay(
+        updatedUser
+    );
+
+    showMessage(
+        message,
+        data.message ||
+        "Profile updated successfully.",
+        "success"
+    );
+
+} catch (error) {
+
+    showMessage(
+        message,
+        "Unable to connect to the server.",
+        "error"
+    );
+
+} finally {
+
+    button.disabled = false;
+
+    button.textContent =
+        "Save Changes";
+}
+
+}
+
+/* ============================================================
+CHANGE PASSWORD
+============================================================ */
+
+async function changePassword(event) {
+
+event.preventDefault();
+
+const currentPassword =
+    document.getElementById(
+        "currentPassword"
+    ).value;
+
+const newPassword =
+    document.getElementById(
+        "newPassword"
+    ).value;
+
+const confirmPassword =
+    document.getElementById(
+        "confirmPassword"
+    ).value;
+
+const message =
+    document.getElementById(
+        "passwordMessage"
+    );
+
+const button =
+    document.getElementById(
+        "changePasswordButton"
+    );
+
+if (
+    !currentPassword ||
+    !newPassword ||
+    !confirmPassword
+) {
+
+    showMessage(
+        message,
+        "Please complete all password fields.",
+        "error"
+    );
+
+    return;
+}
+
+if (newPassword.length < 6) {
+
+    showMessage(
+        message,
+        "New password must be at least 6 characters.",
+        "error"
+    );
+
+    return;
+}
+
+if (newPassword !== confirmPassword) {
+
+    showMessage(
+        message,
+        "New passwords do not match.",
+        "error"
+    );
+
+    return;
+}
+
+button.disabled = true;
+
+button.textContent =
+    "Updating...";
+
+showMessage(
+    message,
+    "",
+    ""
+);
+
+try {
+
+    const response =
+        await fetch(
+            `${API_URL}/user/change-password`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json",
+
+                    Authorization:
+                        `Bearer ${userToken}`
+                },
+
+                body: JSON.stringify({
+                    current_password:
+                        currentPassword,
+
+                    new_password:
+                        newPassword
+                })
+            }
+        );
+
+    const data =
+        await response.json();
+
+    if (response.status === 401 ||
+        response.status === 403) {
+
+        localStorage.removeItem(
+            "user_token"
+        );
+
+        localStorage.removeItem(
+            "user_data"
+        );
+
+        window.location.href =
+            "user_login.html";
+
+        return;
+    }
+
+    if (!response.ok) {
+
+        showMessage(
+            message,
+            data.message ||
+            data.error ||
+            "Unable to change password.",
+            "error"
+        );
+
+        return;
+    }
+
+    document.getElementById(
+        "passwordForm"
+    ).reset();
+
+    showMessage(
+        message,
+        data.message ||
+        "Password changed successfully.",
+        "success"
+    );
+
+} catch (error) {
+
+    showMessage(
+        message,
+        "Unable to connect to the server.",
+        "error"
+    );
+
+} finally {
+
+    button.disabled = false;
+
+    button.textContent =
+        "Update Password";
+}
+
+}
+
+/* ============================================================
+LOGOUT
+============================================================ */
+
+function logoutUser() {
+localStorage.removeItem(
+    "user_token"
+);
+
+localStorage.removeItem(
+    "user_data"
+);
+
+window.location.href =
+    "user_login.html";
+
+}
+
+/* ============================================================
+INITIALIZE
+============================================================ */
+
+function initializeProfile() {
+const profileForm =
+    document.getElementById(
+        "profileForm"
+    );
+
+const passwordForm =
+    document.getElementById(
+        "passwordForm"
+    );
 
 const logoutButton =
     document.getElementById(
         "logoutButton"
     );
 
-
-const changePasswordButton =
+const mobileLogoutButton =
     document.getElementById(
-        "changePasswordButton"
+        "mobileLogoutButton"
     );
 
-
-const myReadingLink =
-    document.getElementById(
-        "myReadingLink"
+if (profileForm) {
+    profileForm.addEventListener(
+        "submit",
+        updateProfile
     );
-
-
-const myReadingButton =
-    document.getElementById(
-        "myReadingButton"
-    );
-
-
-// ============================================================
-// GET USER DATA
-// ============================================================
-
-function getUserName() {
-
-    return (
-        localStorage.getItem(
-            "novelArchiveUserName"
-        ) ||
-        "Reader"
-    );
-
 }
 
-
-function getUserEmail() {
-
-    return (
-        localStorage.getItem(
-            "novelArchiveUserEmail"
-        ) ||
-        ""
+if (passwordForm) {
+    passwordForm.addEventListener(
+        "submit",
+        changePassword
     );
-
 }
-
-
-// ============================================================
-// GET USER INITIAL
-// ============================================================
-
-function getUserInitial(
-    name
-) {
-
-    const cleanName =
-        String(name || "")
-            .trim();
-
-
-    if (!cleanName) {
-        return "U";
-    }
-
-
-    return cleanName
-        .charAt(0)
-        .toUpperCase();
-
-}
-
-
-// ============================================================
-// LOAD PROFILE
-// ============================================================
-
-function loadProfile() {
-
-    const name =
-        getUserName();
-
-
-    const email =
-        getUserEmail();
-
-
-    const initial =
-        getUserInitial(name);
-
-
-    // --------------------------------------------------------
-    // PROFILE OVERVIEW
-    // --------------------------------------------------------
-
-    if (profileName) {
-
-        profileName.textContent =
-            name;
-
-    }
-
-
-    if (profileEmail) {
-
-        profileEmail.textContent =
-            email ||
-            "No email available";
-
-    }
-
-
-    if (profileAvatar) {
-
-        profileAvatar.textContent =
-            initial;
-
-    }
-
-
-    // --------------------------------------------------------
-    // SIDEBAR
-    // --------------------------------------------------------
-
-    if (sidebarAvatar) {
-
-        sidebarAvatar.textContent =
-            initial;
-
-    }
-
-
-    if (sidebarUserName) {
-
-        sidebarUserName.textContent =
-            name;
-
-    }
-
-
-    // --------------------------------------------------------
-    // FORM
-    // --------------------------------------------------------
-
-    if (profileNameInput) {
-
-        profileNameInput.value =
-            name === "Reader"
-                ? ""
-                : name;
-
-    }
-
-
-    if (profileEmailInput) {
-
-        profileEmailInput.value =
-            email;
-
-    }
-
-}
-
-
-// ============================================================
-// SAVE PROFILE
-// ============================================================
-
-if (saveProfileButton) {
-
-    saveProfileButton.addEventListener(
-        "click",
-        function () {
-
-            const newName =
-                profileNameInput
-                    ?.value
-                    .trim();
-
-
-            const newEmail =
-                profileEmailInput
-                    ?.value
-                    .trim();
-
-
-            // ------------------------------------------------
-            // VALIDATION
-            // ------------------------------------------------
-
-            if (!newName) {
-
-                showProfileMessage(
-                    "Please enter your name.",
-                    "error"
-                );
-
-                return;
-            }
-
-
-            if (!newEmail) {
-
-                showProfileMessage(
-                    "Please enter your email.",
-                    "error"
-                );
-
-                return;
-            }
-
-
-            // ------------------------------------------------
-            // SAVE TEMPORARILY
-            // ------------------------------------------------
-
-            localStorage.setItem(
-                "novelArchiveUserName",
-                newName
-            );
-
-
-            localStorage.setItem(
-                "novelArchiveUserEmail",
-                newEmail
-            );
-
-
-            // ------------------------------------------------
-            // REFRESH PROFILE
-            // ------------------------------------------------
-
-            loadProfile();
-
-
-            showProfileMessage(
-                "Profile updated successfully.",
-                "success"
-            );
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// PROFILE MESSAGE
-// ============================================================
-
-function showProfileMessage(
-    message,
-    type
-) {
-
-    if (!profileMessage) {
-        return;
-    }
-
-
-    profileMessage.textContent =
-        message;
-
-
-    profileMessage.className =
-        `profile-message ${type}`;
-
-
-    setTimeout(
-        function () {
-
-            if (profileMessage) {
-
-                profileMessage.textContent =
-                    "";
-
-                profileMessage.className =
-                    "profile-message";
-
-            }
-
-        },
-        2500
-    );
-
-}
-
-
-// ============================================================
-// CHANGE PASSWORD
-// ============================================================
-
-if (changePasswordButton) {
-
-    changePasswordButton.addEventListener(
-        "click",
-        function () {
-
-            alert(
-                "Password change will be connected to the backend later."
-            );
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// MY READING
-// ============================================================
-
-function openMyReadingMessage(
-    event
-) {
-
-    if (event) {
-
-        event.preventDefault();
-
-    }
-
-
-    alert(
-        "My Reading section will be connected next."
-    );
-
-}
-
-
-if (myReadingLink) {
-
-    myReadingLink.addEventListener(
-        "click",
-        openMyReadingMessage
-    );
-
-}
-
-
-if (myReadingButton) {
-
-    myReadingButton.addEventListener(
-        "click",
-        openMyReadingMessage
-    );
-
-}
-
-
-// ============================================================
-// LOGOUT
-// ============================================================
 
 if (logoutButton) {
-
     logoutButton.addEventListener(
         "click",
-        function () {
-
-            localStorage.removeItem(
-                "novelArchiveUserName"
-            );
-
-
-            localStorage.removeItem(
-                "novelArchiveUserEmail"
-            );
-
-
-            window.location.href =
-                "user_signin.html";
-
-        }
+        logoutUser
     );
+}
+
+if (mobileLogoutButton) {
+    mobileLogoutButton.addEventListener(
+        "click",
+        logoutUser
+    );
+}
+
+loadUserProfile();
+
 
 }
 
-
-// ============================================================
-// INITIALIZE
-// ============================================================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        loadProfile();
-
-    }
-);
+initializeProfile();

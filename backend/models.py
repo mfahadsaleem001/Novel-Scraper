@@ -21,6 +21,7 @@ from backend.database import Base
 # ============================================================
 
 class User(Base):
+
     __tablename__ = "users"
 
     id = Column(
@@ -64,12 +65,25 @@ class User(Base):
         cascade="all, delete-orphan",
     )
 
+    reading_history = relationship(
+        "ReadingHistory",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+    saved_novels = relationship(
+        "SavedNovel",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
 
 # ============================================================
 # NOVEL MODEL
 # ============================================================
 
 class Novel(Base):
+
     __tablename__ = "novels"
 
     id = Column(
@@ -190,12 +204,29 @@ class Novel(Base):
         order_by="Chapter.chapter_number",
     )
 
+    # ========================================================
+    # USER READING
+    # ========================================================
+
+    reading_history = relationship(
+        "ReadingHistory",
+        back_populates="novel",
+        cascade="all, delete-orphan",
+    )
+
+    saved_by_users = relationship(
+        "SavedNovel",
+        back_populates="novel",
+        cascade="all, delete-orphan",
+    )
+
 
 # ============================================================
 # CHAPTER MODEL
 # ============================================================
 
 class Chapter(Base):
+
     __tablename__ = "chapters"
 
     id = Column(
@@ -281,30 +312,172 @@ class Chapter(Base):
             name="uq_novel_chapter_number",
         ),
     )
-    
+
+
+# ============================================================
+# READING HISTORY MODEL
+# ============================================================
+
+class ReadingHistory(Base):
+
+    __tablename__ = "reading_history"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
+
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
+    novel_id = Column(
+        Integer,
+        ForeignKey("novels.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
+    last_chapter_id = Column(
+        Integer,
+        ForeignKey("chapters.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+
+    last_chapter_number = Column(
+        Integer,
+        nullable=True,
+    )
+
+    last_read_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow,
+        nullable=False,
+    )
+
+    user = relationship(
+        "User",
+        back_populates="reading_history",
+    )
+
+    novel = relationship(
+        "Novel",
+        back_populates="reading_history",
+    )
+
+    last_chapter = relationship(
+        "Chapter",
+        foreign_keys=[last_chapter_id],
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "novel_id",
+            name="uq_user_reading_history",
+        ),
+    )
+
+
+# ============================================================
+# SAVED NOVEL MODEL
+# ============================================================
+
+class SavedNovel(Base):
+
+    __tablename__ = "saved_novels"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
+
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
+    novel_id = Column(
+        Integer,
+        ForeignKey("novels.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
+    saved_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        nullable=False,
+    )
+
+    user = relationship(
+        "User",
+        back_populates="saved_novels",
+    )
+
+    novel = relationship(
+        "Novel",
+        back_populates="saved_by_users",
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "novel_id",
+            name="uq_user_saved_novel",
+        ),
+    )
+
+
+# ============================================================
+# SETTING MODEL
+# ============================================================
+
 class Setting(Base):
+
     __tablename__ = "settings"
 
-    id = Column(Integer, primary_key=True, index=True)
-    site_name = Column(String(100), nullable=False, default="Novel Archive")
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
+
+    site_name = Column(
+        String(100),
+        nullable=False,
+        default="Novel Archive",
+    )
+
     site_description = Column(
         String(500),
         nullable=False,
-        default="A modern novel archive."
+        default="A modern novel archive.",
     )
+
     auto_sync_enabled = Column(
         Boolean,
         nullable=False,
-        default=True
+        default=True,
     )
+
     sync_interval = Column(
         Integer,
         nullable=False,
-        default=30
+        default=30,
     )
+
     updated_at = Column(
         DateTime,
         default=datetime.utcnow,
         onupdate=datetime.utcnow,
-        nullable=False
+        nullable=False,
     )
