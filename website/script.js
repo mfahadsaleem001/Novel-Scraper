@@ -832,7 +832,6 @@ function initializeScraperPage() {
     loadManualNovels();
 }
 
-
 // ============================================================
 // HANDLE SCRAPE
 // ============================================================
@@ -845,7 +844,22 @@ async function handleScrape(
 
     const urlInput =
         document.getElementById(
-            "url"
+            "novelUrl"
+        );
+
+    const scrapeButton =
+        document.getElementById(
+            "scrapeButton"
+        );
+
+    const buttonIcon =
+        document.getElementById(
+            "buttonIcon"
+        );
+
+    const buttonText =
+        document.getElementById(
+            "buttonText"
         );
 
     if (!urlInput) {
@@ -866,8 +880,8 @@ async function handleScrape(
     }
 
     const token =
-        localStorage.getItem(
-            "token"
+        sessionStorage.getItem(
+            "adminToken"
         );
 
     if (!token) {
@@ -879,6 +893,28 @@ async function handleScrape(
 
         return;
     }
+
+    // ========================================================
+    // SHOW SCRAPING STATUS
+    // ========================================================
+
+    if (scrapeButton) {
+        scrapeButton.disabled = true;
+    }
+
+    if (buttonIcon) {
+        buttonIcon.textContent = "⟳";
+    }
+
+    if (buttonText) {
+        buttonText.textContent =
+            "Scraping Novel...";
+    }
+
+    showMessage(
+        "Scraping novel through the provided URL. Please wait...",
+        "success"
+    );
 
     try {
 
@@ -905,13 +941,21 @@ async function handleScrape(
         const data =
             await response.json();
 
+        // ====================================================
+        // HANDLE UNAUTHORIZED ACCESS
+        // ====================================================
+
         if (
             response.status === 401 ||
             response.status === 403
         ) {
 
-            localStorage.removeItem(
-                "token"
+            sessionStorage.removeItem(
+                "adminToken"
+            );
+
+            sessionStorage.removeItem(
+                "adminUser"
             );
 
             window.location.href =
@@ -920,17 +964,25 @@ async function handleScrape(
             return;
         }
 
+        // ====================================================
+        // HANDLE SCRAPING ERROR
+        // ====================================================
+
         if (!response.ok) {
 
             throw new Error(
                 data.error ||
-                "Scraping failed"
+                "Scraping failed."
             );
         }
 
+        // ====================================================
+        // SCRAPING SUCCESS
+        // ====================================================
+
         showMessage(
             data.message ||
-            "Novel scraped successfully.",
+            "Novel scraped successfully through the provided URL.",
             "success"
         );
 
@@ -947,12 +999,30 @@ async function handleScrape(
 
         showMessage(
             error.message ||
-            "Scraping failed.",
+            "Scraping failed. Please try again.",
             "error"
         );
+
+    } finally {
+
+        // ====================================================
+        // RESTORE BUTTON
+        // ====================================================
+
+        if (scrapeButton) {
+            scrapeButton.disabled = false;
+        }
+
+        if (buttonIcon) {
+            buttonIcon.textContent = "⌕";
+        }
+
+        if (buttonText) {
+            buttonText.textContent =
+                "Add Novel";
+        }
     }
 }
-
 
 // ============================================================
 // LOAD MANUAL NOVELS

@@ -1,5 +1,8 @@
 import sys
-from datetime import datetime
+import time
+import threading
+
+from datetime import datetime, timezone
 
 from bs4 import BeautifulSoup
 
@@ -17,6 +20,13 @@ from scraper import (
     get_chapter_list,
     scrape_chapter,
 )
+
+
+# ============================================================
+# AUTO SYNC CONFIGURATION
+# ============================================================
+
+SYNC_INTERVAL_SECONDS = 60 * 60
 
 
 # ============================================================
@@ -38,6 +48,14 @@ try:
 
 except Exception:
     pass
+
+
+# ============================================================
+# UTC DATETIME HELPER
+# ============================================================
+
+def utc_now():
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 
 # ============================================================
@@ -85,8 +103,7 @@ def sync_novel(novel_id):
             novel.last_sync_error = (
                 "Novel does not have a source URL."
             )
-
-            novel.last_synced_at = datetime.utcnow()
+            novel.last_synced_at = utc_now()
 
             db.commit()
 
@@ -103,6 +120,7 @@ def sync_novel(novel_id):
         print("=" * 60)
         print("AUTO SYNC STARTED")
         print("=" * 60)
+
         print(f"Novel: {novel.title}")
         print(f"Source: {novel.source_url}")
 
@@ -205,15 +223,35 @@ def sync_novel(novel_id):
         )
 
         if not latest_chapter_list:
+
             raise RuntimeError(
                 "No chapters found on source website."
             )
 
-        source_chapters = {
-            int(chapter["chapter_number"]): chapter
-            for chapter in latest_chapter_list
-            if chapter.get("chapter_number") is not None
-        }
+        source_chapters = {}
+
+        for chapter in latest_chapter_list:
+
+            chapter_number = chapter.get(
+                "chapter_number"
+            )
+
+            if chapter_number is None:
+                continue
+
+            try:
+                chapter_number = int(
+                    chapter_number
+                )
+            except (
+                TypeError,
+                ValueError
+            ):
+                continue
+
+            source_chapters[
+                chapter_number
+            ] = chapter
 
         # ====================================================
         # GET DATABASE CHAPTERS
@@ -227,10 +265,23 @@ def sync_novel(novel_id):
             .all()
         )
 
-        database_chapters_map = {
-            int(chapter.chapter_number): chapter
-            for chapter in database_chapters
-        }
+        database_chapters_map = {}
+
+        for chapter in database_chapters:
+
+            try:
+                chapter_number = int(
+                    chapter.chapter_number
+                )
+            except (
+                TypeError,
+                ValueError
+            ):
+                continue
+
+            database_chapters_map[
+                chapter_number
+            ] = chapter
 
         # ====================================================
         # TRACK CHANGES
@@ -272,6 +323,7 @@ def sync_novel(novel_id):
             # ------------------------------------------------
 
             if chapter.is_manual:
+
                 print(
                     f"Keeping manual Chapter "
                     f"{chapter_number}"
@@ -351,12 +403,14 @@ def sync_novel(novel_id):
                             False
                         ),
 
-                        # Source/scraped chapter
                         is_manual=False,
 
                         url=result.get(
                             "url",
-                            source_chapter["url"]
+                            source_chapter.get(
+                                "url",
+                                ""
+                            )
                         ),
 
                         content=result.get(
@@ -367,7 +421,9 @@ def sync_novel(novel_id):
                         scrape_status="success"
                     )
 
-                    db.add(new_chapter)
+                    db.add(
+                        new_chapter
+                    )
 
                     added_count += 1
 
@@ -417,6 +473,7 @@ def sync_novel(novel_id):
                 source_url
                 and source_url != existing_url
             ):
+
                 existing_chapter.url = source_url
 
             # =================================================
@@ -437,11 +494,9 @@ def sync_novel(novel_id):
                 failed_count += 1
                 continue
 
-            latest_content = (
-                result.get(
-                    "content",
-                    ""
-                )
+            latest_content = result.get(
+                "content",
+                ""
             )
 
             current_content = (
@@ -474,6 +529,20 @@ def sync_novel(novel_id):
                     result.get(
                         "date",
                         existing_chapter.date
+                    )
+                )
+
+                existing_chapter.views = (
+                    result.get(
+                        "views",
+                        existing_chapter.views
+                    )
+                )
+
+                existing_chapter.is_locked = (
+                    result.get(
+                        "is_locked",
+                        existing_chapter.is_locked
                     )
                 )
 
@@ -514,7 +583,7 @@ def sync_novel(novel_id):
         # UPDATE SYNC STATUS
         # ====================================================
 
-        novel.last_synced_at = datetime.utcnow()
+        novel.last_synced_at = utc_now()
 
         if (
             metadata_changes
@@ -522,7 +591,8 @@ def sync_novel(novel_id):
             or updated_count > 0
             or removed_count > 0
         ):
-            novel.last_updated = datetime.utcnow()
+
+            novel.last_updated = utc_now()
 
         if failed_count > 0:
 
@@ -566,7 +636,8 @@ def sync_novel(novel_id):
         )
 
         print(
-            f"Manual Chapters Preserved: {manual_count}"
+            f"Manual Chapters Preserved: "
+            f"{manual_count}"
         )
 
         print(
@@ -578,6 +649,7 @@ def sync_novel(novel_id):
         )
 
         if metadata_changes:
+
             print(
                 "Metadata Changes:",
                 ", ".join(metadata_changes)
@@ -593,24 +665,15 @@ def sync_novel(novel_id):
             "success": True,
             "novel_id": novel.id,
             "title": novel.title,
-
             "added": added_count,
             "updated": updated_count,
             "removed": removed_count,
             "unchanged": unchanged_count,
             "manual_preserved": manual_count,
             "failed": failed_count,
-
             "total_chapters": remaining_count,
-
-            "metadata_changes": (
-                metadata_changes
-            ),
-
-            "sync_status": (
-                novel.sync_status
-            ),
-
+            "metadata_changes": metadata_changes,
+            "sync_status": novel.sync_status,
             "last_synced_at": (
                 novel.last_synced_at.isoformat()
                 if novel.last_synced_at
@@ -622,22 +685,16 @@ def sync_novel(novel_id):
 
         db.rollback()
 
-        # ----------------------------------------------------
-        # Safe Unicode error printing
-        # ----------------------------------------------------
-
         try:
+
             print()
             print(
                 "AUTO SYNC ERROR:",
                 repr(error)
             )
+
         except Exception:
             pass
-
-        # ----------------------------------------------------
-        # Record failure in database
-        # ----------------------------------------------------
 
         try:
 
@@ -658,7 +715,7 @@ def sync_novel(novel_id):
                 )
 
                 novel.last_synced_at = (
-                    datetime.utcnow()
+                    utc_now()
                 )
 
                 db.commit()
@@ -716,9 +773,12 @@ def sync_all_novels():
     print("=" * 60)
     print("AUTO SYNC - ALL SOURCE NOVELS")
     print("=" * 60)
+
     print(
-        f"Novels to synchronize: {len(novel_ids)}"
+        f"Novels to synchronize: "
+        f"{len(novel_ids)}"
     )
+
     print("=" * 60)
 
     results = []
@@ -729,7 +789,9 @@ def sync_all_novels():
             novel_id
         )
 
-        results.append(result)
+        results.append(
+            result
+        )
 
     # ========================================================
     # FINAL ALL-NOVELS SUMMARY
@@ -741,7 +803,9 @@ def sync_all_novels():
         if result.get("success")
     )
 
-    failed = len(results) - successful
+    failed = (
+        len(results) - successful
+    )
 
     total_added = sum(
         result.get("added", 0)
@@ -792,71 +856,115 @@ def sync_all_novels():
 
 
 # ============================================================
-# TEST
+# CONTINUOUS AUTO SYNC LOOP
+# ============================================================
+
+def auto_sync_loop():
+    """
+    Continuously synchronize all scraped novels.
+
+    The loop runs once immediately and then
+    repeats after the configured interval.
+    """
+
+    print()
+    print("=" * 60)
+    print("NOVEL ARCHIVE AUTO SYNC SERVICE")
+    print("=" * 60)
+
+    print(
+        "Automatic synchronization is enabled."
+    )
+
+    print(
+        "Sync interval: 1 hour"
+    )
+
+    print(
+        "All scraped novels will be checked automatically."
+    )
+
+    print("=" * 60)
+
+    while True:
+
+        try:
+
+            sync_all_novels()
+
+        except Exception as error:
+
+            print()
+            print(
+                "AUTO SYNC LOOP ERROR:",
+                repr(error)
+            )
+
+        print()
+        print("=" * 60)
+
+        print(
+            "NEXT AUTO SYNC IN 1 HOUR"
+        )
+
+        print("=" * 60)
+
+        time.sleep(
+            SYNC_INTERVAL_SECONDS
+        )
+
+
+# ============================================================
+# START AUTO SYNC IN BACKGROUND THREAD
+# ============================================================
+
+def start_auto_sync():
+
+    """
+    Start the continuous auto-sync service
+    in a background daemon thread.
+
+    This allows the Flask application to continue
+    running normally.
+    """
+
+    sync_thread = threading.Thread(
+        target=auto_sync_loop,
+        name="NovelAutoSync",
+        daemon=True
+    )
+
+    sync_thread.start()
+
+    print(
+        "Novel Auto Sync background service started."
+    )
+
+    return sync_thread
+
+
+# ============================================================
+# TEST / STANDALONE MODE
 # ============================================================
 
 if __name__ == "__main__":
 
     print("=" * 60)
-    print("NOVEL AUTO-SYNC TEST")
+    print("NOVEL ARCHIVE AUTO SYNC")
     print("=" * 60)
 
-    db = SessionLocal()
+    print(
+        "Starting automatic synchronization..."
+    )
 
-    try:
+    print(
+        "All scraped novels will be synchronized."
+    )
 
-        novel = (
-            db.query(Novel)
-            .filter(
-                Novel.source_url.isnot(None),
-                Novel.source_url != ""
-            )
-            .first()
-        )
+    print(
+        "Interval: 1 hour"
+    )
 
-        if not novel:
+    print("=" * 60)
 
-            print(
-                "No scraped novel with a source URL "
-                "was found."
-            )
-
-        else:
-
-            print()
-            print(
-                "Testing sync for:"
-            )
-
-            print(
-                f"ID: {novel.id}"
-            )
-
-            print(
-                f"Title: {novel.title}"
-            )
-
-            print(
-                f"URL: {novel.source_url}"
-            )
-
-            novel_id = novel.id
-
-    finally:
-
-        db.close()
-
-    if "novel_id" in locals():
-
-        result = sync_novel(
-            novel_id
-        )
-
-        print()
-        print(
-            "SYNC RESULT:"
-        )
-
-        print(
-            result
-        )
+    auto_sync_loop()
