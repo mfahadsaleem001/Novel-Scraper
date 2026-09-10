@@ -416,26 +416,6 @@ logoutButton.addEventListener(
     }
 );
 
-
-/* ============================================================
-   SETTINGS
-   ============================================================ */
-
-settingsLink.addEventListener(
-    "click",
-    function (event) {
-
-        event.preventDefault();
-
-        showMessage(
-            "Admin Settings will be connected in the next step.",
-            "success"
-        );
-
-    }
-);
-
-
 /* ============================================================
    INITIAL LOAD
    ============================================================ */

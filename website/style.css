@@ -90,12 +90,10 @@ body {
     letter-spacing: 1.6px;
 }
 
-.header-text {
-    color: #aaa19b;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 1px;
-}
+.header-actions { display: flex; align-items: center; gap: 18px; }
+.header-actions a, .header-logout { color: #ddd3cc; background: transparent; border: 0; padding: 0; font: 600 10px "Manrope", sans-serif; letter-spacing: .6px; text-decoration: none; cursor: pointer; }
+.header-actions .header-join { min-height: 34px; display: inline-flex; align-items: center; padding: 0 14px; border: 1px solid rgba(177,138,82,.75); color: #e2c797; }
+.header-actions a:hover, .header-logout:hover { color: #fff; }
 
 /* =====================================================
    MAIN
@@ -336,6 +334,25 @@ body {
 .novel-card-content {
     padding: 21px;
 }
+
+body.library-page { display: grid; grid-template-columns: 244px minmax(0, 1fr); grid-template-rows: auto 1fr auto; }
+body.library-page .header, body.library-page footer { grid-column: 1 / -1; }
+body.library-page .main-container { width: min(1180px, calc(100% - 72px)); }
+.library-sidebar { grid-column: 1; grid-row: 2; min-height: calc(100vh - 158px); padding: 24px 14px; background: var(--charcoal); color: #d8d0ca; }
+.library-sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 0 8px 22px; border-bottom: 1px solid rgba(255,255,255,.09); }
+.library-sidebar-brand > span, .library-sidebar-user > span { display: grid; place-items: center; width: 38px; height: 38px; background: var(--burgundy); color: var(--ivory); font-family: "Cormorant Garamond", serif; font-weight: 700; }
+.library-sidebar-brand strong { display: block; color: #fff; font: 600 20px "Cormorant Garamond", serif; }
+.library-sidebar-brand small { display: block; margin-top: 3px; color: #978d87; font-size: 8px; letter-spacing: 1.4px; text-transform: uppercase; }
+.library-sidebar-nav { display: grid; gap: 4px; padding: 22px 0; }
+.library-sidebar-nav a { min-height: 42px; display: flex; align-items: center; padding: 0 12px; color: #c7bdb7; text-decoration: none; font-size: 11px; font-weight: 600; border-left: 2px solid transparent; }
+.library-sidebar-nav a:hover, .library-sidebar-nav a.active { background: rgba(255,255,255,.06); color: #fff; border-left-color: var(--gold); }
+.library-sidebar-user { margin-top: auto; padding: 17px 8px 0; border-top: 1px solid rgba(255,255,255,.09); }
+.library-sidebar-user > span { float: left; width: 32px; height: 32px; margin-right: 9px; border-radius: 50%; font-size: 11px; }
+.library-sidebar-user strong { display: block; padding-top: 2px; color: #fff; font-size: 11px; }
+.library-sidebar-user button { margin-top: 13px; width: 100%; min-height: 33px; border: 1px solid rgba(255,255,255,.13); background: transparent; color: #c7bdb7; font: 700 9px "Manrope", sans-serif; cursor: pointer; }
+.library-sidebar-user button:hover { color: #fff; border-color: var(--gold); }
+
+.novel-card-content > p { margin-top: 6px; color: var(--muted); font-size: 10px; }
 
 .novel-card h3 {
     color: var(--charcoal);
@@ -580,6 +597,12 @@ footer > span {
 }
 
 @media (max-width: 800px) {
+    body.library-page { display: block; }
+    .library-sidebar { min-height: auto; padding: 11px 18px; }
+    .library-sidebar-brand, .library-sidebar-user { display: none; }
+    .library-sidebar-nav { display: flex; overflow-x: auto; padding: 0; }
+    .library-sidebar-nav a { flex: 0 0 auto; min-height: 36px; font-size: 10px; }
+    body.library-page .main-container { width: min(100% - 50px, 720px); }
     .header {
         padding: 16px 25px;
     }

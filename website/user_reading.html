@@ -7,11 +7,17 @@
 <meta charset="UTF-8">
 
 <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+
 >
 
 <title>My Reading | Novel Archive</title>
+
+<link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+>
 
 <link
     rel="preconnect"
@@ -46,17 +52,164 @@
 
 <aside class="sidebar">
 
-    <div class="brand-area">
 
-        <div class="brand-mark">
+<div class="brand-area">
+
+    <div class="brand-mark">
+        NA
+    </div>
+
+    <div class="brand-text">
+
+        <h1>
+            Novel Archive
+        </h1>
+
+        <span>
+            Reading Space
+        </span>
+
+    </div>
+
+</div>
+
+
+<nav class="sidebar-nav">
+
+
+    <a
+        href="user_dashboard.html"
+        class="nav-item"
+    >
+
+        <span class="nav-icon">
+            ⌂
+        </span>
+
+        <span>
+            Home
+        </span>
+
+    </a>
+
+
+    <a
+        href="browse_novels.html"
+        class="nav-item"
+    >
+
+        <span class="nav-icon">
+            ▤
+        </span>
+
+        <span>
+            Browse Library
+        </span>
+
+    </a>
+
+
+    <a
+        href="user_reading.html"
+        class="nav-item active"
+    >
+
+        <span class="nav-icon">
+            ◫
+        </span>
+
+        <span>
+            My Reading
+        </span>
+
+    </a>
+
+
+    <a
+        href="user_profile.html"
+        class="nav-item"
+    >
+
+        <span class="nav-icon">
+            ◯
+        </span>
+
+        <span>
+            Profile
+        </span>
+
+    </a>
+
+</nav>
+
+
+<div class="sidebar-bottom">
+
+    <div class="sidebar-user">
+
+        <div
+            class="user-avatar"
+            id="sidebarAvatar"
+        >
+            U
+        </div>
+
+        <div class="sidebar-user-info">
+
+            <strong id="sidebarUserName">
+                Reader
+            </strong>
+
+            <span>
+                Member
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <button
+        type="button"
+        class="logout-button"
+        id="logoutButton"
+    >
+
+        <span>
+            ↪
+        </span>
+
+        Logout
+
+    </button>
+
+</div>
+
+
+</aside>
+
+<!-- =========================
+     MAIN CONTENT
+========================== -->
+
+<main class="main-content">
+
+
+<!-- MOBILE HEADER -->
+
+<header class="mobile-header">
+
+    <div class="mobile-brand">
+
+        <div class="mobile-brand-mark">
             NA
         </div>
 
-        <div class="brand-text">
+        <div>
 
-            <h1>
+            <strong>
                 Novel Archive
-            </h1>
+            </strong>
 
             <span>
                 Reading Space
@@ -67,414 +220,270 @@
     </div>
 
 
-    <nav class="sidebar-nav">
+    <button
+        type="button"
+        class="mobile-logout"
+        id="mobileLogoutButton"
+        aria-label="Logout"
+    >
+        ↪
+    </button>
 
-        <a
-            href="user_dashboard.html"
-            class="nav-item"
-        >
-
-            <span class="nav-icon">
-                ⌂
-            </span>
-
-            <span>
-                Home
-            </span>
-
-        </a>
-
-
-        <a
-            href="index.html"
-            class="nav-item"
-        >
-
-            <span class="nav-icon">
-                ▤
-            </span>
-
-            <span>
-                Browse Library
-            </span>
-
-        </a>
-
-
-        <a
-            href="user_reading.html"
-            class="nav-item active"
-        >
-
-            <span class="nav-icon">
-                ◫
-            </span>
-
-            <span>
-                My Reading
-            </span>
-
-        </a>
-
-
-        <a
-            href="user_profile.html"
-            class="nav-item"
-        >
-
-            <span class="nav-icon">
-                ◯
-            </span>
-
-            <span>
-                Profile
-            </span>
-
-        </a>
-
-    </nav>
-
-
-    <div class="sidebar-bottom">
-
-        <div class="sidebar-user">
-
-            <div
-                class="user-avatar"
-                id="sidebarAvatar"
-            >
-                U
-            </div>
-
-            <div class="sidebar-user-info">
-
-                <strong id="sidebarUserName">
-                    Reader
-                </strong>
-
-                <span>
-                    Member
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <button
-            type="button"
-            class="logout-button"
-            id="logoutButton"
-        >
-
-            <span>
-                ↪
-            </span>
-
-            Logout
-
-        </button>
-
-    </div>
-
-</aside>
+</header>
 
 
 <!-- =========================
-     MAIN CONTENT
+     PAGE INTRO
 ========================== -->
 
-<main class="main-content">
+<section class="page-intro">
 
+    <span class="eyebrow">
+        YOUR LIBRARY
+    </span>
 
-    <!-- MOBILE HEADER -->
+    <h2>
+        My Reading
+    </h2>
 
-    <header class="mobile-header">
+    <p>
+        Keep track of the stories you have been
+        reading and return to them whenever you like.
+    </p>
 
-        <div class="mobile-brand">
+</section>
 
-            <div class="mobile-brand-mark">
-                NA
-            </div>
 
-            <div>
+<!-- =========================
+     CONTINUE READING
+========================== -->
 
-                <strong>
-                    Novel Archive
-                </strong>
+<section class="reading-section">
 
-                <span>
-                    Reading Space
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <button
-            type="button"
-            class="mobile-logout"
-            id="mobileLogoutButton"
-            aria-label="Logout"
-        >
-            ↪
-        </button>
-
-    </header>
-
-
-    <!-- =========================
-         PAGE INTRO
-    ========================== -->
-
-    <section class="page-intro">
-
-        <span class="eyebrow">
-            YOUR LIBRARY
-        </span>
-
-        <h2>
-            My Reading
-        </h2>
-
-        <p>
-            Keep track of the stories you have been
-            reading and return to them whenever you like.
-        </p>
-
-    </section>
-
-
-    <!-- =========================
-         CONTINUE READING
-    ========================== -->
-
-    <section class="reading-section">
-
-        <div class="section-header">
-
-            <div>
-
-                <span class="section-kicker">
-                    PICK UP WHERE YOU LEFT OFF
-                </span>
-
-                <h3>
-                    Continue Reading
-                </h3>
-
-            </div>
-
-        </div>
-
-
-        <div
-            class="continue-container"
-            id="continueReading"
-        >
-
-            <div class="empty-state">
-
-                <div class="empty-mark">
-                    NA
-                </div>
-
-                <h4>
-                    Nothing to continue yet
-                </h4>
-
-                <p>
-                    Start reading a novel and your latest
-                    reading position will appear here.
-                </p>
-
-                <a
-                    href="index.html"
-                    class="primary-button"
-                >
-                    Browse Library
-                </a>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- =========================
-         READING HISTORY
-    ========================== -->
-
-    <section class="reading-section history-section">
-
-        <div class="section-header">
-
-            <div>
-
-                <span class="section-kicker">
-                    YOUR ACTIVITY
-                </span>
-
-                <h3>
-                    Reading History
-                </h3>
-
-            </div>
-
-
-            <button
-                type="button"
-                class="clear-button"
-                id="clearHistoryButton"
-            >
-                Clear History
-            </button>
-
-        </div>
-
-
-        <div
-            class="history-grid"
-            id="readingHistory"
-        >
-
-            <div class="empty-state history-empty">
-
-                <div class="empty-mark">
-                    NA
-                </div>
-
-                <h4>
-                    Your reading history is empty
-                </h4>
-
-                <p>
-                    Novels you open will appear here so
-                    you can easily return to them.
-                </p>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- =========================
-         SAVED STORIES
-    ========================== -->
-
-    <section class="reading-section saved-section">
-
-        <div class="section-header">
-
-            <div>
-
-                <span class="section-kicker">
-                    BOOKMARKED STORIES
-                </span>
-
-                <h3>
-                    Saved Stories
-                </h3>
-
-            </div>
-
-        </div>
-
-
-        <div
-            class="saved-grid"
-            id="savedStories"
-        >
-
-            <div class="empty-state">
-
-                <div class="empty-mark">
-                    NA
-                </div>
-
-                <h4>
-                    No saved stories yet
-                </h4>
-
-                <p>
-                    Save novels from the library to keep
-                    them close to your reading space.
-                </p>
-
-                <a
-                    href="index.html"
-                    class="primary-button"
-                >
-                    Explore Novels
-                </a>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- =========================
-         ACCOUNT NOTE
-    ========================== -->
-
-    <section class="reading-note">
-
-        <div class="note-mark">
-            NA
-        </div>
+    <div class="section-header">
 
         <div>
 
             <span class="section-kicker">
-                NOVEL ARCHIVE
+                PICK UP WHERE YOU LEFT OFF
             </span>
 
             <h3>
-                Every story has a place.
+                Continue Reading
             </h3>
 
+        </div>
+
+    </div>
+
+
+    <div
+        class="continue-container"
+        id="continueReading"
+    >
+
+        <div class="empty-state">
+
+            <div class="empty-mark">
+                NA
+            </div>
+
+            <h4>
+                Nothing to continue yet
+            </h4>
+
             <p>
-                Your reading activity stays organized here
-                so you can return to your stories without
-                losing your place.
+                Start reading a novel and your latest
+                reading position will appear here.
+            </p>
+
+            <a
+                href="browse_novels.html"
+                class="primary-button"
+            >
+                Browse Library
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     READING HISTORY
+========================== -->
+
+<section class="reading-section history-section">
+
+    <div class="section-header">
+
+        <div>
+
+            <span class="section-kicker">
+                YOUR ACTIVITY
+            </span>
+
+            <h3>
+                Reading History
+            </h3>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="clear-button"
+            id="clearHistoryButton"
+        >
+            Clear History
+        </button>
+
+    </div>
+
+
+    <div
+        class="history-grid"
+        id="readingHistory"
+    >
+
+        <div class="empty-state history-empty">
+
+            <div class="empty-mark">
+                NA
+            </div>
+
+            <h4>
+                Your reading history is empty
+            </h4>
+
+            <p>
+                Novels you open will appear here so
+                you can easily return to them.
             </p>
 
         </div>
 
-    </section>
+    </div>
+
+</section>
 
 
-    <!-- =========================
-         FOOTER
-    ========================== -->
+<!-- =========================
+     SAVED STORIES
+========================== -->
 
-    <footer class="page-footer">
+<section class="reading-section saved-section">
 
-        <div class="footer-brand">
+    <div class="section-header">
 
-            <strong>
-                Novel Archive
-            </strong>
+        <div>
 
-            <span>
-                A quiet place for good stories.
+            <span class="section-kicker">
+                BOOKMARKED STORIES
             </span>
+
+            <h3>
+                Saved Stories
+            </h3>
 
         </div>
 
-        <span class="footer-copy">
-            © 2026 Novel Archive
+    </div>
+
+
+    <div
+        class="saved-grid"
+        id="savedStories"
+    >
+
+        <div class="empty-state">
+
+            <div class="empty-mark">
+                NA
+            </div>
+
+            <h4>
+                No saved stories yet
+            </h4>
+
+            <p>
+                Save novels from the library to keep
+                them close to your reading space.
+            </p>
+
+            <a
+                href="browse_novels.html"
+                class="primary-button"
+            >
+                Explore Novels
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     ACCOUNT NOTE
+========================== -->
+
+<section class="reading-note">
+
+    <div class="note-mark">
+        NA
+    </div>
+
+    <div>
+
+        <span class="section-kicker">
+            NOVEL ARCHIVE
         </span>
 
-    </footer>
+        <h3>
+            Every story has a place.
+        </h3>
+
+        <p>
+            Your reading activity stays organized here
+            so you can return to your stories without
+            losing your place.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     FOOTER
+========================== -->
+
+<footer class="page-footer">
+
+    <div class="footer-brand">
+
+        <strong>
+            Novel Archive
+        </strong>
+
+        <span>
+            A quiet place for good stories.
+        </span>
+
+    </div>
+
+    <span class="footer-copy">
+        © 2026 Novel Archive
+    </span>
+
+</footer>
 
 </main>
+
 </div>
 
 <script src="user_reading.js"></script>

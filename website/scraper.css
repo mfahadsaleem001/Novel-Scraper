@@ -15,7 +15,6 @@
     --border: #ded4c8;
 }
 
-
 /* ============================================================
    PAGE LAYOUT
    ============================================================ */
@@ -27,16 +26,10 @@ body {
     font-family: "Manrope", sans-serif;
 }
 
-
-/* ============================================================
-   ADMIN LAYOUT
-   ============================================================ */
-
 .admin-layout {
     min-height: 100vh;
     display: flex;
 }
-
 
 /* ============================================================
    SIDEBAR
@@ -46,13 +39,13 @@ body {
     width: 255px;
     min-width: 255px;
     min-height: 100vh;
+    flex-shrink: 0;
     background: var(--charcoal);
     color: #ffffff;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
 }
-
 
 /* ============================================================
    SIDEBAR BRAND
@@ -98,7 +91,6 @@ body {
     letter-spacing: 2px;
     text-transform: uppercase;
 }
-
 
 /* ============================================================
    NAVIGATION
@@ -152,7 +144,6 @@ body {
     font-size: 15px;
 }
 
-
 /* ============================================================
    SIDEBAR BOTTOM
    ============================================================ */
@@ -200,7 +191,6 @@ body {
     font-size: 10px;
 }
 
-
 /* ============================================================
    MAIN CONTENT
    ============================================================ */
@@ -208,16 +198,16 @@ body {
 .admin-main {
     flex: 1;
     min-width: 0;
-    padding: 42px 52px;
+    width: calc(100% - 255px);
+    padding: 34px 32px 55px;
     box-sizing: border-box;
 }
 
 .admin-content {
     width: 100%;
-    max-width: 1450px;
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
 }
-
 
 /* ============================================================
    PAGE HEADER
@@ -262,15 +252,15 @@ body {
     text-align: right;
 }
 
-
 /* ============================================================
    CONTENT CARD
    ============================================================ */
 
 .scraper-card {
+    width: 100%;
     background: var(--paper);
     border: 1px solid var(--border);
-    padding: 32px;
+    padding: 30px;
     box-sizing: border-box;
 }
 
@@ -291,7 +281,6 @@ body {
     font-size: 12px;
     line-height: 1.6;
 }
-
 
 /* ============================================================
    URL FORM
@@ -357,7 +346,6 @@ body {
     cursor: not-allowed;
 }
 
-
 /* ============================================================
    MESSAGE
    ============================================================ */
@@ -371,7 +359,6 @@ body {
 .message:empty {
     display: none;
 }
-
 
 /* ============================================================
    SCRAPING STATUS
@@ -395,7 +382,6 @@ body {
     font-weight: 600;
 }
 
-
 /* ============================================================
    EXAMPLE URL
    ============================================================ */
@@ -416,7 +402,6 @@ body {
 .example-url a:hover {
     text-decoration: underline;
 }
-
 
 /* ============================================================
    SECTION
@@ -459,13 +444,13 @@ body {
     font-weight: 700;
 }
 
-
 /* ============================================================
    KEEP EXISTING NOVEL GRID
    ============================================================ */
 
 /*
    IMPORTANT:
+
    .novels-list is intentionally NOT styled here.
 
    The existing style.css handles:
@@ -475,7 +460,6 @@ body {
    - cover image
    - grid layout
 */
-
 
 /* ============================================================
    NOVEL CARD ACTIONS
@@ -492,7 +476,6 @@ body {
     box-sizing: border-box;
 }
 
-
 /* ============================================================
    READ + EDIT BUTTONS
    SAME SIZE + SAME STYLE
@@ -506,47 +489,35 @@ body {
 #manualNovelsList .edit-button {
     appearance: none;
     -webkit-appearance: none;
-
     flex: 1 1 0 !important;
-
     width: auto !important;
     min-width: 0 !important;
     max-width: none !important;
-
     height: 40px !important;
     min-height: 40px !important;
     max-height: 40px !important;
-
     margin: 0 !important;
     padding: 0 12px !important;
-
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-
     box-sizing: border-box !important;
-
     background: var(--burgundy) !important;
     color: #ffffff !important;
-
     border: 1px solid var(--burgundy) !important;
     border-radius: 5px !important;
-
     font-family: "Manrope", sans-serif !important;
     font-size: 11px !important;
     font-weight: 700 !important;
     line-height: 1 !important;
     text-align: center !important;
-
     cursor: pointer !important;
     text-decoration: none !important;
-
     transition:
         background 0.2s ease,
         border-color 0.2s ease,
         transform 0.2s ease !important;
 }
-
 
 /* ============================================================
    BUTTON HOVER
@@ -564,7 +535,6 @@ body {
     transform: translateY(-1px);
 }
 
-
 /* ============================================================
    SUCCESS RESULT
    ============================================================ */
@@ -572,7 +542,6 @@ body {
 #scrapedNovelSection {
     margin-top: 30px;
 }
-
 
 /* ============================================================
    NAVIGATION ACTIONS
@@ -624,7 +593,6 @@ body {
     background: var(--burgundy-soft);
 }
 
-
 /* ============================================================
    EMPTY / LOADING
    ============================================================ */
@@ -635,7 +603,6 @@ body {
     text-align: center;
     font-size: 12px;
 }
-
 
 /* ============================================================
    RESPONSIVE — 1050px
@@ -649,7 +616,8 @@ body {
     }
 
     .admin-main {
-        padding: 36px 32px;
+        width: calc(100% - 220px);
+        padding: 32px 25px 50px;
     }
 
     .page-header h1 {
@@ -657,53 +625,52 @@ body {
     }
 }
 
-
 /* ============================================================
    RESPONSIVE — 850px
    ============================================================ */
 
 @media (max-width: 850px) {
 
+    .admin-layout {
+        display: block;
+    }
+
     .admin-sidebar {
-        width: 72px;
-        min-width: 72px;
+        width: 100%;
+        min-width: 0;
+        min-height: auto;
     }
 
     .sidebar-brand {
-        justify-content: center;
-        padding: 20px 10px;
-    }
-
-    .brand-text,
-    .nav-section-title,
-    .nav-item span:last-child,
-    .profile-info {
-        display: none;
+        padding: 20px 22px;
     }
 
     .admin-navigation {
-        padding: 22px 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        padding: 18px 14px;
+    }
+
+    .nav-section-title {
+        width: 100%;
+        margin-bottom: 4px;
     }
 
     .nav-item {
-        justify-content: center;
-        padding: 0;
-    }
-
-    .nav-icon {
-        width: auto;
+        margin-bottom: 0;
     }
 
     .sidebar-bottom {
-        padding: 15px 10px;
-    }
-
-    .admin-profile {
-        justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
     }
 
     .admin-main {
-        padding: 30px 24px;
+        width: 100%;
+        padding: 30px 22px 45px;
     }
 
     .page-header {
@@ -716,19 +683,14 @@ body {
     }
 }
 
-
 /* ============================================================
    RESPONSIVE — 650px
    ============================================================ */
 
 @media (max-width: 650px) {
 
-    .admin-sidebar {
-        display: none;
-    }
-
     .admin-main {
-        padding: 24px 16px;
+        padding: 25px 18px 40px;
     }
 
     .page-header h1 {
@@ -757,7 +719,6 @@ body {
         width: 100%;
     }
 }
-
 
 /* ============================================================
    RESPONSIVE — 480px

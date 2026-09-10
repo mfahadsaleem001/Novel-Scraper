@@ -729,7 +729,7 @@ function attachNovelButtons(
 
 
                     window.location.href =
-                        `novel.html?novel=${encodeURIComponent(
+                        `novel.html?file=${encodeURIComponent(
                             novel
                         )}`;
                 }

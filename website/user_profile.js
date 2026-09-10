@@ -11,22 +11,20 @@ HELPERS
 ============================================================ */
 
 function getStoredUser() {
-
 try {
-    return JSON.parse(
-        localStorage.getItem("user_data") || "{}"
-    );
+return JSON.parse(
+localStorage.getItem("user_data") || "{}"
+);
 } catch (error) {
-    return {};
+return {};
 }
-
 }
 
 function getInitials(name) {
-
 if (!name) {
-    return "U";
+return "U";
 }
+
 
 const words = String(name)
     .trim()
@@ -44,27 +42,41 @@ return (
     words[words.length - 1].charAt(0)
 ).toUpperCase();
 
+
 }
 
-function showMessage(
-element,
-message,
-type
-) {
-
+function showMessage(element, message, type) {
 if (!element) {
-    return;
+return;
 }
+
 
 element.textContent = message;
-
-element.className =
-    "form-message";
+element.className = "form-message";
 
 if (type) {
     element.classList.add(type);
 }
 
+
+}
+
+function clearUserSession() {
+localStorage.removeItem("user_token");
+localStorage.removeItem("user_data");
+
+
+window.location.href = "user_login.html";
+
+
+}
+
+async function parseResponse(response) {
+try {
+return await response.json();
+} catch (error) {
+return {};
+}
 }
 
 /* ============================================================
@@ -73,29 +85,25 @@ USER DISPLAY
 
 function updateUserDisplay(user) {
 const name =
-    user.name ||
-    user.username ||
-    "Reader";
+user.name ||
+user.username ||
+"Reader";
+
 
 const avatar =
-    document.getElementById(
-        "sidebarAvatar"
-    );
+    document.getElementById("sidebarAvatar");
 
 const sidebarName =
-    document.getElementById(
-        "sidebarUserName"
-    );
+    document.getElementById("sidebarUserName");
 
 if (avatar) {
-    avatar.textContent =
-        getInitials(name);
+    avatar.textContent = getInitials(name);
 }
 
 if (sidebarName) {
-    sidebarName.textContent =
-        name;
+    sidebarName.textContent = name;
 }
+
 
 }
 
@@ -104,75 +112,61 @@ LOAD PROFILE
 ============================================================ */
 
 async function loadUserProfile() {
-const storedUser =
-    getStoredUser();
+const storedUser = getStoredUser();
 
-updateUserDisplay(
-    storedUser
-);
+
+updateUserDisplay(storedUser);
+
+const nameInput =
+    document.getElementById("profileName");
+
+const emailInput =
+    document.getElementById("profileEmail");
+
+if (nameInput) {
+    nameInput.value = storedUser.name || "";
+}
+
+if (emailInput) {
+    emailInput.value = storedUser.email || "";
+}
 
 try {
-
-    const response =
-        await fetch(
-            `${API_URL}/user/profile`,
-            {
-                method: "GET",
-
-                headers: {
-                    Authorization:
-                        `Bearer ${userToken}`
-                }
+    const response = await fetch(
+        `${API_URL}/user/profile`,
+        {
+            method: "GET",
+            headers: {
+                Authorization:
+                    `Bearer ${userToken}`
             }
-        );
+        }
+    );
 
-    if (response.status === 401 ||
-        response.status === 403) {
-
-        localStorage.removeItem(
-            "user_token"
-        );
-
-        localStorage.removeItem(
-            "user_data"
-        );
-
-        window.location.href =
-            "user_login.html";
-
+    if (
+        response.status === 401 ||
+        response.status === 403
+    ) {
+        clearUserSession();
         return;
     }
+
+    const data = await parseResponse(response);
 
     if (!response.ok) {
         return;
     }
 
-    const data =
-        await response.json();
-
-    const user =
-        data.user || data;
+    const user = data.user || data;
 
     updateUserDisplay(user);
 
-    const nameInput =
-        document.getElementById(
-            "profileName"
-        );
-
-    const emailInput =
-        document.getElementById(
-            "profileEmail"
-        );
-
     if (nameInput) {
-        nameInput.value =
-            user.name || "";
+        nameInput.value = user.name || "";
     }
 
     if (emailInput) {
-        emailInput.value =
-            user.email || "";
+        emailInput.value = user.email || "";
     }
 
     localStorage.setItem(
@@ -181,27 +175,9 @@ try {
     );
 
 } catch (error) {
-
-    const nameInput =
-        document.getElementById(
-            "profileName"
-        );
-
-    const emailInput =
-        document.getElementById(
-            "profileEmail"
-        );
-
-    if (nameInput) {
-        nameInput.value =
-            storedUser.name || "";
-    }
-
-    if (emailInput) {
-        emailInput.value =
-            storedUser.email || "";
-    }
+    updateUserDisplay(storedUser);
 }
+
 
 }
 
@@ -210,37 +186,29 @@ UPDATE PROFILE
 ============================================================ */
 
 async function updateProfile(event) {
-
 event.preventDefault();
 
+
 const nameInput =
-    document.getElementById(
-        "profileName"
-    );
+    document.getElementById("profileName");
 
 const emailInput =
-    document.getElementById(
-        "profileEmail"
-    );
+    document.getElementById("profileEmail");
 
 const message =
-    document.getElementById(
-        "profileMessage"
-    );
+    document.getElementById("profileMessage");
 
 const button =
-    document.getElementById(
-        "saveProfileButton"
-    );
+    document.getElementById("saveProfileButton");
 
-const name =
-    nameInput.value.trim();
+if (!nameInput || !emailInput || !button) {
+    return;
+}
 
-const email =
-    emailInput.value.trim();
+const name = nameInput.value.trim();
+const email = emailInput.value.trim();
 
 if (!name || !email) {
-
     showMessage(
         message,
         "Name and email are required.",
@@ -251,9 +219,7 @@ if (!name || !email) {
 }
 
 button.disabled = true;
-
-button.textContent =
-    "Saving...";
+button.textContent = "Saving...";
 
 showMessage(
     message,
@@ -262,50 +228,35 @@ showMessage(
 );
 
 try {
+    const response = await fetch(
+        `${API_URL}/user/profile`,
+        {
+            method: "PUT",
+            headers: {
+                "Content-Type":
+                    "application/json",
 
-    const response =
-        await fetch(
-            `${API_URL}/user/profile`,
-            {
-                method: "PUT",
+                Authorization:
+                    `Bearer ${userToken}`
+            },
+            body: JSON.stringify({
+                name,
+                email
+            })
+        }
+    );
 
-                headers: {
-                    "Content-Type":
-                        "application/json",
-
-                    Authorization:
-                        `Bearer ${userToken}`
-                },
-
-                body: JSON.stringify({
-                    name,
-                    email
-                })
-            }
-        );
-
-    const data =
-        await response.json();
-
-    if (response.status === 401 ||
-        response.status === 403) {
-
-        localStorage.removeItem(
-            "user_token"
-        );
-
-        localStorage.removeItem(
-            "user_data"
-        );
-
-        window.location.href =
-            "user_login.html";
-
+    if (
+        response.status === 401 ||
+        response.status === 403
+    ) {
+        clearUserSession();
         return;
     }
 
-    if (!response.ok) {
+    const data = await parseResponse(response);
 
+    if (!response.ok) {
         showMessage(
             message,
             data.message ||
@@ -317,9 +268,12 @@ try {
         return;
     }
 
+    const storedUser = getStoredUser();
+
     const updatedUser =
-        data.user || {
-            ...getStoredUser(),
+        data.user ||
+        {
+            ...storedUser,
             name,
             email
         };
@@ -329,9 +283,7 @@ try {
         JSON.stringify(updatedUser)
     );
 
-    updateUserDisplay(
-        updatedUser
-    );
+    updateUserDisplay(updatedUser);
 
     showMessage(
         message,
@@ -341,7 +293,6 @@ try {
     );
 
 } catch (error) {
-
     showMessage(
         message,
         "Unable to connect to the server.",
@@ -349,12 +300,10 @@ try {
     );
 
 } finally {
-
     button.disabled = false;
-
-    button.textContent =
-        "Save Changes";
+    button.textContent = "Save Changes";
 }
+
 
 }
 
@@ -363,40 +312,47 @@ CHANGE PASSWORD
 ============================================================ */
 
 async function changePassword(event) {
-
 event.preventDefault();
 
-const currentPassword =
-    document.getElementById(
-        "currentPassword"
-    ).value;
 
-const newPassword =
-    document.getElementById(
-        "newPassword"
-    ).value;
+const currentPasswordInput =
+    document.getElementById("currentPassword");
 
-const confirmPassword =
-    document.getElementById(
-        "confirmPassword"
-    ).value;
+const newPasswordInput =
+    document.getElementById("newPassword");
+
+const confirmPasswordInput =
+    document.getElementById("confirmPassword");
 
 const message =
-    document.getElementById(
-        "passwordMessage"
-    );
+    document.getElementById("passwordMessage");
 
 const button =
-    document.getElementById(
-        "changePasswordButton"
-    );
+    document.getElementById("changePasswordButton");
+
+if (
+    !currentPasswordInput ||
+    !newPasswordInput ||
+    !confirmPasswordInput ||
+    !button
+) {
+    return;
+}
+
+const currentPassword =
+    currentPasswordInput.value;
+
+const newPassword =
+    newPasswordInput.value;
+
+const confirmPassword =
+    confirmPasswordInput.value;
 
 if (
     !currentPassword ||
     !newPassword ||
     !confirmPassword
 ) {
-
     showMessage(
         message,
         "Please complete all password fields.",
@@ -407,7 +363,6 @@ if (
 }
 
 if (newPassword.length < 6) {
-
     showMessage(
         message,
         "New password must be at least 6 characters.",
@@ -418,7 +373,6 @@ if (newPassword.length < 6) {
 }
 
 if (newPassword !== confirmPassword) {
-
     showMessage(
         message,
         "New passwords do not match.",
@@ -429,9 +383,7 @@ if (newPassword !== confirmPassword) {
 }
 
 button.disabled = true;
-
-button.textContent =
-    "Updating...";
+button.textContent = "Updating...";
 
 showMessage(
     message,
@@ -440,53 +392,38 @@ showMessage(
 );
 
 try {
+    const response = await fetch(
+        `${API_URL}/user/change-password`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type":
+                    "application/json",
 
-    const response =
-        await fetch(
-            `${API_URL}/user/change-password`,
-            {
-                method: "POST",
+                Authorization:
+                    `Bearer ${userToken}`
+            },
+            body: JSON.stringify({
+                current_password:
+                    currentPassword,
 
-                headers: {
-                    "Content-Type":
-                        "application/json",
+                new_password:
+                    newPassword
+            })
+        }
+    );
 
-                    Authorization:
-                        `Bearer ${userToken}`
-                },
-
-                body: JSON.stringify({
-                    current_password:
-                        currentPassword,
-
-                    new_password:
-                        newPassword
-                })
-            }
-        );
-
-    const data =
-        await response.json();
-
-    if (response.status === 401 ||
-        response.status === 403) {
-
-        localStorage.removeItem(
-            "user_token"
-        );
-
-        localStorage.removeItem(
-            "user_data"
-        );
-
-        window.location.href =
-            "user_login.html";
-
+    if (
+        response.status === 401 ||
+        response.status === 403
+    ) {
+        clearUserSession();
         return;
     }
 
-    if (!response.ok) {
+    const data = await parseResponse(response);
 
+    if (!response.ok) {
         showMessage(
             message,
             data.message ||
@@ -498,9 +435,12 @@ try {
         return;
     }
 
-    document.getElementById(
-        "passwordForm"
-    ).reset();
+    const passwordForm =
+        document.getElementById("passwordForm");
+
+    if (passwordForm) {
+        passwordForm.reset();
+    }
 
     showMessage(
         message,
@@ -510,7 +450,6 @@ try {
     );
 
 } catch (error) {
-
     showMessage(
         message,
         "Unable to connect to the server.",
@@ -518,12 +457,10 @@ try {
     );
 
 } finally {
-
     button.disabled = false;
-
-    button.textContent =
-        "Update Password";
+    button.textContent = "Update Password";
 }
+
 
 }
 
@@ -532,17 +469,7 @@ LOGOUT
 ============================================================ */
 
 function logoutUser() {
-localStorage.removeItem(
-    "user_token"
-);
-
-localStorage.removeItem(
-    "user_data"
-);
-
-window.location.href =
-    "user_login.html";
-
+clearUserSession();
 }
 
 /* ============================================================
@@ -551,24 +478,17 @@ INITIALIZE
 
 function initializeProfile() {
 const profileForm =
-    document.getElementById(
-        "profileForm"
-    );
+document.getElementById("profileForm");
+
 
 const passwordForm =
-    document.getElementById(
-        "passwordForm"
-    );
+    document.getElementById("passwordForm");
 
 const logoutButton =
-    document.getElementById(
-        "logoutButton"
-    );
+    document.getElementById("logoutButton");
 
 const mobileLogoutButton =
-    document.getElementById(
-        "mobileLogoutButton"
-    );
+    document.getElementById("mobileLogoutButton");
 
 if (profileForm) {
     profileForm.addEventListener(
@@ -603,4 +523,15 @@ loadUserProfile();
 
 }
 
+/* ============================================================
+START
+============================================================ */
+
+if (document.readyState === "loading") {
+document.addEventListener(
+"DOMContentLoaded",
+initializeProfile
+);
+} else {
 initializeProfile();
+}

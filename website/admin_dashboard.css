@@ -1,569 +1,605 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap');
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  }
 
 :root {
-    --burgundy: #6f1d3a;
-    --burgundy-dark: #4a1026;
-    --burgundy-soft: #f1e4e8;
-    --ivory: #f7f1e7;
-    --paper: #fffdf8;
-    --charcoal: #292525;
-    --muted: #756c67;
-    --gold: #b18a52;
-    --border: #ded4c8;
+--burgundy: #6f1d3a;
+--burgundy-dark: #4a1026;
+--burgundy-soft: #f1e4e8;
+--ivory: #f7f1e7;
+--paper: #fffdf8;
+--charcoal: #292525;
+--muted: #756c67;
+--gold: #b18a52;
+--border: #ded4c8;
 }
 
 body {
-    min-height: 100vh;
-    font-family: "Manrope", sans-serif;
-    background: var(--ivory);
-    color: var(--charcoal);
+min-height: 100vh;
+font-family: "Manrope", sans-serif;
+background: var(--ivory);
+color: var(--charcoal);
 }
 
 /* =====================================================
-   MAIN LAYOUT
-   ===================================================== */
+MAIN LAYOUT
+===================================================== */
 
 .admin-layout {
-    min-height: 100vh;
-    display: flex;
+min-height: 100vh;
+display: flex;
 }
 
 /* =====================================================
-   SIDEBAR
-   ===================================================== */
+SIDEBAR
+===================================================== */
 
 .admin-sidebar {
-    width: 255px;
-    min-height: 100vh;
-    background: var(--charcoal);
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    padding: 28px 18px;
+width: 255px;
+min-height: 100vh;
+flex-shrink: 0;
+background: var(--charcoal);
+color: #fff;
+display: flex;
+flex-direction: column;
+padding: 28px 18px;
 }
 
 .sidebar-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 4px 10px 28px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+display: flex;
+align-items: center;
+gap: 12px;
+padding: 4px 10px 28px;
+border-bottom: 1px solid rgba(255, 255, 255, 0.10);
 }
 
 .brand-mark {
-    width: 43px;
-    height: 43px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--burgundy);
-    color: var(--ivory);
-    font-family: "Cormorant Garamond", serif;
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: 1px;
+width: 43px;
+height: 43px;
+display: flex;
+align-items: center;
+justify-content: center;
+background: var(--burgundy);
+color: var(--ivory);
+font-family: "Cormorant Garamond", serif;
+font-size: 17px;
+font-weight: 700;
+letter-spacing: 1px;
 }
 
 .sidebar-brand h2 {
-    font-family: "Cormorant Garamond", serif;
-    font-size: 21px;
-    font-weight: 600;
+font-family: "Cormorant Garamond", serif;
+font-size: 21px;
+font-weight: 600;
 }
 
 .sidebar-brand span {
-    display: block;
-    margin-top: 3px;
-    color: #aaa19b;
-    font-size: 10px;
-    letter-spacing: 1px;
+display: block;
+margin-top: 3px;
+color: #aaa19b;
+font-size: 10px;
+letter-spacing: 1px;
 }
 
 /* =====================================================
-   NAVIGATION
-   ===================================================== */
+NAVIGATION
+===================================================== */
 
 .admin-navigation {
-    padding-top: 28px;
+padding-top: 28px;
 }
 
 .nav-label {
-    padding: 0 12px;
-    margin-bottom: 9px;
-    color: #8f8782;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 1.8px;
+padding: 0 12px;
+margin-bottom: 9px;
+color: #8f8782;
+font-size: 9px;
+font-weight: 700;
+letter-spacing: 1.8px;
 }
 
 .nav-label-spaced {
-    margin-top: 28px;
+margin-top: 28px;
 }
 
 .nav-item {
-    height: 43px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 0 12px;
-    margin-bottom: 4px;
-    color: #c5bdb8;
-    text-decoration: none;
-    font-size: 13px;
-    border-left: 3px solid transparent;
-    transition:
-        background 0.2s ease,
-        color 0.2s ease;
+height: 43px;
+display: flex;
+align-items: center;
+gap: 12px;
+padding: 0 12px;
+margin-bottom: 4px;
+color: #c5bdb8;
+text-decoration: none;
+font-size: 13px;
+border-left: 3px solid transparent;
+transition:
+background 0.2s ease,
+color 0.2s ease;
 }
 
 .nav-item:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: #fff;
+background: rgba(255, 255, 255, 0.06);
+color: #fff;
 }
 
 .nav-item.active {
-    background: rgba(111, 29, 58, 0.32);
-    color: #fff;
-    border-left-color: var(--gold);
+background: rgba(111, 29, 58, 0.32);
+color: #fff;
+border-left-color: var(--gold);
 }
 
 .nav-icon {
-    width: 18px;
-    text-align: center;
-    font-size: 16px;
+width: 18px;
+text-align: center;
+font-size: 16px;
 }
 
 /* =====================================================
-   SIDEBAR BOTTOM
-   ===================================================== */
+SIDEBAR BOTTOM
+===================================================== */
 
 .sidebar-bottom {
-    margin-top: auto;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.10);
+margin-top: auto;
+padding-top: 20px;
+border-top: 1px solid rgba(255, 255, 255, 0.10);
 }
 
 .admin-profile {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 8px 14px;
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 8px 8px 14px;
 }
 
 .profile-avatar {
-    width: 34px;
-    height: 34px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: var(--gold);
-    color: var(--charcoal);
-    font-size: 13px;
-    font-weight: 700;
+width: 34px;
+height: 34px;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 50%;
+background: var(--gold);
+color: var(--charcoal);
+font-size: 13px;
+font-weight: 700;
 }
 
 .profile-info strong {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
+display: block;
+font-size: 12px;
+font-weight: 600;
 }
 
 .profile-info span {
-    display: block;
-    margin-top: 2px;
-    color: #99908b;
-    font-size: 10px;
+display: block;
+margin-top: 2px;
+color: #99908b;
+font-size: 10px;
 }
 
 .logout-button {
-    width: 100%;
-    height: 38px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: transparent;
-    color: #c5bdb8;
-    cursor: pointer;
-    font-family: "Manrope", sans-serif;
-    font-size: 12px;
-    transition: all 0.2s ease;
+width: 100%;
+height: 38px;
+border: 1px solid rgba(255, 255, 255, 0.12);
+background: transparent;
+color: #c5bdb8;
+cursor: pointer;
+font-family: "Manrope", sans-serif;
+font-size: 12px;
+transition: all 0.2s ease;
 }
 
 .logout-button:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: #fff;
+background: rgba(255, 255, 255, 0.06);
+color: #fff;
 }
 
 /* =====================================================
-   MAIN CONTENT
-   ===================================================== */
+MAIN CONTENT
+===================================================== */
 
 .admin-main {
-    flex: 1;
-    max-width: 1450px;
-    padding: 46px 52px;
+flex: 1;
+min-width: 0;
+width: calc(100% - 255px);
+padding: 34px 32px 45px;
 }
 
 /* =====================================================
-   HEADER
-   ===================================================== */
+HEADER
+===================================================== */
 
 .dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 38px;
+display: flex;
+justify-content: space-between;
+align-items: flex-end;
+margin-bottom: 32px;
 }
 
 .page-eyebrow,
 .section-eyebrow {
-    color: var(--gold);
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 2px;
+color: var(--gold);
+font-size: 10px;
+font-weight: 700;
+letter-spacing: 2px;
 }
 
 .dashboard-header h1 {
-    margin-top: 8px;
-    font-family: "Cormorant Garamond", serif;
-    font-size: 48px;
-    font-weight: 600;
-    line-height: 1;
+margin-top: 8px;
+font-family: "Cormorant Garamond", serif;
+font-size: 48px;
+font-weight: 600;
+line-height: 1;
 }
 
 .page-description {
-    margin-top: 10px;
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.6;
+margin-top: 10px;
+color: var(--muted);
+font-size: 13px;
+line-height: 1.6;
 }
 
 .header-date {
-    text-align: right;
-    color: var(--muted);
-    font-size: 11px;
+text-align: right;
+color: var(--muted);
+font-size: 11px;
 }
 
 .header-date strong {
-    display: block;
-    margin-top: 5px;
-    color: var(--charcoal);
-    font-family: "Cormorant Garamond", serif;
-    font-size: 17px;
-    font-weight: 600;
+display: block;
+margin-top: 5px;
+color: var(--charcoal);
+font-family: "Cormorant Garamond", serif;
+font-size: 17px;
+font-weight: 600;
 }
 
 /* =====================================================
-   STATISTICS
-   ===================================================== */
+STATISTICS
+===================================================== */
 
 .statistics-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+display: grid;
+grid-template-columns: repeat(4, minmax(0, 1fr));
+gap: 16px;
 }
 
 .stat-card {
-    padding: 22px;
-    background: var(--paper);
-    border: 1px solid var(--border);
+padding: 22px;
+background: var(--paper);
+border: 1px solid var(--border);
 }
 
 .stat-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: var(--muted);
-    font-size: 11px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+color: var(--muted);
+font-size: 11px;
 }
 
 .stat-icon {
-    color: var(--burgundy);
-    font-size: 18px;
+color: var(--burgundy);
+font-size: 18px;
 }
 
 .stat-number {
-    display: block;
-    margin-top: 17px;
-    font-family: "Manrope", sans-serif;
-    font-size: 38px;
-    font-weight: 600;
-    letter-spacing: -1px;
-    line-height: 1;
+display: block;
+margin-top: 17px;
+font-family: "Manrope", sans-serif;
+font-size: 38px;
+font-weight: 600;
+letter-spacing: -1px;
+line-height: 1;
 }
 
 .stat-note {
-    display: block;
-    margin-top: 7px;
-    color: #918984;
-    font-size: 10px;
+display: block;
+margin-top: 7px;
+color: #918984;
+font-size: 10px;
 }
 
 /* =====================================================
-   SECTIONS
-   ===================================================== */
+SECTIONS
+===================================================== */
 
 .dashboard-section {
-    margin-top: 45px;
+margin-top: 40px;
 }
 
 .section-heading {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    margin-bottom: 18px;
+display: flex;
+align-items: flex-end;
+justify-content: space-between;
+margin-bottom: 18px;
 }
 
 .section-heading h2 {
-    margin-top: 6px;
-    font-family: "Cormorant Garamond", serif;
-    font-size: 29px;
-    font-weight: 600;
+margin-top: 6px;
+font-family: "Cormorant Garamond", serif;
+font-size: 29px;
+font-weight: 600;
 }
 
 .view-all-button {
-    border: none;
-    background: transparent;
-    color: var(--burgundy);
-    font-family: "Manrope", sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
+border: none;
+background: transparent;
+color: var(--burgundy);
+font-family: "Manrope", sans-serif;
+font-size: 12px;
+font-weight: 700;
+cursor: pointer;
 }
 
 /* =====================================================
-   QUICK ACTIONS
-   ===================================================== */
+QUICK ACTIONS
+===================================================== */
 
 .quick-actions {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+display: grid;
+grid-template-columns: repeat(3, minmax(0, 1fr));
+gap: 16px;
 }
 
 .action-card {
-    min-height: 105px;
-    display: flex;
-    align-items: center;
-    gap: 17px;
-    padding: 22px;
-    border: 1px solid var(--border);
-    background: var(--paper);
-    color: var(--charcoal);
-    text-align: left;
-    cursor: pointer;
-    transition:
-        transform 0.2s ease,
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
+min-height: 105px;
+display: flex;
+align-items: center;
+gap: 17px;
+padding: 22px;
+border: 1px solid var(--border);
+background: var(--paper);
+color: var(--charcoal);
+text-align: left;
+cursor: pointer;
+transition:
+transform 0.2s ease,
+border-color 0.2s ease,
+box-shadow 0.2s ease;
 }
 
 .action-card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(111, 29, 58, 0.35);
-    box-shadow:
-        0 10px 25px
-        rgba(50, 35, 35, 0.08);
+transform: translateY(-2px);
+border-color: rgba(111, 29, 58, 0.35);
+box-shadow:
+0 10px 25px
+rgba(50, 35, 35, 0.08);
 }
 
 .action-symbol {
-    width: 43px;
-    height: 43px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--burgundy-soft);
-    color: var(--burgundy);
-    font-size: 20px;
+width: 43px;
+height: 43px;
+flex-shrink: 0;
+display: flex;
+align-items: center;
+justify-content: center;
+background: var(--burgundy-soft);
+color: var(--burgundy);
+font-size: 20px;
 }
 
 .action-card strong {
-    display: block;
-    font-family: "Cormorant Garamond", serif;
-    font-size: 19px;
-    font-weight: 600;
+display: block;
+font-family: "Cormorant Garamond", serif;
+font-size: 19px;
+font-weight: 600;
 }
 
 .action-card small {
-    display: block;
-    margin-top: 5px;
-    color: var(--muted);
-    font-size: 10px;
-    line-height: 1.5;
+display: block;
+margin-top: 5px;
+color: var(--muted);
+font-size: 10px;
+line-height: 1.5;
 }
 
 /* =====================================================
-   EMPTY COLLECTION
-   ===================================================== */
+EMPTY COLLECTION
+===================================================== */
 
 .recent-novels {
-    min-height: 240px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--paper);
-    border: 1px solid var(--border);
+min-height: 240px;
+display: flex;
+align-items: center;
+justify-content: center;
+background: var(--paper);
+border: 1px solid var(--border);
 }
 
 .empty-collection {
-    max-width: 390px;
-    padding: 35px;
-    text-align: center;
+max-width: 390px;
+padding: 35px;
+text-align: center;
 }
 
 .empty-icon {
-    margin-bottom: 14px;
-    color: var(--gold);
-    font-size: 28px;
+margin-bottom: 14px;
+color: var(--gold);
+font-size: 28px;
 }
 
 .empty-collection h3 {
-    font-family: "Cormorant Garamond", serif;
-    font-size: 23px;
-    font-weight: 600;
+font-family: "Cormorant Garamond", serif;
+font-size: 23px;
+font-weight: 600;
 }
 
 .empty-collection p {
-    margin-top: 8px;
-    color: var(--muted);
-    font-size: 12px;
-    line-height: 1.6;
+margin-top: 8px;
+color: var(--muted);
+font-size: 12px;
+line-height: 1.6;
 }
 
 /* =====================================================
-   RECENT NOVELS
-   ===================================================== */
+RECENT NOVELS
+===================================================== */
 
 .recent-novels-list {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1px;
-    background: var(--border);
+width: 100%;
+display: grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 1px;
+background: var(--border);
 }
 
 .recent-novel-item {
-    min-height: 125px;
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    padding: 18px;
-    background: var(--paper);
+min-height: 125px;
+display: flex;
+align-items: center;
+gap: 18px;
+padding: 18px;
+background: var(--paper);
 }
 
 .recent-novel-cover {
-    width: 70px;
-    height: 95px;
-    flex-shrink: 0;
-    overflow: hidden;
-    background: var(--ivory);
+width: 70px;
+height: 95px;
+flex-shrink: 0;
+overflow: hidden;
+background: var(--ivory);
 }
 
 .recent-novel-cover img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+width: 100%;
+height: 100%;
+object-fit: cover;
+}
+
+.recent-novel-info {
+min-width: 0;
 }
 
 .recent-novel-info h3 {
-    font-family: "Cormorant Garamond", serif;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.25;
+font-family: "Cormorant Garamond", serif;
+font-size: 20px;
+font-weight: 600;
+line-height: 1.25;
+overflow-wrap: anywhere;
 }
 
 .recent-novel-info p {
-    margin-top: 5px;
-    color: var(--muted);
-    font-size: 11px;
+margin-top: 5px;
+color: var(--muted);
+font-size: 11px;
 }
 
 .recent-novel-info span {
-    display: inline-block;
-    margin-top: 10px;
-    color: var(--burgundy);
-    font-size: 10px;
-    font-weight: 700;
+display: inline-block;
+margin-top: 10px;
+color: var(--burgundy);
+font-size: 10px;
+font-weight: 700;
 }
 
 /* =====================================================
-   RESPONSIVE
-   ===================================================== */
+RESPONSIVE
+===================================================== */
 
 @media (max-width: 1050px) {
 
-    .statistics-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
 
-    .quick-actions {
-        grid-template-columns: 1fr;
-    }
+.statistics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.quick-actions {
+    grid-template-columns: 1fr;
+}
+
+
 }
 
 @media (max-width: 850px) {
 
-    .recent-novels-list {
-        grid-template-columns: 1fr;
-    }
+
+.recent-novels-list {
+    grid-template-columns: 1fr;
+}
+
+
 }
 
 @media (max-width: 800px) {
 
-    .admin-sidebar {
-        width: 210px;
-    }
 
-    .admin-main {
-        padding: 35px 25px;
-    }
+.admin-sidebar {
+    width: 210px;
+}
+
+.admin-main {
+    width: calc(100% - 210px);
+    padding: 30px 22px 40px;
+}
+
+
 }
 
 @media (max-width: 650px) {
 
-    .admin-layout {
-        display: block;
-    }
 
-    .admin-sidebar {
-        width: 100%;
-        min-height: auto;
-    }
+.admin-layout {
+    display: block;
+}
 
-    .admin-navigation {
-        padding-bottom: 15px;
-    }
+.admin-sidebar {
+    width: 100%;
+    min-height: auto;
+}
 
-    .sidebar-bottom {
-        margin-top: 15px;
-    }
+.admin-main {
+    width: 100%;
+    padding: 28px 18px 35px;
+}
 
-    .dashboard-header {
-        display: block;
-    }
+.admin-navigation {
+    padding-bottom: 15px;
+}
 
-    .header-date {
-        margin-top: 20px;
-        text-align: left;
-    }
+.sidebar-bottom {
+    margin-top: 15px;
+}
+
+.dashboard-header {
+    display: block;
+}
+
+.header-date {
+    margin-top: 20px;
+    text-align: left;
+}
+
+
 }
 
 @media (max-width: 480px) {
 
-    .statistics-grid {
-        grid-template-columns: 1fr;
-    }
 
-    .admin-main {
-        padding: 28px 17px;
-    }
+.statistics-grid {
+    grid-template-columns: 1fr;
+}
 
-    .dashboard-header h1 {
-        font-size: 40px;
-    }
+.admin-main {
+    padding: 26px 16px 32px;
+}
+
+.dashboard-header h1 {
+    font-size: 40px;
+}
+
+.stat-card {
+    padding: 20px;
+}
+
+.action-card {
+    padding: 19px;
+}
+
+
 }

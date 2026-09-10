@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Novel Archive | Browse Novels</title>
+
+    <link
+        rel="stylesheet"
+        href="browse_novels.css"
+    >
+
+</head>
+
+<body>
+
+<div class="user-layout">
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="user-sidebar">
+
+        <div class="sidebar-brand">
+
+            <div class="brand-mark">
+                NA
+            </div>
+
+            <div class="brand-text">
+
+                <strong>
+                    Novel Archive
+                </strong>
+
+                <span>
+                    Reading Space
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <nav class="user-navigation">
+
+            <div class="navigation-section">
+
+                <span class="navigation-label">
+                    LIBRARY
+                </span>
+
+
+                <a
+                    href="user_dashboard.html"
+                    class="user-nav-link"
+                >
+
+                    <span class="nav-icon">
+                        ⌂
+                    </span>
+
+                    <span>
+                        Home
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="browse_novels.html"
+                    class="user-nav-link active"
+                >
+
+                    <span class="nav-icon">
+                        ▦
+                    </span>
+
+                    <span>
+                        Browse Library
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="user_reading.html"
+                    class="user-nav-link"
+                >
+
+                    <span class="nav-icon">
+                        ◫
+                    </span>
+
+                    <span>
+                        My Reading
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="user_favorites.html"
+                    class="user-nav-link"
+                >
+
+                    <span class="nav-icon">
+                        ♡
+                    </span>
+
+                    <span>
+                        Saved Novels
+                    </span>
+
+                </a>
+
+            </div>
+
+
+            <div class="navigation-section">
+
+                <span class="navigation-label">
+                    ACCOUNT
+                </span>
+
+
+                <a
+                    href="user_profile.html"
+                    class="user-nav-link"
+                >
+
+                    <span class="nav-icon">
+                        ○
+                    </span>
+
+                    <span>
+                        Profile
+                    </span>
+
+                </a>
+
+            </div>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="sidebar-user">
+
+                <div class="sidebar-avatar">
+                    U
+                </div>
+
+                <div class="sidebar-user-info">
+
+                    <strong>
+                        Reader
+                    </strong>
+
+                    <span>
+                        Novel Archive User
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="logoutButton"
+                class="logout-button"
+            >
+
+                <span>
+                    ↪
+                </span>
+
+                <span>
+                    Logout
+                </span>
+
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="user-main">
+
+
+        <!-- =================================================
+             PAGE HEADER
+        ================================================== -->
+
+        <header class="user-header">
+
+            <div class="header-heading">
+
+                <span class="header-label">
+                    THE ARCHIVE
+                </span>
+
+                <h1>
+                    Browse Novels
+                </h1>
+
+                <p>
+                    Explore the complete collection of novels
+                    available in Novel Archive.
+                </p>
+
+            </div>
+
+
+            <div class="header-date">
+
+                <span>
+                    Novel Archive
+                </span>
+
+                <strong>
+                    Browse Collection
+                </strong>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             BROWSE SUMMARY
+        ================================================== -->
+
+        <section class="saved-summary">
+
+            <div class="saved-summary-content">
+
+                <span class="section-label">
+                    THE COLLECTION
+                </span>
+
+                <h2>
+                    Available Novels
+                </h2>
+
+                <p>
+                    Discover stories from the Novel Archive
+                    collection and choose your next read.
+                </p>
+
+            </div>
+
+
+            <div class="saved-count-box">
+
+                <span id="novelCount">
+                    0
+                </span>
+
+                <small>
+                    Novels
+                </small>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             BROWSE CONTROLS
+        ================================================== -->
+
+        <section class="browse-controls">
+
+            <div class="search-wrapper">
+
+                <span class="search-icon">
+                    ⌕
+                </span>
+
+                <input
+                    type="search"
+                    id="searchInput"
+                    placeholder="Search novels, authors..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <div class="filter-wrapper">
+
+                <label for="genreFilter">
+                    Genre
+                </label>
+
+                <select id="genreFilter">
+
+                    <option value="all">
+                        All Genres
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="clearFilters"
+                class="clear-button"
+            >
+                Clear
+            </button>
+
+        </section>
+
+
+        <!-- =================================================
+             LOADING
+        ================================================== -->
+
+        <div
+            id="loading"
+            class="loading-state"
+        >
+
+            <div class="loader"></div>
+
+            <p>
+                Loading novels...
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             ERROR
+        ================================================== -->
+
+        <div
+            id="error"
+            class="error-state"
+            style="display: none;"
+        >
+
+            <div class="error-icon">
+                !
+            </div>
+
+            <h2>
+                Unable to load novels
+            </h2>
+
+            <p id="errorMessage">
+                Something went wrong while loading
+                the archive.
+            </p>
+
+            <button
+                type="button"
+                id="retryButton"
+                class="retry-button"
+            >
+                Try Again
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             EMPTY STATE
+        ================================================== -->
+
+        <div
+            id="emptyState"
+            class="empty-state"
+            style="display: none;"
+        >
+
+            <div class="empty-icon">
+                ◇
+            </div>
+
+            <h2>
+                No novels found
+            </h2>
+
+            <p>
+                Try another search term or select
+                a different genre.
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             NOVELS GRID
+        ================================================== -->
+
+        <section
+            id="novelsGrid"
+            class="novels-grid"
+        ></section>
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <footer class="user-footer">
+
+            <span>
+                Novel Archive
+            </span>
+
+            <span>
+                Read. Discover. Enjoy.
+            </span>
+
+        </footer>
+
+    </main>
+
+</div>
+
+
+<script src="browse_novels.js"></script>
+
+</body>
+
+</html>

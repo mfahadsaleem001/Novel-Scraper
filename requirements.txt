@@ -1,2 +1,9 @@
+Flask
+Flask-Cors
+SQLAlchemy
+psycopg2-binary
+PyJWT
+python-dotenv
+APScheduler
 requests
 beautifulsoup4

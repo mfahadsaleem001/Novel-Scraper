@@ -1937,7 +1937,7 @@
         const novelParameter =
             new URLSearchParams(
                 window.location.search
-            ).get("file");
+        ).get("file") || new URLSearchParams(window.location.search).get("novel");
 
 
         if (!novelParameter) {

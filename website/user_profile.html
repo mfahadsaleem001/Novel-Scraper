@@ -7,7 +7,8 @@
         name="viewport"
         content="width=device-width, initial-scale=1.0"
     >
-<title>Profile | Novel Archive</title>
+    <title>Profile | Novel Archive</title>
+
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link
@@ -26,6 +27,7 @@
     href="user_profile.css"
 >
 
+
 </head>
 
 <body>
@@ -33,336 +35,342 @@
 <div class="profile-layout">
 
 <!-- SIDEBAR -->
+
 <aside class="sidebar">
 
-    <div class="brand-area">
-        <div class="brand-mark">NA</div>
 
-        <div class="brand-text">
-            <h1>Novel Archive</h1>
-            <span>Reading Space</span>
-        </div>
+<div class="brand-area">
+    <div class="brand-mark">NA</div>
+
+    <div class="brand-text">
+        <h1>Novel Archive</h1>
+        <span>Reading Space</span>
     </div>
+</div>
 
-    <nav class="sidebar-nav">
+<nav class="sidebar-nav">
 
-        <a
-            href="user_dashboard.html"
-            class="nav-item"
+    <a
+        href="user_dashboard.html"
+        class="nav-item"
+    >
+        <span class="nav-icon">⌂</span>
+        <span>Home</span>
+    </a>
+
+    <a
+        href="browse_novels.html"
+        class="nav-item"
+    >
+        <span class="nav-icon">▤</span>
+        <span>Browse Library</span>
+    </a>
+
+    <a
+        href="user_reading.html"
+        class="nav-item"
+    >
+        <span class="nav-icon">◫</span>
+        <span>My Reading</span>
+    </a>
+
+    <a
+        href="user_profile.html"
+        class="nav-item active"
+    >
+        <span class="nav-icon">◯</span>
+        <span>Profile</span>
+    </a>
+
+</nav>
+
+<div class="sidebar-bottom">
+
+    <div class="sidebar-user">
+
+        <div
+            class="user-avatar"
+            id="sidebarAvatar"
         >
-            <span class="nav-icon">⌂</span>
-            <span>Home</span>
-        </a>
-
-        <a
-            href="index.html"
-            class="nav-item"
-        >
-            <span class="nav-icon">▤</span>
-            <span>Browse Library</span>
-        </a>
-
-        <a
-            href="user_reading.html"
-            class="nav-item"
-        >
-            <span class="nav-icon">◫</span>
-            <span>My Reading</span>
-        </a>
-
-        <a
-            href="user_profile.html"
-            class="nav-item active"
-        >
-            <span class="nav-icon">◯</span>
-            <span>Profile</span>
-        </a>
-
-    </nav>
-
-    <div class="sidebar-bottom">
-
-        <div class="sidebar-user">
-
-            <div
-                class="user-avatar"
-                id="sidebarAvatar"
-            >
-                U
-            </div>
-
-            <div class="sidebar-user-info">
-                <strong id="sidebarUserName">
-                    Reader
-                </strong>
-
-                <span>Member</span>
-            </div>
-
+            U
         </div>
 
-        <button
-            type="button"
-            class="logout-button"
-            id="logoutButton"
-        >
-            <span>↪</span>
-            Logout
-        </button>
+        <div class="sidebar-user-info">
+            <strong id="sidebarUserName">
+                Reader
+            </strong>
+
+            <span>Member</span>
+        </div>
 
     </div>
+
+    <button
+        type="button"
+        class="logout-button"
+        id="logoutButton"
+    >
+        <span>↪</span>
+        Logout
+    </button>
+
+</div>
+
 
 </aside>
 
 <!-- MAIN -->
+
 <main class="main-content">
 
-    <!-- MOBILE HEADER -->
-    <header class="mobile-header">
 
-        <div class="mobile-brand">
+<!-- MOBILE HEADER -->
+<header class="mobile-header">
 
-            <div class="mobile-brand-mark">
-                NA
-            </div>
+    <div class="mobile-brand">
 
-            <div>
-                <strong>Novel Archive</strong>
-                <span>Reading Space</span>
-            </div>
-
-        </div>
-
-        <button
-            type="button"
-            class="mobile-logout"
-            id="mobileLogoutButton"
-            aria-label="Logout"
-        >
-            ↪
-        </button>
-
-    </header>
-
-    <!-- PAGE INTRO -->
-    <section class="page-intro">
-
-        <div>
-            <span class="eyebrow">
-                ACCOUNT
-            </span>
-
-            <h2>Your Profile</h2>
-
-            <p>
-                Manage your account information and keep
-                your Novel Archive profile up to date.
-            </p>
-        </div>
-
-    </section>
-
-    <!-- PROFILE CONTENT -->
-    <section class="profile-section">
-
-        <div class="profile-grid">
-
-            <!-- ACCOUNT INFORMATION -->
-            <div class="profile-card">
-
-                <div class="card-heading">
-
-                    <div>
-                        <span class="section-kicker">
-                            PERSONAL DETAILS
-                        </span>
-
-                        <h3>Account Information</h3>
-                    </div>
-
-                </div>
-
-                <form id="profileForm">
-
-                    <div class="form-group">
-
-                        <label for="profileName">
-                            Name
-                        </label>
-
-                        <input
-                            type="text"
-                            id="profileName"
-                            name="name"
-                            placeholder="Your name"
-                            autocomplete="name"
-                            required
-                        >
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label for="profileEmail">
-                            Email Address
-                        </label>
-
-                        <input
-                            type="email"
-                            id="profileEmail"
-                            name="email"
-                            placeholder="Your email"
-                            autocomplete="email"
-                            required
-                        >
-
-                    </div>
-
-                    <div
-                        class="form-message"
-                        id="profileMessage"
-                        aria-live="polite"
-                    ></div>
-
-                    <button
-                        type="submit"
-                        class="primary-button"
-                        id="saveProfileButton"
-                    >
-                        Save Changes
-                    </button>
-
-                </form>
-
-            </div>
-
-            <!-- PASSWORD -->
-            <div class="profile-card password-card">
-
-                <div class="card-heading">
-
-                    <div>
-                        <span class="section-kicker">
-                            SECURITY
-                        </span>
-
-                        <h3>Change Password</h3>
-                    </div>
-
-                </div>
-
-                <form id="passwordForm">
-
-                    <div class="form-group">
-
-                        <label for="currentPassword">
-                            Current Password
-                        </label>
-
-                        <input
-                            type="password"
-                            id="currentPassword"
-                            name="currentPassword"
-                            autocomplete="current-password"
-                            required
-                        >
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label for="newPassword">
-                            New Password
-                        </label>
-
-                        <input
-                            type="password"
-                            id="newPassword"
-                            name="newPassword"
-                            autocomplete="new-password"
-                            minlength="6"
-                            required
-                        >
-
-                    </div>
-
-                    <div class="form-group">
-
-                        <label for="confirmPassword">
-                            Confirm New Password
-                        </label>
-
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            name="confirmPassword"
-                            autocomplete="new-password"
-                            minlength="6"
-                            required
-                        >
-
-                    </div>
-
-                    <div
-                        class="form-message"
-                        id="passwordMessage"
-                        aria-live="polite"
-                    ></div>
-
-                    <button
-                        type="submit"
-                        class="primary-button"
-                        id="changePasswordButton"
-                    >
-                        Update Password
-                    </button>
-
-                </form>
-
-            </div>
-
-        </div>
-
-    </section>
-
-    <!-- ACCOUNT NOTE -->
-    <section class="account-note">
-
-        <div class="note-mark">
+        <div class="mobile-brand-mark">
             NA
         </div>
 
         <div>
-            <span class="section-kicker">
-                NOVEL ARCHIVE
-            </span>
-
-            <h3>Your reading space, your stories.</h3>
-
-            <p>
-                Your profile information is used to personalize
-                your reading experience.
-            </p>
-        </div>
-
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="page-footer">
-
-        <div class="footer-brand">
             <strong>Novel Archive</strong>
-
-            <span>
-                A quiet place for good stories.
-            </span>
+            <span>Reading Space</span>
         </div>
 
-        <span class="footer-copy">
-            © 2026 Novel Archive
+    </div>
+
+    <button
+        type="button"
+        class="mobile-logout"
+        id="mobileLogoutButton"
+        aria-label="Logout"
+    >
+        ↪
+    </button>
+
+</header>
+
+<!-- PAGE INTRO -->
+<section class="page-intro">
+
+    <div>
+        <span class="eyebrow">
+            ACCOUNT
         </span>
 
-    </footer>
+        <h2>Your Profile</h2>
+
+        <p>
+            Manage your account information and keep
+            your Novel Archive profile up to date.
+        </p>
+    </div>
+
+</section>
+
+<!-- PROFILE CONTENT -->
+<section class="profile-section">
+
+    <div class="profile-grid">
+
+        <!-- ACCOUNT INFORMATION -->
+        <div class="profile-card">
+
+            <div class="card-heading">
+
+                <div>
+                    <span class="section-kicker">
+                        PERSONAL DETAILS
+                    </span>
+
+                    <h3>Account Information</h3>
+                </div>
+
+            </div>
+
+            <form id="profileForm">
+
+                <div class="form-group">
+
+                    <label for="profileName">
+                        Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="profileName"
+                        name="name"
+                        placeholder="Your name"
+                        autocomplete="name"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="profileEmail">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="profileEmail"
+                        name="email"
+                        placeholder="Your email"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+                <div
+                    class="form-message"
+                    id="profileMessage"
+                    aria-live="polite"
+                ></div>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="saveProfileButton"
+                >
+                    Save Changes
+                </button>
+
+            </form>
+
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="profile-card password-card">
+
+            <div class="card-heading">
+
+                <div>
+                    <span class="section-kicker">
+                        SECURITY
+                    </span>
+
+                    <h3>Change Password</h3>
+                </div>
+
+            </div>
+
+            <form id="passwordForm">
+
+                <div class="form-group">
+
+                    <label for="currentPassword">
+                        Current Password
+                    </label>
+
+                    <input
+                        type="text"
+                        id="currentPassword"
+                        name="currentPassword"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="newPassword">
+                        New Password
+                    </label>
+
+                    <input
+                        type="text"
+                        id="newPassword"
+                        name="newPassword"
+                        autocomplete="new-password"
+                        minlength="6"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="confirmPassword">
+                        Confirm New Password
+                    </label>
+
+                    <input
+                        type="text"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        autocomplete="new-password"
+                        minlength="6"
+                        required
+                    >
+
+                </div>
+
+                <div
+                    class="form-message"
+                    id="passwordMessage"
+                    aria-live="polite"
+                ></div>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="changePasswordButton"
+                >
+                    Update Password
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ACCOUNT NOTE -->
+<section class="account-note">
+
+    <div class="note-mark">
+        NA
+    </div>
+
+    <div>
+        <span class="section-kicker">
+            NOVEL ARCHIVE
+        </span>
+
+        <h3>Your reading space, your stories.</h3>
+
+        <p>
+            Your profile information is used to personalize
+            your reading experience.
+        </p>
+    </div>
+
+</section>
+
+<!-- FOOTER -->
+<footer class="page-footer">
+
+    <div class="footer-brand">
+        <strong>Novel Archive</strong>
+
+        <span>
+            A quiet place for good stories.
+        </span>
+    </div>
+
+    <span class="footer-copy">
+        © 2026 Novel Archive
+    </span>
+
+</footer>
+
 
 </main>
 

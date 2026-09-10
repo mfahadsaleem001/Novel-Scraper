@@ -17,6 +17,9 @@ const currentPage = window.location.pathname;
 
 document.addEventListener("DOMContentLoaded", function () {
 
+    initializeUserHeader();
+    initializeLibrarySidebar();
+
     if (
         currentPage.endsWith("index.html") ||
         currentPage === "/" ||
@@ -33,6 +36,49 @@ document.addEventListener("DOMContentLoaded", function () {
         initializeNovelPage();
     }
 });
+
+function initializeLibrarySidebar() {
+    const sidebar = document.getElementById("librarySidebar");
+    if (!sidebar) return;
+    const token = localStorage.getItem("user_token");
+    if (!token) {
+        sidebar.remove();
+        document.body.classList.remove("library-page");
+        return;
+    }
+    const user = JSON.parse(localStorage.getItem("user_data") || "{}");
+    const name = user.name || "Reader";
+    sidebar.querySelector("[data-user-name]").textContent = name;
+    sidebar.querySelector("[data-user-initial]").textContent = name.charAt(0).toUpperCase();
+    sidebar.querySelector("[data-action='logout']").addEventListener("click", () => {
+        localStorage.removeItem("user_token");
+        localStorage.removeItem("user_data");
+        window.location.href = "user_login.html";
+    });
+}
+
+function initializeUserHeader() {
+    const actions = document.getElementById("headerActions");
+    if (!actions) return;
+    if (!localStorage.getItem("user_token")) {
+        actions.innerHTML = '<a href="user_login.html">Sign in</a><a href="user_signup.html" class="header-join">Create account</a>';
+        return;
+    }
+    actions.innerHTML = "";
+    const dashboard = document.createElement("a");
+    dashboard.href = "user_dashboard.html";
+    dashboard.textContent = "My reading";
+    const logout = document.createElement("button");
+    logout.type = "button";
+    logout.className = "header-logout";
+    logout.textContent = "Logout";
+    logout.addEventListener("click", () => {
+        localStorage.removeItem("user_token");
+        localStorage.removeItem("user_data");
+        window.location.href = "index.html";
+    });
+    actions.append(dashboard, logout);
+}
 
 
 // ============================================================
@@ -67,68 +113,292 @@ async function initializeHomePage() {
 
 
 // ============================================================
-// LOAD NOVELS
+// LOAD NOVEL
 // ============================================================
 
-async function loadNovels() {
+async function loadNovel(filename) {
+    const loading = document.getElementById("loading");
+    const errorBox = document.getElementById("error");
+    const novelContent = document.getElementById("novelContent");
 
-    const container =
-        document.getElementById(
-            "novelsContainer"
-        );
+    const titleElement = document.getElementById("novelTitle");
+    const authorElement = document.getElementById("novelAuthor");
+    const genreElement = document.getElementById("novelGenre");
+    const statusElement = document.getElementById("novelStatus");
+    const synopsisElement = document.getElementById("novelSynopsis");
+    const coverElement = document.getElementById("coverImage");
+    const chapterCountElement = document.getElementById("chapterCount");
+    const chaptersList = document.getElementById("chaptersList");
 
-    if (container) {
+    // ============================================================
+    // INITIAL UI STATE
+    // ============================================================
 
-        container.innerHTML = `
-            <div class="empty-state">
-                <p>Loading novels...</p>
-            </div>
-        `;
+    if (loading) {
+        loading.style.display = "block";
+    }
+
+    if (errorBox) {
+        errorBox.style.display = "none";
+    }
+
+    if (novelContent) {
+        novelContent.style.display = "none";
     }
 
     try {
+        // ========================================================
+        // VALIDATE FILENAME
+        // ========================================================
 
-        const response =
-            await fetch(
-                `${API_URL}/novels`
+        if (!filename) {
+            throw new Error("Novel file was not specified.");
+        }
+
+        console.log("Loading novel:", filename);
+
+        // ========================================================
+        // API REQUEST WITH TIMEOUT
+        // ========================================================
+
+        const controller = new AbortController();
+
+        const timeout = setTimeout(function () {
+            controller.abort();
+        }, 15000);
+
+        let response;
+
+        try {
+            response = await fetch(
+                `${API_URL}/novel/${encodeURIComponent(filename)}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json"
+                    },
+                    signal: controller.signal
+                }
             );
+        } finally {
+            clearTimeout(timeout);
+        }
+
+        // ========================================================
+        // CHECK HTTP RESPONSE
+        // ========================================================
 
         if (!response.ok) {
-
             throw new Error(
-                "Could not load novels"
+                `Failed to load novel. Server returned ${response.status}.`
             );
         }
 
-        allNovels =
-            await response.json();
+        const novel = await response.json();
 
-        console.log(
-            "Novels loaded:",
-            allNovels
-        );
+        console.log("Novel API response:", novel);
 
-        displayFilteredNovels("");
+        // ========================================================
+        // VALIDATE RESPONSE
+        // ========================================================
+
+        if (!novel || typeof novel !== "object") {
+            throw new Error("Invalid novel data received from server.");
+        }
+
+        // ========================================================
+        // STORE NOVEL INFORMATION
+        // ========================================================
+
+        currentNovelFilename = filename;
+
+        currentNovelId = novel.id || null;
+
+        // ========================================================
+        // FALLBACK: FIND NOVEL ID
+        // ========================================================
+
+        if (!currentNovelId) {
+            try {
+                currentNovelId = await findNovelIdByFilename(filename);
+
+                console.log(
+                    "Novel ID found using fallback:",
+                    currentNovelId
+                );
+            } catch (idError) {
+                console.warn(
+                    "Could not find novel ID:",
+                    idError
+                );
+            }
+        }
+
+        // ========================================================
+        // NOVEL TITLE
+        // ========================================================
+
+        if (titleElement) {
+            titleElement.textContent =
+                novel.title || "Untitled Novel";
+        }
+
+        // ========================================================
+        // AUTHOR
+        // ========================================================
+
+        if (authorElement) {
+            authorElement.textContent =
+                novel.author || "Unknown Author";
+        }
+
+        // ========================================================
+        // GENRE
+        // ========================================================
+
+        if (genreElement) {
+            genreElement.textContent =
+                novel.genre || "Unknown Genre";
+        }
+
+        // ========================================================
+        // STATUS
+        // ========================================================
+
+        if (statusElement) {
+            statusElement.textContent =
+                novel.status || "Unknown";
+        }
+
+        // ========================================================
+        // SYNOPSIS
+        // ========================================================
+
+        if (synopsisElement) {
+            synopsisElement.textContent =
+                novel.synopsis || "No synopsis available.";
+        }
+
+        // ========================================================
+        // COVER IMAGE
+        // ========================================================
+
+        if (coverElement) {
+
+            if (novel.cover_image) {
+                coverElement.src = novel.cover_image;
+                coverElement.alt =
+                    novel.title || "Novel Cover";
+
+                coverElement.style.display = "block";
+            } else {
+                coverElement.removeAttribute("src");
+
+                coverElement.alt = "No Cover Available";
+
+                coverElement.style.display = "none";
+            }
+        }
+
+        // ========================================================
+        // CHAPTERS
+        // ========================================================
+
+        const chapters = Array.isArray(novel.chapters)
+            ? novel.chapters
+            : [];
+
+        if (chapterCountElement) {
+            chapterCountElement.textContent =
+                chapters.length;
+        }
+
+        // ========================================================
+        // DISPLAY CHAPTERS
+        // ========================================================
+
+        if (chaptersList) {
+
+            chaptersList.innerHTML = "";
+
+            if (chapters.length > 0) {
+
+                displayChapters(chapters);
+
+            } else {
+
+                chaptersList.innerHTML = `
+                    <div class="no-chapters">
+                        No chapters available.
+                    </div>
+                `;
+            }
+        }
+
+        // ========================================================
+        // IMPORTANT:
+        // SHOW NOVEL PAGE BEFORE SAVED REQUEST
+        // ========================================================
+
+        if (loading) {
+            loading.style.display = "none";
+        }
+
+        if (errorBox) {
+            errorBox.style.display = "none";
+        }
+
+        if (novelContent) {
+            novelContent.style.display = "block";
+        }
+
+        console.log("Novel page displayed successfully.");
+
+        // ========================================================
+        // LOAD SAVED STATUS
+        // DO NOT BLOCK THE NOVEL PAGE
+        // ========================================================
+
+        loadSavedNovelStatus()
+            .catch(function (savedError) {
+
+                console.warn(
+                    "Unable to load saved status:",
+                    savedError
+                );
+
+            });
 
     } catch (error) {
 
+        // ========================================================
+        // ERROR HANDLING
+        // ========================================================
+
         console.error(
-            "Load Novels Error:",
+            "Error loading novel:",
             error
         );
 
-        if (container) {
-
-            container.innerHTML = `
-                <div class="empty-state">
-                    <h3>Unable to load novels</h3>
-                    <p>Please try again later.</p>
-                </div>
-            `;
+        if (loading) {
+            loading.style.display = "none";
         }
+
+        if (novelContent) {
+            novelContent.style.display = "none";
+        }
+
+        if (errorBox) {
+            errorBox.style.display = "block";
+        }
+
+        showNovelError(
+            error.name === "AbortError"
+                ? "Novel loading timed out. Please try again."
+                : error.message || "Unable to load novel."
+        );
     }
 }
-
 
 // ============================================================
 // DISPLAY FILTERED NOVELS
@@ -243,7 +513,7 @@ function createNovelCard(
             : "";
 
     card.innerHTML = `
-        <div class="novel-cover-wrapper">
+        <div class="novel-card-cover">
 
             ${
                 cover
@@ -279,6 +549,12 @@ function createNovelCard(
                     novel.author || "Unknown Author"
                 )}
             </p>
+
+            <div class="novel-card-meta">
+                <span>${escapeHtml(novel.genre || "Uncategorized")}</span>
+                <span>${escapeHtml(novel.status || "Unknown")}</span>
+                <span>${escapeHtml(String(novel.total_chapters || 0))} chapters</span>
+            </div>
 
             <div class="novel-card-actions">
 
@@ -371,6 +647,11 @@ function createGenreFilters() {
                         genres.add(genre)
                 );
         }
+    );
+
+    setText(
+        "genreCount",
+        `${genres.size} ${genres.size === 1 ? "Genre" : "Genres"}`
     );
 
     container.innerHTML = "";
@@ -776,7 +1057,7 @@ function initializeNovelPage() {
         );
 
     const filename =
-        params.get("file");
+        params.get("file") || params.get("novel");
 
     if (!filename) {
 
@@ -897,11 +1178,17 @@ async function loadNovel(
                 ? novel.chapters
                 : [];
 
+        setText(
+            "chapterCount",
+            `${currentChapters.length} ${currentChapters.length === 1 ? "Chapter" : "Chapters"}`
+        );
+
         displayChapters(
             currentChapters
         );
 
         await loadSavedNovelStatus();
+        setNovelPageVisibility(true);
 
     } catch (error) {
 
@@ -914,7 +1201,17 @@ async function loadNovel(
             error.message ||
             "Could not load novel."
         );
+        setNovelPageVisibility(false);
     }
+}
+
+function setNovelPageVisibility(isLoaded) {
+    const loading = document.getElementById("loading");
+    const content = document.getElementById("novelContent");
+    const error = document.getElementById("error");
+    if (loading) loading.style.display = "none";
+    if (content) content.style.display = isLoaded ? "block" : "none";
+    if (error) error.style.display = isLoaded ? "none" : "block";
 }
 
 
@@ -980,7 +1277,7 @@ async function loadSavedNovelStatus() {
 
     const token =
         localStorage.getItem(
-            "token"
+            "user_token"
         );
 
     if (!token) {
@@ -1017,7 +1314,7 @@ async function loadSavedNovelStatus() {
         ) {
 
             localStorage.removeItem(
-                "token"
+                "user_token"
             );
 
             localStorage.removeItem(
@@ -1081,7 +1378,7 @@ function updateSaveNovelButton(
 
     const button =
         document.getElementById(
-            "saveNovelBtn"
+            "saveNovelButton"
         );
 
     if (!button) {
@@ -1127,7 +1424,7 @@ async function toggleSavedNovel() {
 
     const token =
         localStorage.getItem(
-            "token"
+            "user_token"
         );
 
     if (!token) {
@@ -1199,7 +1496,7 @@ async function toggleSavedNovel() {
         ) {
 
             localStorage.removeItem(
-                "token"
+                "user_token"
             );
 
             localStorage.removeItem(
@@ -1263,7 +1560,7 @@ async function saveReadingHistory(
 
     const token =
         localStorage.getItem(
-            "token"
+            "user_token"
         );
 
     if (!token) {
@@ -1347,7 +1644,7 @@ async function saveReadingHistory(
         ) {
 
             localStorage.removeItem(
-                "token"
+                "user_token"
             );
 
             localStorage.removeItem(
@@ -1402,7 +1699,7 @@ function displayChapters(
 
     const container =
         document.getElementById(
-            "chapterList"
+            "chaptersList"
         );
 
     if (!container) {
@@ -1528,7 +1825,7 @@ async function openChapter(
 
     const readerTitle =
         document.getElementById(
-            "readerChapterTitle"
+            "readerTitle"
         );
 
     const readerContent =
@@ -1565,7 +1862,7 @@ async function openChapter(
 
     const modal =
         document.getElementById(
-            "chapterReader"
+            "readerModal"
         );
 
     if (modal) {
@@ -1760,7 +2057,7 @@ function closeReader() {
 
     const modal =
         document.getElementById(
-            "chapterReader"
+            "readerModal"
         );
 
     if (modal) {
@@ -1837,7 +2134,7 @@ function bindNovelReaderEvents() {
 
     const chapterToggle =
         document.getElementById(
-            "toggleChapterList"
+            "chapterListButton"
         );
 
     if (
@@ -1856,7 +2153,7 @@ function bindNovelReaderEvents() {
 
     const saveButton =
         document.getElementById(
-            "saveNovelBtn"
+            "saveNovelButton"
         );
 
     if (
@@ -1911,7 +2208,7 @@ function bindNovelReaderEvents() {
 
     const modal =
         document.getElementById(
-            "chapterReader"
+            "readerModal"
         );
 
     if (
@@ -1985,15 +2282,6 @@ function formatChapterContent(
     cleaned =
         cleaned.trim();
 
-    if (
-        /<[^>]+>/.test(
-            cleaned
-        )
-    ) {
-
-        return cleaned;
-    }
-
     return escapeHtml(
         cleaned
     )
@@ -2012,34 +2300,46 @@ function formatChapterContent(
 // SHOW NOVEL ERROR
 // ============================================================
 
-function showNovelError(
-    message
-) {
+function showNovelError(message) {
 
-    const title =
-        document.getElementById(
-            "novelTitle"
-        );
+    const loading = document.getElementById("loading");
+    const errorBox = document.getElementById("error");
+    const novelContent = document.getElementById("novelContent");
+    const titleElement = document.getElementById("novelTitle");
+    const synopsisElement = document.getElementById("novelSynopsis");
 
-    if (title) {
-
-        title.textContent =
-            "Unable to Load Novel";
+    if (loading) {
+        loading.style.display = "none";
     }
 
-    const content =
-        document.getElementById(
-            "novelSynopsis"
-        );
-
-    if (content) {
-
-        content.textContent =
-            message ||
-            "An error occurred while loading this novel.";
+    if (novelContent) {
+        novelContent.style.display = "none";
     }
+
+    if (errorBox) {
+        errorBox.style.display = "block";
+
+        const errorMessage =
+            errorBox.querySelector(".error-message");
+
+        if (errorMessage) {
+            errorMessage.textContent = message;
+        } else {
+            errorBox.textContent = message;
+        }
+    }
+
+    if (titleElement) {
+        titleElement.textContent = "Unable to Load Novel";
+    }
+
+    if (synopsisElement) {
+        synopsisElement.textContent =
+            message || "Something went wrong while loading the novel.";
+    }
+
+    console.error("Novel Error:", message);
 }
-
 
 // ============================================================
 // SET TEXT

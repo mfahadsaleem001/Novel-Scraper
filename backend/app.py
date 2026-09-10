@@ -560,10 +560,7 @@ def get_novel(filename):
                     chapter.url or "",
 
                 "content":
-                    chapter.content or "",
-
-                "scrape_status":
-                    chapter.scrape_status or ""
+                    chapter.content or ""
 
             })
 
@@ -573,14 +570,10 @@ def get_novel(filename):
 
         novel_data = {
 
+            "id": novel.id,
+
             "filename":
                 novel.filename,
-
-            "source_website":
-                novel.source_website or "",
-
-            "source_url":
-                novel.source_url or "",
 
             "title":
                 novel.title or "Untitled Novel",
@@ -2064,6 +2057,21 @@ def edit_manual_novel(filename):
 )
 def admin_signup():
 
+    # Administrator creation must never be available as a public signup path.
+    # A one-time bootstrap is permitted only when no administrator exists and a
+    # separately configured reset key is supplied.
+    bootstrap_key = request.headers.get("X-Admin-Reset-Key", "")
+    db = SessionLocal()
+    try:
+        admin_exists = db.query(User).filter(User.role == "admin").first()
+    finally:
+        db.close()
+
+    if admin_exists or not ADMIN_RESET_KEY or bootstrap_key != ADMIN_RESET_KEY:
+        return jsonify({
+            "error": "Administrator accounts cannot be created from this endpoint."
+        }), 403
+
     data = request.get_json(
         silent=True
     )
@@ -2677,6 +2685,22 @@ def user_required(function):
                         "User access required"
                 }), 403
 
+            # The database remains the authority for a user's current role.
+            # This prevents an old token from retaining user privileges after
+            # an account is removed or its role changes.
+            db = SessionLocal()
+            try:
+                user = db.query(User).filter(
+                    User.id == user_id,
+                    User.role == "user"
+                ).first()
+                if not user:
+                    return jsonify({
+                        "error": "User account is no longer authorized"
+                    }), 403
+            finally:
+                db.close()
+
         except jwt.ExpiredSignatureError:
 
             return jsonify({
@@ -2870,6 +2894,11 @@ def get_reading_history():
             result.append({
                 "id": item.id,
                 "novel_id": item.novel_id,
+                "novel_filename": (
+                    item.novel.filename
+                    if item.novel
+                    else None
+                ),
                 "novel_title": (
                     item.novel.title
                     if item.novel
@@ -2995,6 +3024,24 @@ def save_reading_progress():
             return jsonify({
                 "error": "Novel not found"
             }), 404
+
+        try:
+            chapter_id = int(chapter_id)
+            chapter_number = int(chapter_number)
+        except (TypeError, ValueError):
+            return jsonify({
+                "error": "A valid chapter is required"
+            }), 400
+
+        chapter = db.query(Chapter).filter(
+            Chapter.id == chapter_id,
+            Chapter.novel_id == novel.id
+        ).first()
+
+        if not chapter or chapter.chapter_number != chapter_number:
+            return jsonify({
+                "error": "Chapter does not belong to this novel"
+            }), 400
 
         history = (
             db.query(ReadingHistory)
@@ -3212,6 +3259,7 @@ def get_saved_novels():
             result.append({
                 "id": item.id,
                 "novel_id": item.novel_id,
+                "filename": item.novel.filename,
                 "title": item.novel.title,
                 "author": item.novel.author,
                 "cover_image": item.novel.cover_image,
