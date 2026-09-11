@@ -1490,135 +1490,28 @@ function updateSaveNovelButton(
 // TOGGLE SAVED NOVEL
 // ============================================================
 
-async function toggleSavedNovel() {
+function toggleChapterList() {
+    const list = document.getElementById("readerChapterList");
+    const readerContainer = document.querySelector(".reader-container");
+    const button = document.getElementById("chapterListButton");
 
-    const token =
-        localStorage.getItem(
-            "user_token"
-        );
+    if (!list || !readerContainer) return;
 
-    if (!token) {
+    const isOpen = list.classList.toggle("active");
 
-        window.location.href =
-            "user_login.html";
+    readerContainer.classList.toggle(
+        "chapter-list-open",
+        isOpen
+    );
 
-        return;
-    }
-
-    if (!currentNovelId) {
-
-        showMessage(
-            "Novel information is not available.",
-            "error"
-        );
-
-        return;
-    }
-
-    try {
-
-        let response;
-
-        if (currentNovelSaved) {
-
-            response =
-                await fetch(
-                    `${API_URL}/user/saved/${currentNovelId}`,
-                    {
-                        method: "DELETE",
-
-                        headers: {
-                            "Authorization":
-                                `Bearer ${token}`
-                        }
-                    }
-                );
-
-        } else {
-
-            response =
-                await fetch(
-                    `${API_URL}/user/saved`,
-                    {
-                        method: "POST",
-
-                        headers: {
-                            "Content-Type":
-                                "application/json",
-
-                            "Authorization":
-                                `Bearer ${token}`
-                        },
-
-                        body: JSON.stringify({
-                            novel_id:
-                                Number(
-                                    currentNovelId
-                                )
-                        })
-                    }
-                );
-        }
-
-        if (
-            response.status === 401 ||
-            response.status === 403
-        ) {
-
-            localStorage.removeItem(
-                "user_token"
-            );
-
-            localStorage.removeItem(
-                "user_data"
-            );
-
-            window.location.href =
-                "user_login.html";
-
-            return;
-        }
-
-        const data =
-            await response.json();
-
-        if (!response.ok) {
-
-            throw new Error(
-                data.error ||
-                "Could not update saved story."
-            );
-        }
-
-        currentNovelSaved =
-            !currentNovelSaved;
-
-        updateSaveNovelButton(
-            currentNovelSaved
-        );
-
-        showMessage(
-            currentNovelSaved
-                ? "Novel saved to your library."
-                : "Novel removed from your saved stories.",
-            "success"
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Toggle Saved Novel Error:",
-            error
-        );
-
-        showMessage(
-            error.message ||
-            "Could not update saved story.",
-            "error"
+    if (button) {
+        button.classList.toggle("active", isOpen);
+        button.setAttribute(
+            "aria-expanded",
+            String(isOpen)
         );
     }
 }
-
 
 // ============================================================
 // SAVE READING HISTORY
@@ -2019,7 +1912,6 @@ function openNextChapter() {
     );
 }
 
-
 // ============================================================
 // POPULATE READER CHAPTER LIST
 // ============================================================
@@ -2027,9 +1919,7 @@ function openNextChapter() {
 function populateReaderChapterList() {
 
     const container =
-        document.getElementById(
-            "readerChapterList"
-        );
+        document.getElementById("readerChapters");
 
     if (!container) {
         return;
@@ -2037,66 +1927,77 @@ function populateReaderChapterList() {
 
     container.innerHTML = "";
 
-    currentChapters.forEach(
-        (chapter, index) => {
+    currentChapters.forEach((chapter, index) => {
 
-            const button =
-                document.createElement(
-                    "button"
-                );
+        const button =
+            document.createElement("button");
 
-            button.type = "button";
+        button.type = "button";
+        button.className = "reader-chapter-item";
 
-            button.className =
-                "reader-chapter-item";
+        if (index === currentChapterIndex) {
+            button.classList.add("active");
+        }
 
-            if (
-                index ===
-                currentChapterIndex
-            ) {
+        const chapterNumber =
+            chapter.chapter_number ||
+            index + 1;
 
-                button.classList.add(
-                    "active"
-                );
-            }
+        button.innerHTML = `
+            <span class="chapter-number">
+                Chapter ${escapeHtml(
+                    String(chapterNumber)
+                )}
+            </span>
+        `;
 
-            button.innerHTML = `
-                <span>
-                    Chapter
-                    ${escapeHtml(
-                        String(
-                            chapter.chapter_number ||
-                            index + 1
-                        )
-                    )}
-                </span>
+        button.addEventListener(
+            "click",
+            function () {
 
-                <span>
-                    ${escapeHtml(
-                        chapter.title ||
-                        ""
-                    )}
-                </span>
-            `;
+                openChapter(index);
 
-            button.addEventListener(
-                "click",
-                function () {
-
-                    openChapter(
-                        index
+                const list =
+                    document.getElementById(
+                        "readerChapterList"
                     );
 
+                const readerContainer =
+                    document.querySelector(
+                        ".reader-container"
+                    );
+
+                const chapterListButton =
+                    document.getElementById(
+                        "chapterListButton"
+                    );
+
+                if (list) {
+                    list.classList.remove("active");
                 }
-            );
 
-            container.appendChild(
-                button
-            );
-        }
-    );
+                if (readerContainer) {
+                    readerContainer.classList.remove(
+                        "chapter-list-open"
+                    );
+                }
+
+                if (chapterListButton) {
+                    chapterListButton.classList.remove(
+                        "active"
+                    );
+
+                    chapterListButton.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+                }
+            }
+        );
+
+        container.appendChild(button);
+    });
 }
-
 
 // ============================================================
 // TOGGLE CHAPTER LIST
@@ -2105,19 +2006,39 @@ function populateReaderChapterList() {
 function toggleChapterList() {
 
     const list =
-        document.getElementById(
-            "readerChapterList"
-        );
+        document.getElementById("readerChapterList");
 
-    if (!list) {
+    const readerContainer =
+        document.querySelector(".reader-container");
+
+    const button =
+        document.getElementById("chapterListButton");
+
+    if (!list || !readerContainer) {
         return;
     }
 
-    list.classList.toggle(
-        "active"
-    );
-}
+    const isOpen =
+        list.classList.toggle("active");
 
+    readerContainer.classList.toggle(
+        "chapter-list-open",
+        isOpen
+    );
+
+    if (button) {
+
+        button.classList.toggle(
+            "active",
+            isOpen
+        );
+
+        button.setAttribute(
+            "aria-expanded",
+            String(isOpen)
+        );
+    }
+}
 
 // ============================================================
 // CLOSE READER

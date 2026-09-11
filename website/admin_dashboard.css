@@ -40,7 +40,7 @@ SIDEBAR
 
 .admin-sidebar {
 width: 255px;
-min-height: 100vh;
+height: 100vh;
 flex-shrink: 0;
 background: var(--charcoal);
 color: #fff;
@@ -205,6 +205,8 @@ MAIN CONTENT
 
 .admin-main {
 flex: 1;
+height: 100vh;
+overflow-y:scroll;
 min-width: 0;
 width: calc(100% - 255px);
 padding: 34px 32px 45px;
